@@ -1,51 +1,41 @@
-# Solar waterfall
+# Plot a solar dynamic spectrum
 
-The existing `casm-solar-waterfall` command creates the team's three-panel
-scientific figure: normalized dynamic spectrum, raw bandpass, and selected
-channel light curves. It belongs to `casm_vis_analysis`.
-
-## Current input contract
-
-`plot_waterfall` currently takes a **single-beam SIGPROC filterbank path**.
-It does not accept a visibility array. The first monitor redesign is intended
-to use visibilities; adapting this presentation to that input is future work.
-There is no new fast-beam recording workflow in this documentation preview.
-
-## Existing filterbank usage
-
-Illustrative invocation for an already available file:
+Turn an existing **single-beam filterbank** into a waterfall, bandpass, and
+light curves with the existing solar plotter. Run this in `casm_offline_env`:
 
 ```bash
-python -m casm_vis_analysis.solar_waterfall /path/to/solar.fil \
-  --out-dir /path/to/figures --beam IB --tz America/Los_Angeles
+python -m casm_vis_analysis.solar_waterfall /path/to/solar_IB.fil \
+  --out-dir /path/to/figures --out-name solar-waterfall.png \
+  --beam IB --tz America/Los_Angeles --cmap viridis
 ```
 
-This writes a figure. It does not request a recording or change telescope state.
-Use the [generated reference](../packages/vis-analysis-api.md) for the exact
-function signature in the inspected revision.
+The command writes one PNG. Replace the paths with your input and output
+locations; no new recording is requested. Here is an existing output from the
+August 18 solar campaign:
 
-## Reading the figure
+```{figure} ../_static/tutorials/solar/solar-waterfall.png
+:alt: Solar campaign incoherent-beam waterfall with frequency bandpass and channel light curves, August 18 2026.
 
-The implementation time-averages the data, computes the temporal mean of each
-channel, and divides each channel by that bandpass. The waterfall display uses
-the fifth and ninety-fifth percentiles for its colour limits. The raw bandpass
-is plotted on a logarithmic power axis; the lower panel includes selected
-channels and the mean normalized power.
+Recorded incoherent-beam power. Frequency increases upward; the time axes use
+OVRO local time. This is a saved historical example, not live data.
+```
 
-This normalization emphasizes variability. It does not create an absolute
-flux scale, and its denominator must be suitable for the input quantity.
-Signed or near-zero visibility-derived estimates require separate treatment.
-The current renderer's percentile clipping is a display choice, not data deletion.
+Read the three panels together:
 
-## Scientific cautions
+- **Top:** each frequency channel divided by its mean over the plotted interval.
+  Colour reveals changes with time, not absolute brightness.
+- **Middle:** the original mean bandpass. Narrow peaks help locate persistent
+  interference that normalization can hide.
+- **Bottom:** selected channel light curves and the average normalized power.
+  Compare a feature's timing across frequencies.
 
-Solar variability is part of the signal. Do not apply a generic transient/RFI
-cleaner that removes broadband temporal structure before producing a solar
-diagnostic. Compare on-source and control measurements where available, keeping
-the response geometry and data coverage explicit.
+The Sun varies, and an incoherent beam also contains other sky and instrumental
+signals. A bright feature alone does not identify a solar burst or an array fault.
+The historical plot uses `viridis`; the current plotter's default is `inferno`.
 
-A visibility-based view must state its integration time. A roughly 137-second
-integration cannot reveal millisecond structure. Gaps and stale products should
-remain visible, including when the Sun is below the useful observing range.
+For Python, the same renderer is
+`casm_vis_analysis.solar_waterfall.plot_waterfall(path, out_path, beam="IB")`.
+It currently accepts a filterbank path, **not visibilities**. To inspect solar
+visibility phase, use [the phase tutorial](solar-phase.md).
 
-The canonical operational procedure is linked from [the wiki](../knowledge.md).
+[Source, data, and verification notes](../developer/solar-example-notes.md).

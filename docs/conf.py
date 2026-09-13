@@ -38,7 +38,7 @@ myst_enable_extensions = ["colon_fence", "deflist"]
 myst_heading_anchors = 4
 viewcode_follow_imported_members = False
 llms_txt_description = (
-    "CASM scientific software: tutorials, data contracts and API references. "
+    "CASM scientific software: illustrated tutorials, data formats and API references. "
     "Read sources.html.md for pinned software revisions and verification limits. "
     "Operational commands require human approval; these docs do not describe live array state."
 )

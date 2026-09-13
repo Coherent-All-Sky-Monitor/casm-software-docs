@@ -12,21 +12,26 @@ myst:
 
 ```{raw} html
 <div class="hero">
-<p>Data access, visibility diagnostics and calibration. Package references and worked examples for the CASM analysis stack.</p>
+<p>Read an observation, make your first plots, and learn how to check the array. Worked examples from CASM at OVRO.</p>
 </div>
 <div class="package-grid">
-<a class="package-card" href="packages/io.html"><small>01 / READ</small><strong>casm_io</strong><span>Visibility, voltage and filterbank data. Formats, subsets and antenna mappings.</span><em>Explore data access →</em></a>
-<a class="package-card" href="packages/vis-analysis.html"><small>02 / UNDERSTAND</small><strong>casm_vis_analysis</strong><span>Fringe stopping, delay diagnostics, source geometry and scientific plots.</span><em>Explore diagnostics →</em></a>
-<a class="package-card" href="packages/calibrator.html"><small>03 / CALIBRATE</small><strong>casm_calibrator</strong><span>SVD solutions, calibration products and the contracts between packages.</span><em>Explore calibration →</em></a>
+<a class="package-card" href="guides/read-visibilities.html"><small>01 / FIRST PLOTS</small><strong>Read an observation</strong><span>Load visibilities, slice time and frequency, and plot auto- and cross-correlations.</span><em>Start the tutorial →</em></a>
+<a class="package-card" href="guides/solar-waterfall.html"><small>02 / SOLAR SCIENCE</small><strong>See the Sun</strong><span>Follow solar phase and explore a dynamic spectrum with bandpass and light curves.</span><em>Plot a solar waterfall →</em></a>
+<a class="package-card" href="guides/check-calibration.html"><small>03 / BEAM CHECK</small><strong>Watch a transit</strong><span>See power rise and fall as Cyg A crosses a stationary beam.</span><em>Explore the transit →</em></a>
 </div>
 ```
 
-## Start with a question
+New to these modules? Start with [Getting started](getting-started.md), then
+follow the [tutorials](tutorials.md) in order.
+
+## Find a task
 
 | I want to… | Start here |
 |---|---|
 | Read a bounded visibility interval | [Read visibilities](guides/read-visibilities.md) |
-| Understand shapes, units and antenna IDs | [Data contracts](guides/contracts.md) |
+| Understand array dimensions and labels | [Shapes, units and antenna IDs](guides/contracts.md) |
+| Open a saved voltage dump | [Read voltages](guides/read-voltages.md) |
+| Understand solar red/blue phase plots | [Solar phase](guides/solar-phase.md) |
 | Compare a calibration across observing days | [Check a calibration](guides/check-calibration.md) |
 | Generate calibration and beamforming weights | [Build weights](guides/generate-weights.md) |
 | Review and deploy a paired weights product | [Deploy weights](guides/deploy-weights.md) |
@@ -37,7 +42,7 @@ myst:
 | Find a function or command | [API and CLI index](reference.md) |
 | Check what version these docs describe | [Sources and verification](sources.md) |
 
-## Package boundaries
+## Software reference
 
 **casm_io** reads and maps data. **casm_vis_analysis** supplies geometry and
 diagnostics. **casm_calibrator** solves and stores calibration products.
@@ -50,52 +55,44 @@ Solar observations, calibration checks and injection recovery support its
 commissioning. These manuals explain software; current array state and
 operational decisions remain in the [team wiki](knowledge.md).
 
-See [sources and verification](sources.md) for the exact revisions and checks
-behind this preview.
+Function signatures and source-code links are in the [API reference](reference.md).
+Build instructions, versioning and example details are in the
+[developer documentation](developer/index.md).
 
 ```{toctree}
 :hidden:
 :caption: Start here
 
 getting-started
-guides/contracts
+tutorials
 knowledge
-sources
-maintaining-docs
-machine-readable
-```
-
-```{toctree}
-:hidden:
-:caption: Packages
-
-packages/io
-packages/vis-analysis
-packages/calibrator
-```
-
-```{toctree}
-:hidden:
-:caption: Workflows
-
-guides/read-visibilities
-guides/check-calibration
-guides/generate-weights
-guides/deploy-weights
-guides/rank1-diagnostics
-guides/calibration-figures
-guides/image-visibilities
-guides/fold-b0329
-guides/solar-waterfall
 ```
 
 ```{toctree}
 :hidden:
 :caption: Reference
 
+guides/contracts
+packages/io
+packages/vis-analysis
+packages/calibrator
 reference
 packages/io-api
 packages/vis-analysis-api
 packages/calibrator-api
-upstream
+```
+
+```{toctree}
+:hidden:
+:caption: How-to guides
+
+guides/generate-weights
+guides/deploy-weights
+```
+
+```{toctree}
+:hidden:
+:caption: Development
+
+developer/index
 ```

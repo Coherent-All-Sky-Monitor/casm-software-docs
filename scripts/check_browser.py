@@ -17,12 +17,19 @@ def main():
         page.goto(URL, wait_until="networkidle")
         assert page.locator(".package-card").count() == 3
         page.screenshot(path=str(output / "desktop.png"), full_page=True)
-        page.locator('.package-card[href="packages/io.html"]').click()
-        page.wait_for_url("**/packages/io.html")
+        page.locator('.package-card[href="guides/read-visibilities.html"]').click()
+        page.wait_for_url("**/guides/read-visibilities.html")
         assert page.locator("h1").count() == 1
         page.goto(URL + "/search.html?q=VisibilityReader", wait_until="networkidle")
         page.wait_for_selector("#search-results li", timeout=15000)
         assert page.locator("#search-results li").count() > 0
+        for tutorial in ("read-visibilities", "read-voltages", "solar-phase", "solar-waterfall", "check-calibration"):
+            page.goto(URL + f"/guides/{tutorial}.html", wait_until="networkidle")
+            assert page.locator("figure img").count() > 0, tutorial
+            assert page.locator("figure img").evaluate_all(
+                "images => images.every(img => img.complete && img.naturalWidth > 0)"
+            ), tutorial
+            page.screenshot(path=str(output / f"{tutorial}.png"), full_page=True)
         page.goto(URL + "/guides/check-calibration.html", wait_until="networkidle")
         page.screenshot(path=str(output / "calibration.png"), full_page=True)
         page.goto(URL + "/guides/rank1-diagnostics.html", wait_until="networkidle")

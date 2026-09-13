@@ -30,9 +30,9 @@ def main():
                 target = (path.parent / unquote(url.path)).resolve()
                 assert target.is_file(), f"{path.name}: missing {link}"
                 checked += 1
-    imaging = (SITE / "guides/image-visibilities.html.md").read_text()
-    assert "Cyan circles mark the background" in imaging, "Figure caption lost in export"
-    assert "../_static/tutorials/imaging/cyga-transit-lm.png" in imaging
+    transit = (SITE / "guides/check-calibration.html.md").read_text()
+    assert "Existing scratchpad result from 2026-08-05" in transit, "Figure caption lost in export"
+    assert "../_static/tutorials/transit/cyga_stationary_beam_20260805.png" in transit
     assert "_downloads/" not in (SITE / "llms.txt").read_text()
 
     snapshot = json.loads((ROOT / "source-snapshot.json").read_text())

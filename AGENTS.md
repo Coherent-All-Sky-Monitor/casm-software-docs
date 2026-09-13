@@ -28,3 +28,9 @@ do not maintain divergent copies here.
   concrete examples, precise contracts and useful limitations. Avoid filler,
   decorative emoji, repetitive caveats, formulaic conditionals, and marketing
   language. Explain decisions once, where they matter.
+- Tutorials are for scientists new to these modules: one task, short code,
+  a real figure, and a few sentences on what to notice. Use familiar titles.
+  Put hashes, revision audits and extended implementation caveats in developer
+  notes linked from the tutorial. Keep action-critical warnings at the action.
+  Cyg A calibration validation uses a stationary-beam transit curve; sky imaging
+  is a separate tutorial. Preserve scientific captions in Markdown exports too.

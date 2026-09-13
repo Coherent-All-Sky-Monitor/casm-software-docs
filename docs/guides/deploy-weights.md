@@ -112,10 +112,5 @@ Finally assess observation continuity, injection recovery, and the appropriate
 calibration/source checks. Update the canonical wiki and deployment ledger with
 the date and evidence after a real operation. This tutorial creates no such event.
 
-## Inspected implementation
-
-Source revision `06004c75afad0af6ea3f3f2206944f342cb04730`, clean at inspection
-on 2026-09-13. [Deployment implementation](https://github.com/Coherent-All-Sky-Monitor/bf_weights_generator/blob/06004c75afad0af6ea3f3f2206944f342cb04730/bf_weights_generator/deploy_bf_weights.py)
-SHA256: `b78b99da7aa8bc3db9b4e9dfcfcd13cb53c2df76df4aa5428475261685445ab3`.
-The dry-run registry caveat above is established by code inspection, not a live
-reproduction. Source fixes are outside this documentation task.
+Implementation details and source versions are in the
+[developer notes](../developer/weights-notes.md).

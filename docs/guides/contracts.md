@@ -1,7 +1,8 @@
-# Data contracts
+# Array shapes, units and antenna IDs
 
-These contracts are relevant to the inspected software. Always read the
-metadata for the selected observation; historical data may use another format.
+Use this reference when an array dimension, frequency axis or antenna label
+is unclear. The [first visibility tutorial](read-visibilities.md) introduces
+these ideas through a worked example.
 
 ## Axes and units
 
