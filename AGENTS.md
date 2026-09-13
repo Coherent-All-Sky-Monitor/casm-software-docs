@@ -39,6 +39,10 @@ do not maintain divergent copies here.
   notes linked from the tutorial. Keep action-critical warnings at the action.
   Cyg A calibration validation uses a stationary-beam transit curve; sky imaging
   is a separate tutorial. Preserve scientific captions in Markdown exports too.
+- Tutorial figures must match the displayed code and data selection. Regenerate
+  inexpensive examples with existing modules; do not substitute unrelated plots.
+  Use saved worked examples for expensive workflows, with their actual settings.
+  Never run large reads or calibration builds merely to decorate documentation.
 - Visual style: conventional technical documentation, restrained typography,
   neutral surfaces and blue links. No promotional cards, numbered feature tiles,
   slogans, decorative hero sections or purple UI/code accents. Scientific figure

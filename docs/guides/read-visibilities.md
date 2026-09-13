@@ -14,7 +14,7 @@ source /home/casm/software/dev/casm_venvs/casm_offline_env/bin/activate
 ## Read two antennas
 
 This example uses files present on the CASM host at review time and a ten-minute
-daytime interval on August 19. Give the reader a root directory and a time
+daytime interval on August 23. Give the reader a root directory and a time
 window; it finds the observation folders and joins the matching files.
 The current recordings use the 64-antenna format, which the reader detects
 from their headers. No format configuration is needed for this first example.
@@ -28,13 +28,13 @@ import numpy as np
 from casm_io.correlator import AntennaMapping, read_visibilities
 
 ant = AntennaMapping.load(
-    "/home/casm/software/dev/antenna_layouts/casm_antenna_layout_2026-08-19_bf17.csv"
+    "/home/casm/software/dev/antenna_layouts/casm_antenna_layout_2026-08-07.csv"
 )
-inputs = sorted([ant.packet_index(9), ant.packet_index(10)])
+inputs = sorted([ant.packet_index(9), ant.packet_index(19)])
 data = read_visibilities(
-    data_root="/mnt",
-    time_start="2026-08-19 18:04:00",
-    time_end="2026-08-19 18:14:00",
+    data_root="/mnt/nvme4/data/casm",
+    time_start="2026-08-23 20:42:00",
+    time_end="2026-08-23 20:52:00",
     inputs=inputs,
 )
 print(data.vis.shape)                    # (time, frequency, baseline)
@@ -46,7 +46,7 @@ Times default to UTC and frequencies to descending order. The two-antenna
 selection keeps this first read small. Change the root and time window for
 your own data; you do not need to find individual files.
 
-For a narrower search, use a root such as `/mnt/nvme4/data/casm`.
+Use `data_root="/mnt"` to search across mounted data disks.
 `data_dir` is an optional override for a specific observation directory tree.
 For old headerless recordings, supply `fmt=load_format("layout_64ant")`
 after importing `load_format` from `casm_io.correlator`; choose the appropriate
@@ -80,12 +80,11 @@ fig = plot_autocorr(auto, freq, labels, ncols=2,
 plt.show()
 ```
 
-```{figure} ../_static/tutorials/io/visibility-snap0.png
-:alt: Six archived SNAP 0 antenna spectra showing different power levels and narrow frequency peaks.
+```{figure} ../_static/tutorials/io/visibility-two-antennas.png
+:alt: Antenna 9 and antenna 19 power spectra from the ten-minute selection, with narrow peaks above their smooth backgrounds.
 
-Existing scratchpad example: SNAP 0, 2026-08-05 05:20:16–10:29:31 UTC.
-It uses the same plotting routine for six inputs over a longer interval.
-Your two-antenna selection will produce two panels.
+Output of the code above: antenna 9 and antenna 19, averaged over the selected
+integrations on August 23, 2026. No calibration or frequency mask is applied.
 ```
 
 Read left to right in frequency and compare the smooth background with the
@@ -123,21 +122,21 @@ axes[0].set_ylabel("Amplitude")
 axes[1].plot(freq, np.angle(cross[0]))
 axes[1].set_ylabel("Phase (rad)")
 axes[1].set_xlabel("Frequency (MHz)")
+fig.tight_layout()
 plt.show()
 ```
 
-```{figure} ../_static/tutorials/io/cross-phase-sawtooth.png
-:alt: Wrapped cross-correlation phase versus frequency for nine baselines referenced to antenna 9, showing repeated jumps between minus pi and pi.
+```{figure} ../_static/tutorials/io/cross-amplitude-phase.png
+:alt: Single-integration amplitude and wrapped phase versus frequency for the antenna 9 by antenna 19 cross-correlation.
 
-Archived phase spectra from August 23, 2026, 20:42:59–21:40:15 UTC.
-Each panel pairs antenna 9 with the antenna named at left. These are
-time-averaged, background-subtracted visibilities before Sun fringe-stopping,
-not output from the single-integration example above.
+Output of the code above: the first integration in the same antenna 9 × 19
+selection. These are raw cross-correlations, before background subtraction,
+fringe-stopping or calibration.
 ```
 
-Follow the 9×19 panel: phase rises across frequency, reaches π, and reappears
-at −π. Those jumps are the phase wrapping, not breaks in the signal. Different
-baselines have different slopes; instrumental delays also contribute.
+Follow the phase between its jumps at ±π. Those jumps are phase wrapping,
+not breaks in the signal. Narrow-band interference and noisy channels can
+interrupt the smooth slope; instrumental delays also contribute.
 
 Phase wraps between −π and π, so a sawtooth shape can be normal. Avoid averaging
 complex values over the whole band before correcting a phase slope: they can

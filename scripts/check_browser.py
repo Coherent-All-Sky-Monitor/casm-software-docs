@@ -17,10 +17,15 @@ def main():
         page.goto(URL, wait_until="networkidle")
         assert page.locator(".package-card").count() == 0
         assert page.locator("article figure img").count() == 1
+        assert page.locator("article figure img").get_attribute("src").endswith(
+            "solar-waterfall.png"
+        )
         page.screenshot(path=str(output / "desktop.png"), full_page=True)
         page.locator('article a[href="guides/read-visibilities.html"]').first.click()
         page.wait_for_url("**/guides/read-visibilities.html")
         assert page.locator("h1").count() == 1
+        assert page.locator('figure img[src$="visibility-two-antennas.png"]').count() == 1
+        assert page.locator('figure img[src$="cross-amplitude-phase.png"]').count() == 1
         assert page.locator(".highlight .kn").first.evaluate(
             "node => getComputedStyle(node).color"
         ) == "rgb(40, 87, 126)"

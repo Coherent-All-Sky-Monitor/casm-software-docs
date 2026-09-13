@@ -1,72 +1,83 @@
 # Solar example provenance and limits
 
-Both tutorial figures were visually inspected and copied unchanged on
-2026-09-13. No source package was edited, science workflow rerun, or recording
-requested. Python signatures and rendering options were checked against
+Tutorial figures were checked on 2026-09-13. No source package was edited or
+recording requested. Python signatures and rendering options were checked against
 `casm_vis_analysis` revision `5039eb4714b5c62eb72b6b8f82527c787ca4f214`.
-The historical generating Git revisions are not established here.
+Per-figure inputs and execution details follow.
 
 ## Three-panel filterbank waterfall
 
-Original PNG:
-`/mnt/nvme5/solar0819/waterfalls_v2/aug18/aug18_IB_waterfall_localtime.png`.
-Documentation copy: `docs/_static/tutorials/solar/solar-waterfall.png`.
-SHA256: `c84cdc169785a76ce22b8832f4b39c972b1b927ca86c5f46c8842237d29aa9f8`.
+Regenerated on 2026-09-13 by executing the tutorial's `split_filterbank` and
+`plot_waterfall` calls, changing only output paths to the documentation tree.
+Output: `docs/_static/tutorials/solar/solar-waterfall.png`, SHA256
+`164fdb5eb1dd6cbd47ab724e0bfb056e27173f3a5f37cf91657a531350973215`.
 
-Input named in the generating script:
-`/mnt/nvme5/solar0818/fil/aug18_IB.fil`.
-It is an existing roughly 152 GB filterbank, not a visibility file; it was not
-reread for this documentation. Observation ID `2026-08-18-07:01:53`; plotted
-interval approximately 05:55–09:45 PDT. Antenna count and campaign window in
-the image title are historical metadata, not current array state.
+Input: `/mnt/nvme5/solar0819/solartrack_fil/ib_IB.fil`, 77,309,411,670 bytes.
+Header: `tstart=61272.01780093231`, `tsamp=0.001048576` seconds,
+`nchans=3072`, `nbits=32`, `nbeams=1`, `fch1=484.375` MHz,
+`foff=-0.030517578125` MHz. Only the header and selected data were read.
+The tutorial selects samples `[2667427, 2696037)`, approximately
+2026-08-20 01:12:15–01:12:45 UTC. Output cutout:
+`_build/tutorial-data/solar_IB_20260820_011215.fil`, SHA256
+`e8066d82fb7201c768c96fa68b3216dff036374ad485bfc05820f919550fa17e`.
+The cutout is a disposable build artifact, not committed source data.
 
-Generating script: `/mnt/nvme5/solar0819_v2/scripts/plot_aug18.sh`, SHA256
-`246a1d0939ac197259062a5819ff028f02727dd52ff6000f5b11c6b18cd040ad`.
-Later title annotations are described in the sibling v2 README and relabeling
-workflow; this tutorial does not claim its short command exactly reproduces
-every historical annotation.
+Extraction used `casm_io.filterbank.split.split_filterbank` at revision
+`22ef826d9f2ba355388523265081da1468e5a4ff`; module SHA256
+`a64cc9335d8abd07bceddcfebb8bd42ced420c96db6095b4c6be838cc3227f18`.
+Its seek-and-read path fetched 351,559,680 payload bytes. The combined
+extraction and rendering took 4.40 seconds with peak RSS 810,852 KiB.
+No conversion of the whole observation or new science implementation was used.
 
-The v2 README documents a corrected frequency orientation: descending channel
-0 belongs at the upper edge using `origin="upper"`. Older images under
-`/mnt/nvme5/solar0819/waterfalls/` have a mirrored frequency axis and were rejected
-for this tutorial. The copied v2 image places the approximately 400 MHz comb
-at the same frequency in waterfall and bandpass panels.
-
-Current renderer: `src/casm_vis_analysis/solar_waterfall.py`, SHA256
+Renderer: `src/casm_vis_analysis/solar_waterfall.py`, SHA256
 `5553a9572f9fc20a50d7a18c5ca45b2f68a459cea39f2cd0e8d4ac3fa749a188`.
-`plot_waterfall(path, out_path, beam, role=None, tfac=954, chans=..., tz=...,
-cmap=...)` downsamples time, divides each channel by its full-interval mean,
-and uses fifth/ninety-fifth percentiles for waterfall colour limits.
-`viridis` reproduces this historical palette; current default is `inferno`.
-The omitted colour bar limits quantitative reading of the image's colour.
-The selected channel indices are zero-based and validated against file length.
+Parameters: `beam="IB"`, `tfac=48`, `tz="America/Los_Angeles"`,
+`cmap="inferno"`; default channel selection `(505, 1200, 1500, 2000)`.
+The renderer averages 48 samples per bin (50.331648 ms), retaining 596 complete
+bins and dropping two final samples. It divides each channel by its temporal
+mean over those bins, including the burst, and clips the waterfall colour range
+at the fifth/ninety-fifth percentiles. It provides no colour bar. Peak values
+are not calibrated fluxes, and are not directly comparable to an off-event
+baseline excess. The descending frequency axis was visually checked against
+the bandpass and channel-frequency labels.
+
+The solar identification is historical, not derived from this plotting run.
+Evidence and independent e-CALLISTO/RSTN confirmation are recorded in
+`/home/casm/software/dev/casm-wiki/solar-burst-2026-08-20.md`, with original
+analysis under `/mnt/nvme5/solar0819/event0112/`. The tutorial makes no new burst
+classification, drift-rate, flux or array-health claim. No antenna layout is
+applied to an already beamformed incoherent-beam filterbank.
+
+The renderer has no time-window option and always reads the whole supplied
+filterbank. Increasing `tfac` reduces output size, not the bytes read. The
+bounded extraction is therefore part of this tutorial, rather than an implied
+optimization. The input's `nbeams=1` was verified before using the splitter;
+historical mislabelled multi-beam headers need separate validation.
 
 ## Solar phase panels
 
-Original PNG:
-`/mnt/nvme5/solar0819/recipe_demo_20260820/figs/fringe_20260820/fringe_diag_snap0_to_2.png`.
-Documentation copy: `docs/_static/tutorials/solar/solar-phase.png`.
-SHA256: `2c89f469e997917411147629a1c76c8a374a84ac5a9c6d4faa31e91ba07c8dd0`.
+`scripts/render_solar_phase_tutorial.py` executes the displayed Python blocks
+in `docs/guides/solar-phase.md` and saves the figure through Agg. Generated
+2026-09-13: `docs/_static/tutorials/solar/solar-phase-two-antennas.png`.
+The four-integration window, file and August-7 layout are the same as the
+[visibility example](io-example-notes.md). The directed reference-9 to target-19
+read returns `(4, 3072, 1)` complex64, 98,304 bytes. `with_inactive()` selects
+only those two antennas in memory; no layout file is changed. No static
+background, frequency mask or calibration is applied.
 
-The archived recipe's `params_20260820.json`, `report_20260820.json`, and
-`cal_20260820_diagnostics.ipynb` identify a Sun solve over
-2026-08-19 20:41:30–21:41:30 UTC, with 16 antennas and reference 9.
-The image spans the actual integrations to 21:41:03 UTC. Its four target
-antennas are 26, 30, 32, and 36. The layout is
-`casm_antenna_layout_2026-08-07.csv`.
-
-The primary solve subtracts the Aug-20 02:45–03:15 UTC static template;
-“Raw phase” means before fringe stopping within that recipe, not necessarily
-untouched on-disk visibilities. The short tutorial intentionally demonstrates
-the API on the reader's own selected `data`; reproducing these exact historical
-pixels additionally requires that recorded selection and preprocessing.
+The displayed snippet temporarily disables Astropy IERS downloads and permits
+older predictions for this illustration, restoring settings afterward.
+The installed `astropy-iers-data` is `0.2026.2.23.0.48.33`, using its
+`data/finals2000A.all` table. Its age check otherwise rejects this date.
+This is not a calibration validation; refresh Earth-orientation data before
+scientific calibration. The four integrations cover 20:42:59–20:49:51 UTC
+on August 23 and show only a short section of solar motion.
 
 Renderer: `plot_fringe_diagnostic` in `src/casm_vis_analysis/plotting/fringe_diag.py`,
 SHA256 `ce1922df763a630997c75ebfab28ef1614bc36a1bb998a77c8749cd8420ca99d`.
 It uses `RdBu`, `Normalize(-pi, pi)`, complex angle extraction, and white for
 masked channels. Arrays have shape `(time, frequency, target baseline)`.
-`bf_weights_generator.recipe_diagnostics.plot_fringe_stopped` produces the
-archived panels and relabels the elapsed-hours axis to local clock time.
+The time axis remains elapsed hours; the header states the local interval.
 
 This is a near-transit observing window, not a claim that the entire transit
 was captured or that the Sun was the only signal. The phase plot is not a

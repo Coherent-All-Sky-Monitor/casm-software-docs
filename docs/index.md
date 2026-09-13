@@ -24,12 +24,11 @@ follow the [tutorials](tutorials.md) in order.
   [sky imaging](guides/image-visibilities.md) and
   [pulsar folding](guides/fold-b0329.md): work with saved scientific results.
 
-```{figure} _static/tutorials/solar/solar-phase.png
-:alt: Recorded solar baseline phase before and after fringe stopping, shown in red and blue.
+```{figure} _static/tutorials/solar/solar-waterfall.png
+:alt: Solar observing dynamic spectrum with frequency bandpass and channel light curves.
 
-Solar baseline phase from an August 19 observation. Read across each row to
-compare measured phase, geometric prediction and fringe-stopped phase.
-[Walk through this example](guides/solar-phase.md).
+Solar observing data: changes in received power across time and frequency.
+[Plot a dynamic spectrum](guides/solar-waterfall.md).
 ```
 
 ## Calibration procedures

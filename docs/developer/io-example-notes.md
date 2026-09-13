@@ -1,9 +1,9 @@
 # I/O tutorial sources and verification
 
-The beginner guides use existing CASM readers and plotting functions. Their
-short examples require user-supplied files and have not been run on observation
-data during this documentation task. Existing figures were visually inspected
-and copied without editing or rerunning their analysis.
+The visibility tutorial's displayed Python blocks were executed on the CASM
+host on 2026-09-13, producing its two figures. The voltage figure remains an
+archived illustration; its beginner snippets have not been executed. Source
+packages were not edited and no acquisition commands were run.
 
 ## Source snapshot
 
@@ -16,37 +16,34 @@ and copied without editing or rerunning their analysis.
 - Plotting API:
   `/home/casm/software/dev/casm_vis_analysis/src/casm_vis_analysis/plotting/autocorr.py`.
 
-## Visibility figure
+## Matched visibility figures
 
-Source PNG:
-`/mnt/nvme5/casm_pipeline/scratchpad/output/range_2026-08-05_05-20-00_to_2026-08-05_10-30-00/autocorr/autocorr_snap0.png`.
-Copy: `docs/_static/tutorials/io/visibility-snap0.png`.
-Both SHA-256: `78bde76faaaf28b7c3e87a2387ff203975f9ed2c804fb1c927234d07b5bb1d62`.
+`scripts/render_visibility_tutorial.py` executes every Python block in
+`docs/guides/read-visibilities.md` in order, replacing only `plt.show()` with
+a PNG save using Agg. It contains no separate data-selection or analysis code.
+Run manually with the shared environment, `CASM_IO_WORKERS=1`, BLAS threads
+limited to one, and `timeout 90s`. It is not part of the site build.
 
-The figure labels six SNAP 0 inputs, 2026-08-05 05:20:16–10:29:31 UTC, in
-instrumental power dB. Its path and format match the `run_autocorr` invocation
-in `/mnt/nvme5/casm_pipeline/scratchpad/cyga_stationary_beam.py`, which requests
-05:20–10:30 UTC and calls the package's `plot_autocorr` through the runner.
-Script SHA-256: `23003ec1bc8ab7729f63977ba2fa02fbd4d0add1cd9610bc28ae7a419049087a`.
-No execution manifest survives alongside the PNG to prove the exact producing
-revision; this attribution follows the matching source call and output path.
+Read root: `/mnt/nvme4/data/casm`. Discovery selected
+`visibilities_64ant/2026-08-23-19:18:14.dat.1` for the requested
+20:42–20:52 UTC window. Returned data are `(4, 3072, 3)` complex64,
+294,912 bytes, with no reported gaps or missing files. Actual integration
+timestamps span 20:42:59–20:49:51 UTC. Frequencies descend from 484.375
+to 390.655517578125 MHz. The historical August-7 layout maps antennas 9/19
+to packet inputs 8/18. This is also the layout recorded by the Aug-23
+calibration recipe in `/mnt/nvme5/vishnu/cal_build_20260824/params_aug23_exact512.json`.
 
-Only the autocorrelation figure is reused. The historical script's later
-steering, private CSV parsing and antenna-number assumptions are not tutorial
-instructions. The beginner example selects two inputs, while the archived plot
-contains six and spans a longer interval. It is not its newly generated output.
+- `docs/_static/tutorials/io/visibility-two-antennas.png`: time-averaged
+  autos from the displayed `plot_autocorr` call. SHA256:
+  `9637805c0d10133d1e264b0f7ec1cb79213d14d177660758c37a58410774b08e`.
+- `docs/_static/tutorials/io/cross-amplitude-phase.png`: amplitude and
+  wrapped phase of the first integration. SHA256:
+  `b5f526dfacba613a02731dd4621651b08b67d30e17e0dfa209a93cede1b35a51`.
 
-## Cross-correlation phase figure
-
-Source: `/mnt/nvme5/vishnu/cal_build_20260824/figs/phase_raw_sawtooth_aug23_exact512_CAL0823N.png`.
-Copy: `docs/_static/tutorials/io/cross-phase-sawtooth.png`, unchanged.
-The matching `cal_aug23_exact512_CAL0823N_diagnostics.ipynb` displays this
-figure in cell 5. `bf_weights_generator/recipe_diagnostics.py:plot_sawtooth`
-averages complex visibilities over the selected times before taking their
-angle, masking excluded frequencies. The recipe supplies static-subtracted
-visibilities. Thus "raw" in the figure means before fringe-stopping, not
-untouched correlator output. This is a historical multi-baseline illustration,
-not a claimed execution of the beginner's single-integration snippet.
+Both plots were visually checked. The phase has a clear wrapped slope, with
+narrow-band departures. No background subtraction, RFI masking, calibration
+or fringe stopping was applied. An initial four-integration August-19 trial
+was noise-dominated; it is not the example now shown.
 
 ## Voltage figure
 
@@ -71,7 +68,7 @@ delete files; opening it should not be followed by an indiscriminate Run All.
 
 ## Reader details kept out of the first walkthrough
 
-- The introductory read uses `data_root="/mnt"` discovery and header-derived
+- The introductory read uses `data_root="/mnt/nvme4/data/casm"` discovery and header-derived
   format, with UTC and descending frequency defaults. Current 64-antenna
   recordings do not require an explicit format. This is not a hardcoded
   64-antenna fallback: headerless files need `fmt`. The upstream CLAUDE.md's
@@ -98,4 +95,4 @@ delete files; opening it should not be followed by an indiscriminate Run All.
 The scratchpad viewer at
 `/home/casm/software/casm_analysis_tools/webconsole/pages/3_Scratchpad.py` treats
 figures as temporary and exposes adjacent captions/scripts when present. These
-two copies are now retained in the documentation repository with their origins.
+archived voltage copy is retained in the documentation repository with its origin.
