@@ -13,13 +13,15 @@ Some commands write products or configuration. Consult the workflow before execu
 
 ## casm_calibrator.__init__
 
+```{py:currentmodule} casm_calibrator.__init__
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_calibrator/blob/8b5fcf5b089d6725e3c2c6b22d72c076e7ae74b3/src/casm_calibrator/__init__.py) · snapshot hash `09d4f25d4d23`
 
 
 ### CalibrationResult
 
-```python
-class CalibrationResult(TypedDict)
+```{py:class} CalibrationResult(TypedDict)
 ```
 
 ````text
@@ -34,8 +36,7 @@ antenna positions the cal was built against.
 
 ### svd_calibrate
 
-```python
-svd_calibrate(fs, ant, *, data, config: SVDConfig | None=None, time_mask=None) -> CalibrationResult
+```{py:function} svd_calibrate(fs, ant, *, data, config: SVDConfig | None=None, time_mask=None) -> CalibrationResult
 ```
 
 ````text
@@ -76,8 +77,7 @@ cal : :class:`CalibrationResult`
 
 ### save_calibration
 
-```python
-save_calibration(cal, path, *, n_time_averaged=0, rfi_mask=None, overwrite=False)
+```{py:function} save_calibration(cal, path, *, n_time_averaged=0, rfi_mask=None, overwrite=False)
 ```
 
 ````text
@@ -118,8 +118,7 @@ overwrite : bool, optional
 
 ### plot_calibration
 
-```python
-plot_calibration(cal, *, threshold=None, rfi_ranges=None, output_path=None, ant=None)
+```{py:function} plot_calibration(cal, *, threshold=None, rfi_ranges=None, output_path=None, ant=None)
 ```
 
 ````text
@@ -147,13 +146,15 @@ ant : :class:`AntennaMapping`, optional
 
 ## casm_calibrator.svd
 
+```{py:currentmodule} casm_calibrator.svd
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_calibrator/blob/8b5fcf5b089d6725e3c2c6b22d72c076e7ae74b3/src/casm_calibrator/svd.py) · snapshot hash `d3a9dff69b13`
 
 
 ### SVDMode
 
-```python
-class SVDMode(Enum)
+```{py:class} SVDMode(Enum)
 ```
 
 ````text
@@ -168,8 +169,7 @@ SVD input matrix preparation mode.
 
 ### SVDConfig
 
-```python
-class SVDConfig
+```{py:class} SVDConfig
 ```
 
 ````text
@@ -203,8 +203,7 @@ min_baseline_wavelengths : float, optional
 
 ### SVDResult
 
-```python
-class SVDResult
+```{py:class} SVDResult
 ```
 
 ````text
@@ -229,8 +228,7 @@ block_metadata : dict
 
 ### SVDCalibrator
 
-```python
-class SVDCalibrator
+```{py:class} SVDCalibrator
 ```
 
 ````text
@@ -242,12 +240,10 @@ config : SVDConfig
     Calibration configuration.
 ````
 
-```python
-__init__(self, config: SVDConfig, baseline_mask: np.ndarray | None=None)
+```{py:method} SVDCalibrator.__init__(self, config: SVDConfig, baseline_mask: np.ndarray | None=None)
 ```
 
-```python
-calibrate(self, vis_avg: np.ndarray) -> SVDResult
+```{py:method} SVDCalibrator.calibrate(self, vis_avg: np.ndarray) -> SVDResult
 ```
 
 ````text
@@ -266,13 +262,15 @@ SVDResult
 
 ## casm_calibrator.output
 
+```{py:currentmodule} casm_calibrator.output
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_calibrator/blob/8b5fcf5b089d6725e3c2c6b22d72c076e7ae74b3/src/casm_calibrator/output.py) · snapshot hash `5c6705df0f14`
 
 
 ### CalibrationWeightsWriter
 
-```python
-class CalibrationWeightsWriter
+```{py:class} CalibrationWeightsWriter
 ```
 
 ````text
@@ -282,8 +280,7 @@ The output is compatible with
 ``bf_weights_generator.load_calibration_weights()``.
 ````
 
-```python
-write(self, path: str, svd_result: SVDResult, freqs_mhz: np.ndarray, ant_ids: np.ndarray, ref_ant_id: int, source: str, n_time_averaged: int=0, rfi_mask: np.ndarray | None=None)
+```{py:method} CalibrationWeightsWriter.write(self, path: str, svd_result: SVDResult, freqs_mhz: np.ndarray, ant_ids: np.ndarray, ref_ant_id: int, source: str, n_time_averaged: int=0, rfi_mask: np.ndarray | None=None)
 ```
 
 ````text

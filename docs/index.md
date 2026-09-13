@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    description: "CASM data access, calibration and imaging tutorials with scientific figures and versioned API references."
+---
+
 ```{raw} html
 <div class="eyebrow">OVRO · Scientific software · Documentation preview</div>
 ```
@@ -22,6 +28,11 @@
 | Read a bounded visibility interval | [Read visibilities](guides/read-visibilities.md) |
 | Understand shapes, units and antenna IDs | [Data contracts](guides/contracts.md) |
 | Compare a calibration across observing days | [Check a calibration](guides/check-calibration.md) |
+| Generate calibration and beamforming weights | [Build weights](guides/generate-weights.md) |
+| Review and deploy a paired weights product | [Deploy weights](guides/deploy-weights.md) |
+| Interpret SVD rank-1 plots | [Rank-1 diagnostics](guides/rank1-diagnostics.md) |
+| Form an image from visibilities | [Visibility imaging](guides/image-visibilities.md) |
+| Fold a B0329+54 observation | [B0329+54 tutorial](guides/fold-b0329.md) |
 | Reproduce the solar plotting style | [Solar waterfall](guides/solar-waterfall.md) |
 | Find a function or command | [API and CLI index](reference.md) |
 | Check what version these docs describe | [Sources and verification](sources.md) |
@@ -30,8 +41,9 @@
 
 **casm_io** reads and maps data. **casm_vis_analysis** supplies geometry and
 diagnostics. **casm_calibrator** solves and stores calibration products.
-The canonical calibration-and-weights build belongs to `bf_weights_generator`,
-outside this initial three-package preview.
+The calibration-and-weights build belongs to `bf_weights_generator` and imaging
+to `casm-bf-imaging`. Their workflows are covered here; the initial API inventory
+covers the three packages above.
 
 CASM is being developed toward a 256-antenna FRB survey instrument at OVRO.
 Solar observations, calibration checks and injection recovery support its
@@ -49,6 +61,8 @@ getting-started
 guides/contracts
 knowledge
 sources
+maintaining-docs
+machine-readable
 ```
 
 ```{toctree}
@@ -66,6 +80,12 @@ packages/calibrator
 
 guides/read-visibilities
 guides/check-calibration
+guides/generate-weights
+guides/deploy-weights
+guides/rank1-diagnostics
+guides/calibration-figures
+guides/image-visibilities
+guides/fold-b0329
 guides/solar-waterfall
 ```
 

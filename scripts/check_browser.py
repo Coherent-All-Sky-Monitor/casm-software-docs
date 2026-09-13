@@ -25,13 +25,30 @@ def main():
         assert page.locator("#search-results li").count() > 0
         page.goto(URL + "/guides/check-calibration.html", wait_until="networkidle")
         page.screenshot(path=str(output / "calibration.png"), full_page=True)
+        page.goto(URL + "/guides/rank1-diagnostics.html", wait_until="networkidle")
+        assert page.locator("figure img").count() == 2
+        assert page.locator("figure img").evaluate_all(
+            "images => images.every(img => img.complete && img.naturalWidth > 0)"
+        )
+        page.emulate_media(color_scheme="dark")
+        assert page.locator(".sidebar-drawer").evaluate(
+            'node => getComputedStyle(node).backgroundColor'
+        ) == "rgb(12, 13, 15)"
+        page.screenshot(path=str(output / "dark-tutorial.png"), full_page=True)
+        page.goto(URL + "/packages/io-api.html", wait_until="networkidle")
+        page.locator(".viewcode-link").first.click()
+        page.wait_for_url("**/_modules/**")
+        assert page.locator(".viewcode-block").count() > 0
+        assert (page.request.get(URL + "/llms.txt")).ok
+        assert (page.request.get(URL + "/guides/rank1-diagnostics.html.md")).ok
+        page.emulate_media(color_scheme="light")
         page.set_viewport_size({"width": 390, "height": 844})
         page.goto(URL, wait_until="networkidle")
         assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
         page.screenshot(path=str(output / "mobile.png"), full_page=True)
         browser.close()
     assert not errors, errors
-    print("OK: desktop navigation, search, mobile layout; no JavaScript errors")
+    print("OK: navigation, search, source links, figures, dark/mobile layouts and Markdown endpoints")
 
 
 if __name__ == "__main__":

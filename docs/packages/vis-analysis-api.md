@@ -22,13 +22,15 @@ Some commands write products or configuration. Consult the workflow before execu
 
 ## casm_vis_analysis.runners
 
+```{py:currentmodule} casm_vis_analysis.runners
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/src/casm_vis_analysis/runners.py) · snapshot hash `e48abff934a6`
 
 
 ### run_autocorr
 
-```python
-run_autocorr(*, data_dir=None, obs=None, format, layout=None, snaps=(0, 2, 4), output_dir='./output', freq_order='descending', time_start=None, time_end=None, time_tz='UTC', nfiles=None, skip_nfiles=0, data_root=None, freq_range_mhz=None, show=False, ncols=4, scale='dB', include_inactive=False)
+```{py:function} run_autocorr(*, data_dir=None, obs=None, format, layout=None, snaps=(0, 2, 4), output_dir='./output', freq_order='descending', time_start=None, time_end=None, time_tz='UTC', nfiles=None, skip_nfiles=0, data_root=None, freq_range_mhz=None, show=False, ncols=4, scale='dB', include_inactive=False)
 ```
 
 ````text
@@ -44,8 +46,7 @@ dict
 
 ### run_waterfall
 
-```python
-run_waterfall(*, data_dir=None, obs=None, format, layout=None, snaps=(0, 2, 4), output_dir='./output', freq_order='descending', time_start=None, time_end=None, time_tz='UTC', nfiles=None, skip_nfiles=0, data_root=None, freq_range_mhz=None, show=False, split_max=16, diag_spectra=False, pub=False, include_inactive=False)
+```{py:function} run_waterfall(*, data_dir=None, obs=None, format, layout=None, snaps=(0, 2, 4), output_dir='./output', freq_order='descending', time_start=None, time_end=None, time_tz='UTC', nfiles=None, skip_nfiles=0, data_root=None, freq_range_mhz=None, show=False, split_max=16, diag_spectra=False, pub=False, include_inactive=False)
 ```
 
 ````text
@@ -68,8 +69,7 @@ dict
 
 ### run_fringe_stop
 
-```python
-run_fringe_stop(*, data_dir=None, obs=None, format, layout, ref_ant, source='sun', sign=-1, min_alt=10.0, output_dir='./output', freq_order='descending', time_start=None, time_end=None, time_tz='UTC', nfiles=None, skip_nfiles=0, data_root=None, freq_range_mhz=None, show=False, rfi_mask=None, delay_model=None, antenna_delays=False, save_npz=False)
+```{py:function} run_fringe_stop(*, data_dir=None, obs=None, format, layout, ref_ant, source='sun', sign=-1, min_alt=10.0, output_dir='./output', freq_order='descending', time_start=None, time_end=None, time_tz='UTC', nfiles=None, skip_nfiles=0, data_root=None, freq_range_mhz=None, show=False, rfi_mask=None, delay_model=None, antenna_delays=False, save_npz=False)
 ```
 
 ````text
@@ -94,13 +94,15 @@ dict
 
 ## casm_vis_analysis.sources
 
+```{py:currentmodule} casm_vis_analysis.sources
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/src/casm_vis_analysis/sources.py) · snapshot hash `b005477ce6ed`
 
 
 ### source_position
 
-```python
-source_position(name, time_unix)
+```{py:function} source_position(name, time_unix)
 ```
 
 ````text
@@ -122,8 +124,7 @@ SkyCoord
 
 ### source_altaz
 
-```python
-source_altaz(name, time_unix)
+```{py:function} source_altaz(name, time_unix)
 ```
 
 ````text
@@ -147,8 +148,7 @@ az_deg : ndarray
 
 ### source_enu
 
-```python
-source_enu(name, time_unix)
+```{py:function} source_enu(name, time_unix)
 ```
 
 ````text
@@ -170,8 +170,7 @@ enu : ndarray, shape (T, 3)
 
 ### source_flux
 
-```python
-source_flux(name, freqs_mhz, sun_flux_400=SUN_FLUX_400_DEFAULT)
+```{py:function} source_flux(name, freqs_mhz, sun_flux_400=SUN_FLUX_400_DEFAULT)
 ```
 
 ````text
@@ -196,8 +195,7 @@ flux : ndarray
 
 ### find_transit_window
 
-```python
-find_transit_window(name, time_unix, min_alt_deg=10.0)
+```{py:function} find_transit_window(name, time_unix, min_alt_deg=10.0)
 ```
 
 ````text
@@ -227,13 +225,15 @@ ValueError
 
 ## casm_vis_analysis.fringe_stop
 
+```{py:currentmodule} casm_vis_analysis.fringe_stop
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/src/casm_vis_analysis/fringe_stop.py) · snapshot hash `8c12b5c4323c`
 
 
 ### FringeStoppedData
 
-```python
-class FringeStoppedData(TypedDict)
+```{py:class} FringeStoppedData(TypedDict)
 ```
 
 ````text
@@ -243,8 +243,7 @@ Fringe-stop output. Consumed by SVD calibration and imaging.
 
 ### compute_baselines_enu
 
-```python
-compute_baselines_enu(positions_enu, ref_idx, target_idxs)
+```{py:function} compute_baselines_enu(positions_enu, ref_idx, target_idxs)
 ```
 
 ````text
@@ -265,8 +264,7 @@ baselines : ndarray, shape (n_targets, 3)
 
 ### geometric_delay
 
-```python
-geometric_delay(source_enu, baseline_enu)
+```{py:function} geometric_delay(source_enu, baseline_enu)
 ```
 
 ````text
@@ -285,8 +283,7 @@ tau_s : ndarray, shape (T,) or (T, n_bl)
 
 ### fringe_stop_array
 
-```python
-fringe_stop_array(vis, freq_mhz, tau_s, sign=-1)
+```{py:function} fringe_stop_array(vis, freq_mhz, tau_s, sign=-1)
 ```
 
 ````text
@@ -308,8 +305,7 @@ tau_s, sign, freq_mhz.
 
 ### fringe_stop_single_baseline
 
-```python
-fringe_stop_single_baseline(vis, freq_hz, tau_s, sign=-1)
+```{py:function} fringe_stop_single_baseline(vis, freq_hz, tau_s, sign=-1)
 ```
 
 ````text
@@ -331,8 +327,7 @@ vis_fs : ndarray, shape (T, F)
 
 ### coherence_metric
 
-```python
-coherence_metric(vis, freq_mask=None)
+```{py:function} coherence_metric(vis, freq_mask=None)
 ```
 
 ````text
@@ -354,8 +349,7 @@ coh : ndarray, shape (T,) or (T, n_bl)
 
 ### auto_detect_sign
 
-```python
-auto_detect_sign(vis, freq_mhz, tau_s, freq_mask=None)
+```{py:function} auto_detect_sign(vis, freq_mhz, tau_s, freq_mask=None)
 ```
 
 ````text
@@ -377,8 +371,7 @@ sign : int
 
 ### fringe_stop
 
-```python
-fringe_stop(data, ant, *, ref_ant, source, sign=-1, min_alt_deg=10.0, rfi_mask=None) -> FringeStoppedData
+```{py:function} fringe_stop(data, ant, *, ref_ant, source, sign=-1, min_alt_deg=10.0, rfi_mask=None) -> FringeStoppedData
 ```
 
 ````text
@@ -411,13 +404,15 @@ callers that need them.
 
 ## casm_vis_analysis.delay
 
+```{py:currentmodule} casm_vis_analysis.delay
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/src/casm_vis_analysis/delay.py) · snapshot hash `b1541157146d`
 
 
 ### linear_fit
 
-```python
-linear_fit(vis_fs, freq_mhz, time_mask=None, freq_mask=None, tau_max_ns=1000.0, tau_step_ns=0.5, r_squared_threshold=0.7, peak_ratio_threshold=2.0, peak_exclusion_bins=None, return_coherence=False)
+```{py:function} linear_fit(vis_fs, freq_mhz, time_mask=None, freq_mask=None, tau_max_ns=1000.0, tau_step_ns=0.5, r_squared_threshold=0.7, peak_ratio_threshold=2.0, peak_exclusion_bins=None, return_coherence=False)
 ```
 
 ````text
@@ -519,8 +514,7 @@ params : dict
 
 ### linear_apply
 
-```python
-linear_apply(vis, freq_mhz, fit_params)
+```{py:function} linear_apply(vis, freq_mhz, fit_params)
 ```
 
 ````text
@@ -543,8 +537,7 @@ vis_corrected : ndarray, same shape as vis
 
 ### phasor_fit
 
-```python
-phasor_fit(vis_fs, freq_mhz, time_mask=None, freq_mask=None, **_kwargs)
+```{py:function} phasor_fit(vis_fs, freq_mhz, time_mask=None, freq_mask=None, **_kwargs)
 ```
 
 ````text
@@ -568,8 +561,7 @@ params : dict
 
 ### phasor_apply
 
-```python
-phasor_apply(vis, freq_mhz, fit_params)
+```{py:function} phasor_apply(vis, freq_mhz, fit_params)
 ```
 
 ````text
@@ -592,8 +584,7 @@ vis_corrected : ndarray, same shape as vis
 
 ### compute_per_freq_phasor
 
-```python
-compute_per_freq_phasor(vis_fs, time_mask=None, freq_mask=None)
+```{py:function} compute_per_freq_phasor(vis_fs, time_mask=None, freq_mask=None)
 ```
 
 ````text
@@ -617,8 +608,7 @@ phasor_phase : ndarray, shape (F,) or (F, n_bl)
 
 ### apply_per_freq_phasor
 
-```python
-apply_per_freq_phasor(vis, phasor_phase)
+```{py:function} apply_per_freq_phasor(vis, phasor_phase)
 ```
 
 ````text
@@ -631,8 +621,7 @@ Counterpart to :func:`compute_per_freq_phasor`. Equivalent to
 
 ### fit_delay
 
-```python
-fit_delay(vis_fs, freq_mhz, time_mask=None, freq_mask=None, model='linear', **kwargs)
+```{py:function} fit_delay(vis_fs, freq_mhz, time_mask=None, freq_mask=None, model='linear', **kwargs)
 ```
 
 ````text
@@ -664,8 +653,7 @@ params : dict
 
 ### apply_delay
 
-```python
-apply_delay(vis, freq_mhz, fit_params, model='linear')
+```{py:function} apply_delay(vis, freq_mhz, fit_params, model='linear')
 ```
 
 ````text
@@ -690,8 +678,7 @@ vis_corrected : ndarray
 
 ### build_delay_design_matrix
 
-```python
-build_delay_design_matrix(n_ant, baseline_pairs)
+```{py:function} build_delay_design_matrix(n_ant, baseline_pairs)
 ```
 
 ````text
@@ -713,8 +700,7 @@ A : ndarray, shape (n_baselines, n_ant)
 
 ### solve_antenna_delays
 
-```python
-solve_antenna_delays(baseline_delays, design_matrix, weights=None, ref_ant_idx=0)
+```{py:function} solve_antenna_delays(baseline_delays, design_matrix, weights=None, ref_ant_idx=0)
 ```
 
 ````text
@@ -742,13 +728,15 @@ ant_delays : ndarray, shape (n_ant,)
 
 ## casm_vis_analysis.solar_waterfall
 
+```{py:currentmodule} casm_vis_analysis.solar_waterfall
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/src/casm_vis_analysis/solar_waterfall.py) · snapshot hash `5553a9572f9f`
 
 
 ### read_filterbank_header
 
-```python
-read_filterbank_header(path)
+```{py:function} read_filterbank_header(path)
 ```
 
 ````text
@@ -758,8 +746,7 @@ Parse a SIGPROC header inline. Returns dict plus '_header_size'.
 
 ### open_fil
 
-```python
-open_fil(path)
+```{py:function} open_fil(path)
 ```
 
 ````text
@@ -769,8 +756,7 @@ Return (memmap[nsamp, nchans], header) with the true sample count.
 
 ### freq_axis
 
-```python
-freq_axis(header)
+```{py:function} freq_axis(header)
 ```
 
 ````text
@@ -780,8 +766,7 @@ Channel centre frequencies in MHz.
 
 ### downsample
 
-```python
-downsample(path, tfac)
+```{py:function} downsample(path, tfac)
 ```
 
 ````text
@@ -791,8 +776,7 @@ Block-average in time. Returns (spec[nt, nchans], tsec, freqs, header).
 
 ### local_times
 
-```python
-local_times(header, tsec, tz)
+```{py:function} local_times(header, tsec, tz)
 ```
 
 ````text
@@ -802,8 +786,7 @@ Sample times as timezone-aware datetimes in `tz`.
 
 ### infer_beam
 
-```python
-infer_beam(path)
+```{py:function} infer_beam(path)
 ```
 
 ````text
@@ -813,8 +796,7 @@ Beam name from the filename: 'IB', or the number in _bNNN / _nNNN.
 
 ### beam_description
 
-```python
-beam_description(beam, role=None)
+```{py:function} beam_description(beam, role=None)
 ```
 
 ````text
@@ -824,8 +806,7 @@ beam_description(beam, role=None)
 
 ### plot_waterfall
 
-```python
-plot_waterfall(path, out_path, beam, role=None, tfac=DEFAULT_TFAC, chans=DEFAULT_CHANS, tz=DEFAULT_TZ, cmap=DEFAULT_CMAP)
+```{py:function} plot_waterfall(path, out_path, beam, role=None, tfac=DEFAULT_TFAC, chans=DEFAULT_CHANS, tz=DEFAULT_TZ, cmap=DEFAULT_CMAP)
 ```
 
 ````text
@@ -835,20 +816,21 @@ Write the 3-panel waterfall PNG for one filterbank. Returns out_path.
 
 ### main
 
-```python
-main(argv=None)
+```{py:function} main(argv=None)
 ```
 
 
 ## casm_vis_analysis.beam_power
+
+```{py:currentmodule} casm_vis_analysis.beam_power
+```
 
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/src/casm_vis_analysis/beam_power.py) · snapshot hash `c2cf1b1a3871`
 
 
 ### beam_power_vs_time
 
-```python
-beam_power_vs_time(data, ant, sources: Iterable, *, cal_weights=None, freq_band_mhz: tuple | None=None, sign: int=-1) -> dict
+```{py:function} beam_power_vs_time(data, ant, sources: Iterable, *, cal_weights=None, freq_band_mhz: tuple | None=None, sign: int=-1) -> dict
 ```
 
 ````text
@@ -915,8 +897,7 @@ Notes
 
 ### plot_beam_power
 
-```python
-plot_beam_power(result: Mapping, *, ax=None, show_alt: bool=True, output_path=None, time_tz: str='America/Los_Angeles', xlim_unix: tuple | None=None)
+```{py:function} plot_beam_power(result: Mapping, *, ax=None, show_alt: bool=True, output_path=None, time_tz: str='America/Los_Angeles', xlim_unix: tuple | None=None)
 ```
 
 ````text
@@ -940,13 +921,15 @@ Returns the Matplotlib Figure.
 
 ## casm_vis_analysis.plotting.phase_freq
 
+```{py:currentmodule} casm_vis_analysis.plotting.phase_freq
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/src/casm_vis_analysis/plotting/phase_freq.py) · snapshot hash `b2db11cb0215`
 
 
 ### plot_phase_vs_freq
 
-```python
-plot_phase_vs_freq(panels, freq_mhz, baseline_labels=None, unwrap=True, output_path=None, time_unix=None, time_mask=None, freq_mask=None, split_max=8, time_tz='UTC')
+```{py:function} plot_phase_vs_freq(panels, freq_mhz, baseline_labels=None, unwrap=True, output_path=None, time_unix=None, time_mask=None, freq_mask=None, split_max=8, time_tz='UTC')
 ```
 
 ````text

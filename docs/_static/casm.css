@@ -16,6 +16,8 @@ article h2 { letter-spacing: -.025em; }
 .package-card em { font-style: normal; color: var(--color-brand-primary); margin-top: auto; padding-top: 1rem; font-size: .82rem; }
 article table { font-size: .88rem; }
 article pre { font-size: .82rem; }
+article figure { margin: 2rem 0; }
+article figcaption { text-align: left; font-size: .88rem; line-height: 1.55; margin-top: .8rem; }
 .api-entry { border-top: 1px solid var(--color-background-border); margin-top: 1.5rem; padding-top: .6rem; }
 @media (max-width: 700px) { .package-grid { grid-template-columns: 1fr; } article h1 { font-size: 2.2rem; } }
 @media (prefers-reduced-motion: reduce) { .package-card { transition: none; } }

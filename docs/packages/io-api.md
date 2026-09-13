@@ -15,13 +15,15 @@ Some commands write products or configuration. Consult the workflow before execu
 
 ## casm_io.correlator.reader
 
+```{py:currentmodule} casm_io.correlator.reader
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_io/blob/22ef826d9f2ba355388523265081da1468e5a4ff/casm_io/correlator/reader.py) · snapshot hash `547a64a769a1`
 
 
 ### extract_file_index
 
-```python
-extract_file_index(path: str) -> int
+```{py:function} extract_file_index(path: str) -> int
 ```
 
 ````text
@@ -31,8 +33,7 @@ Extract numeric index from file path (e.g., 'file.123' -> 123).
 
 ### discover_files
 
-```python
-discover_files(data_dir: str, base_str: str) -> dict[int, str]
+```{py:function} discover_files(data_dir: str, base_str: str) -> dict[int, str]
 ```
 
 ````text
@@ -54,8 +55,7 @@ dict
 
 ### discover_observations
 
-```python
-discover_observations(data_dir: str, fmt: VisibilityFormat | None=None, verbose: bool=False) -> list[dict]
+```{py:function} discover_observations(data_dir: str, fmt: VisibilityFormat | None=None, verbose: bool=False) -> list[dict]
 ```
 
 ````text
@@ -80,8 +80,7 @@ list of dict
 
 ### read_visibilities
 
-```python
-read_visibilities(time_start: str | datetime, time_end: str | datetime, time_tz: str='UTC', data_root: str='/mnt', data_dir: str | None=None, fmt: VisibilityFormat | None=None, ref: int | None=None, targets: list[int] | None=None, inputs: list[int] | None=None, freq_order: str='descending', channels: tuple[int, int] | None=None, freq_range_mhz: tuple[float, float] | None=None, workers: int | None=None, verbose: bool=True) -> VisibilityResult
+```{py:function} read_visibilities(time_start: str | datetime, time_end: str | datetime, time_tz: str='UTC', data_root: str='/mnt', data_dir: str | None=None, fmt: VisibilityFormat | None=None, ref: int | None=None, targets: list[int] | None=None, inputs: list[int] | None=None, freq_order: str='descending', channels: tuple[int, int] | None=None, freq_range_mhz: tuple[float, float] | None=None, workers: int | None=None, verbose: bool=True) -> VisibilityResult
 ```
 
 ````text
@@ -138,8 +137,7 @@ VisibilityResult
 
 ### VisibilityReader
 
-```python
-class VisibilityReader
+```{py:class} VisibilityReader
 ```
 
 ````text
@@ -157,44 +155,38 @@ fmt : VisibilityFormat, optional
     old files without headers.
 ````
 
-```python
-__init__(self, data_dir: str, base_str: str, fmt: VisibilityFormat | None=None)
+```{py:method} VisibilityReader.__init__(self, data_dir: str, base_str: str, fmt: VisibilityFormat | None=None)
 ```
 
-```python
-n_files(self) -> int
+```{py:method} VisibilityReader.n_files(self) -> int
 ```
 
 ````text
 Number of available .dat files.
 ````
 
-```python
-available_indices(self) -> list[int]
+```{py:method} VisibilityReader.available_indices(self) -> list[int]
 ```
 
 ````text
 Sorted list of available file indices.
 ````
 
-```python
-missing_indices(self) -> list[int]
+```{py:method} VisibilityReader.missing_indices(self) -> list[int]
 ```
 
 ````text
 Indices missing from the contiguous range [0, max_idx].
 ````
 
-```python
-time_span(self) -> tuple[float, float]
+```{py:method} VisibilityReader.time_span(self) -> tuple[float, float]
 ```
 
 ````text
 (start_unix, end_unix) of available data.
 ````
 
-```python
-time_span_str(self, tz: str='UTC') -> str
+```{py:method} VisibilityReader.time_span_str(self, tz: str='UTC') -> str
 ```
 
 ````text
@@ -211,8 +203,7 @@ str
     Formatted string like '2026-01-28 12:00:00 UTC -> 2026-01-28 22:00:00 UTC'.
 ````
 
-```python
-read(self, time_start: str | datetime | None=None, time_end: str | datetime | None=None, time_tz: str='UTC', nfiles: int | None=None, skip_nfiles: int=0, ref: int | None=None, targets: list[int] | None=None, inputs: list[int] | None=None, freq_order: str='descending', channels: tuple[int, int] | None=None, freq_range_mhz: tuple[float, float] | None=None, workers: int | None=None, verbose: bool=True) -> VisibilityResult
+```{py:method} VisibilityReader.read(self, time_start: str | datetime | None=None, time_end: str | datetime | None=None, time_tz: str='UTC', nfiles: int | None=None, skip_nfiles: int=0, ref: int | None=None, targets: list[int] | None=None, inputs: list[int] | None=None, freq_order: str='descending', channels: tuple[int, int] | None=None, freq_range_mhz: tuple[float, float] | None=None, workers: int | None=None, verbose: bool=True) -> VisibilityResult
 ```
 
 ````text
@@ -277,37 +268,36 @@ VisibilityResult with keys:
 
 ## casm_io.correlator.formats
 
+```{py:currentmodule} casm_io.correlator.formats
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_io/blob/22ef826d9f2ba355388523265081da1468e5a4ff/casm_io/correlator/formats.py) · snapshot hash `549860330be5`
 
 
 ### VisibilityFormat
 
-```python
-class VisibilityFormat
+```{py:class} VisibilityFormat
 ```
 
 ````text
 Configuration for a correlator visibility data format.
 ````
 
-```python
-n_baselines(self) -> int
+```{py:method} VisibilityFormat.n_baselines(self) -> int
 ```
 
 ````text
 Number of baselines including autos: nsig*(nsig+1)/2.
 ````
 
-```python
-file_duration_s(self) -> float
+```{py:method} VisibilityFormat.file_duration_s(self) -> float
 ```
 
 ````text
 Duration of one .dat file in seconds.
 ````
 
-```python
-get_frequency_axis(self, order: str='descending') -> np.ndarray
+```{py:method} VisibilityFormat.get_frequency_axis(self, order: str='descending') -> np.ndarray
 ```
 
 ````text
@@ -324,8 +314,7 @@ np.ndarray
     Frequency axis in MHz with shape (nchan,).
 ````
 
-```python
-freq_to_channel(self, freq_mhz: float) -> int
+```{py:method} VisibilityFormat.freq_to_channel(self, freq_mhz: float) -> int
 ```
 
 ````text
@@ -350,8 +339,7 @@ ValueError
     If frequency is outside the band.
 ````
 
-```python
-freq_range_to_channels(self, freq_lo: float, freq_hi: float) -> tuple[int, int]
+```{py:method} VisibilityFormat.freq_range_to_channels(self, freq_lo: float, freq_hi: float) -> tuple[int, int]
 ```
 
 ````text
@@ -380,8 +368,7 @@ ValueError
 
 ### load_format
 
-```python
-load_format(name_or_path: str) -> VisibilityFormat
+```{py:function} load_format(name_or_path: str) -> VisibilityFormat
 ```
 
 ````text
@@ -400,13 +387,15 @@ VisibilityFormat
 
 ## casm_io.correlator.mapping
 
+```{py:currentmodule} casm_io.correlator.mapping
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_io/blob/22ef826d9f2ba355388523265081da1468e5a4ff/casm_io/correlator/mapping.py) · snapshot hash `50217aea73e3`
 
 
 ### AntennaMapping
 
-```python
-class AntennaMapping
+```{py:class} AntennaMapping
 ```
 
 ````text
@@ -429,12 +418,10 @@ Default-path loading (canonical CAsMan-derived layout):
 >>> ant = AntennaMapping.load()      # reads $CASM_LAYOUT_CSV / current symlink
 ````
 
-```python
-__init__(self, df: pd.DataFrame)
+```{py:method} AntennaMapping.__init__(self, df: pd.DataFrame)
 ```
 
-```python
-load(cls, csv_path=None) -> 'AntennaMapping'
+```{py:method} AntennaMapping.load(cls, csv_path=None) -> 'AntennaMapping'
 ```
 
 ````text
@@ -465,56 +452,49 @@ Two CSV schemas are accepted:
    positions renamed.
 ````
 
-```python
-dataframe(self) -> pd.DataFrame
+```{py:method} AntennaMapping.dataframe(self) -> pd.DataFrame
 ```
 
 ````text
 Raw DataFrame.
 ````
 
-```python
-n_antennas(self) -> int
+```{py:method} AntennaMapping.n_antennas(self) -> int
 ```
 
 ````text
 Total number of antennas in the mapping.
 ````
 
-```python
-packet_index(self, antenna_id: int) -> int
+```{py:method} AntennaMapping.packet_index(self, antenna_id: int) -> int
 ```
 
 ````text
 Correlator input index for a given antenna.
 ````
 
-```python
-snap_adc(self, antenna_id: int) -> tuple[int, int]
+```{py:method} AntennaMapping.snap_adc(self, antenna_id: int) -> tuple[int, int]
 ```
 
 ````text
 (snap_id, adc) for a given antenna.
 ````
 
-```python
-antenna_for_input(self, packet_idx: int) -> int
+```{py:method} AntennaMapping.antenna_for_input(self, packet_idx: int) -> int
 ```
 
 ````text
 Antenna ID for a given correlator input index.
 ````
 
-```python
-active_antennas(self) -> list[int]
+```{py:method} AntennaMapping.active_antennas(self) -> list[int]
 ```
 
 ````text
 List of antenna IDs that are functional (or all if no 'functional' column).
 ````
 
-```python
-get_positions(self) -> np.ndarray
+```{py:method} AntennaMapping.get_positions(self) -> np.ndarray
 ```
 
 ````text
@@ -522,24 +502,21 @@ ENU positions as (n_ant, 3) array [x_m, y_m, z_m].
 Raises ValueError if coordinate columns are missing.
 ````
 
-```python
-get_packet_indices(self) -> np.ndarray
+```{py:method} AntennaMapping.get_packet_indices(self) -> np.ndarray
 ```
 
 ````text
 All packet_index values as array, ordered by antenna_id.
 ````
 
-```python
-format_antenna(self, antenna_id: int) -> str
+```{py:method} AntennaMapping.format_antenna(self, antenna_id: int) -> str
 ```
 
 ````text
 Human-readable label: 'Ant 5 | S2A6 → input 30'.
 ````
 
-```python
-is_in_beamforming(self, antenna_id: int) -> bool
+```{py:method} AntennaMapping.is_in_beamforming(self, antenna_id: int) -> bool
 ```
 
 ````text
@@ -550,8 +527,7 @@ falls back to ``functional == 1`` (the natural definition for
 legacy CSVs).
 ````
 
-```python
-slot_table(self, n_snaps: int=6, n_adc: int=12) -> pd.DataFrame
+```{py:method} AntennaMapping.slot_table(self, n_snaps: int=6, n_adc: int=12) -> pd.DataFrame
 ```
 
 ````text
@@ -570,8 +546,7 @@ supersedes what ``Array64Config`` provided in
 ``bf_weights_generator``.
 ````
 
-```python
-positions_64(self, n_snaps: int=6, n_adc: int=12) -> np.ndarray
+```{py:method} AntennaMapping.positions_64(self, n_snaps: int=6, n_adc: int=12) -> np.ndarray
 ```
 
 ````text
@@ -583,8 +558,7 @@ through ``slot_table()``; if any are missing the corresponding
 coordinate is filled with zero.
 ````
 
-```python
-active_mask_64(self, n_snaps: int=6, n_adc: int=12) -> np.ndarray
+```{py:method} AntennaMapping.active_mask_64(self, n_snaps: int=6, n_adc: int=12) -> np.ndarray
 ```
 
 ````text
@@ -602,8 +576,7 @@ layout-time intent set by CAsMan. Both must agree for the slot
 to be active.
 ````
 
-```python
-antenna_ids_64(self, n_snaps: int=6, n_adc: int=12) -> np.ndarray
+```{py:method} AntennaMapping.antenna_ids_64(self, n_snaps: int=6, n_adc: int=12) -> np.ndarray
 ```
 
 ````text
@@ -615,8 +588,7 @@ of active/inactive status; combine with :meth:`active_mask_64`
 to select only the active antennas.
 ````
 
-```python
-with_inactive(self, antenna_ids) -> 'AntennaMapping'
+```{py:method} AntennaMapping.with_inactive(self, antenna_ids) -> 'AntennaMapping'
 ```
 
 ````text
@@ -632,8 +604,7 @@ The original mapping is unchanged. Antenna IDs not in the
 mapping are silently ignored.
 ````
 
-```python
-with_only(self, antenna_ids) -> 'AntennaMapping'
+```{py:method} AntennaMapping.with_only(self, antenna_ids) -> 'AntennaMapping'
 ```
 
 ````text
@@ -646,8 +617,7 @@ my fringe-stop" workflows.
 >>> ant_subset = ant.with_only([1, 2, 5, 8, 12])
 ````
 
-```python
-with_snap_output(self, output_mapping: 'AntennaMapping') -> 'DualLayout'
+```{py:method} AntennaMapping.with_snap_output(self, output_mapping: 'AntennaMapping') -> 'DualLayout'
 ```
 
 ````text
@@ -661,8 +631,7 @@ mappings must share the same ``antenna_id`` keys.
 
 ### DualLayout
 
-```python
-class DualLayout
+```{py:class} DualLayout
 ```
 
 ````text
@@ -672,20 +641,17 @@ Both mappings share the same ``antenna_id`` keys. Use
 :meth:`AntennaMapping.with_snap_output` to construct one.
 ````
 
-```python
-__init__(self, compute: AntennaMapping, output: AntennaMapping)
+```{py:method} DualLayout.__init__(self, compute: AntennaMapping, output: AntennaMapping)
 ```
 
-```python
-compute_snap_adc(self, antenna_id: int) -> tuple[int, int]
+```{py:method} DualLayout.compute_snap_adc(self, antenna_id: int) -> tuple[int, int]
 ```
 
 ````text
 SNAP/ADC the correlator sees for this antenna.
 ````
 
-```python
-output_snap_adc(self, antenna_id: int) -> tuple[int, int]
+```{py:method} DualLayout.output_snap_adc(self, antenna_id: int) -> tuple[int, int]
 ```
 
 ````text
@@ -695,13 +661,15 @@ SNAP/ADC the F-engine receives this antenna on.
 
 ## casm_io.correlator.baselines
 
+```{py:currentmodule} casm_io.correlator.baselines
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_io/blob/22ef826d9f2ba355388523265081da1468e5a4ff/casm_io/correlator/baselines.py) · snapshot hash `42adb57215b7`
 
 
 ### triu_flat_index
 
-```python
-triu_flat_index(n: int, i: int, j: int) -> int
+```{py:function} triu_flat_index(n: int, i: int, j: int) -> int
 ```
 
 ````text
@@ -728,8 +696,7 @@ int
 
 ### triu_to_ij
 
-```python
-triu_to_ij(n: int, flat_idx: int) -> tuple[int, int]
+```{py:function} triu_to_ij(n: int, flat_idx: int) -> tuple[int, int]
 ```
 
 ````text
@@ -739,8 +706,7 @@ Convert flat index back to (i, j) pair where i <= j.
 
 ### n_baselines
 
-```python
-n_baselines(nsig: int) -> int
+```{py:function} n_baselines(nsig: int) -> int
 ```
 
 ````text
@@ -750,8 +716,7 @@ Number of baselines including autos: nsig*(nsig+1)/2.
 
 ### build_baseline_plan
 
-```python
-build_baseline_plan(ref: int, targets: list[int], nsig: int) -> tuple[np.ndarray, np.ndarray]
+```{py:function} build_baseline_plan(ref: int, targets: list[int], nsig: int) -> tuple[np.ndarray, np.ndarray]
 ```
 
 ````text
@@ -777,8 +742,7 @@ conjugate : np.ndarray
 
 ### build_input_subset_plan
 
-```python
-build_input_subset_plan(inputs, nsig: int) -> tuple[np.ndarray, np.ndarray, list[int]]
+```{py:function} build_input_subset_plan(inputs, nsig: int) -> tuple[np.ndarray, np.ndarray, list[int]]
 ```
 
 ````text
@@ -810,8 +774,7 @@ sel : list of int
 
 ### extract_baselines
 
-```python
-extract_baselines(data: np.ndarray, bl_indices: np.ndarray, conjugate: np.ndarray) -> np.ndarray
+```{py:function} extract_baselines(data: np.ndarray, bl_indices: np.ndarray, conjugate: np.ndarray) -> np.ndarray
 ```
 
 ````text
@@ -836,13 +799,15 @@ np.ndarray
 
 ## casm_io.filterbank.reader
 
+```{py:currentmodule} casm_io.filterbank.reader
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_io/blob/22ef826d9f2ba355388523265081da1468e5a4ff/casm_io/filterbank/reader.py) · snapshot hash `70868a4338c3`
 
 
 ### FilterbankFile
 
-```python
-class FilterbankFile
+```{py:class} FilterbankFile
 ```
 
 ````text
@@ -871,40 +836,31 @@ nbeams : int
     Number of beams in the file.
 ````
 
-```python
-__init__(self, filepath: str, beam: int | None=None, verbose: bool=True)
+```{py:method} FilterbankFile.__init__(self, filepath: str, beam: int | None=None, verbose: bool=True)
 ```
 
-```python
-header(self) -> dict
+```{py:method} FilterbankFile.header(self) -> dict
 ```
 
-```python
-backend_used(self) -> str
+```{py:method} FilterbankFile.backend_used(self) -> str
 ```
 
-```python
-nchans(self) -> int
+```{py:method} FilterbankFile.nchans(self) -> int
 ```
 
-```python
-nbeams(self) -> int
+```{py:method} FilterbankFile.nbeams(self) -> int
 ```
 
-```python
-nsamples(self) -> int
+```{py:method} FilterbankFile.nsamples(self) -> int
 ```
 
-```python
-freq_mhz(self) -> np.ndarray
+```{py:method} FilterbankFile.freq_mhz(self) -> np.ndarray
 ```
 
-```python
-time_s(self) -> np.ndarray
+```{py:method} FilterbankFile.time_s(self) -> np.ndarray
 ```
 
-```python
-data(self) -> np.ndarray
+```{py:method} FilterbankFile.data(self) -> np.ndarray
 ```
 
 ````text
@@ -914,13 +870,15 @@ Load data on first access (lazy loading).
 
 ## casm_io.voltage.reader
 
+```{py:currentmodule} casm_io.voltage.reader
+```
+
 [Baseline source](https://github.com/Coherent-All-Sky-Monitor/casm_io/blob/22ef826d9f2ba355388523265081da1468e5a4ff/casm_io/voltage/reader.py) · snapshot hash `cd8b6cbe00a4`
 
 
 ### mem_available_bytes
 
-```python
-mem_available_bytes() -> int | None
+```{py:function} mem_available_bytes() -> int | None
 ```
 
 ````text
@@ -930,8 +888,7 @@ MemAvailable from /proc/meminfo, or None where that doesn't exist.
 
 ### default_gulp_samples
 
-```python
-default_gulp_samples(n_chan: int, n_inputs: int, mem_fraction: float=0.2) -> int
+```{py:function} default_gulp_samples(n_chan: int, n_inputs: int, mem_fraction: float=0.2) -> int
 ```
 
 ````text
@@ -948,8 +905,7 @@ unreadable.
 
 ### VoltageReader
 
-```python
-class VoltageReader
+```{py:class} VoltageReader
 ```
 
 ````text
@@ -971,20 +927,17 @@ config : str or dict, optional
     loaded dict. Default: chosen from the subdirectories in data_dir.
 ````
 
-```python
-__init__(self, data_dir: str, timestamp: str, config: str | dict | None=None)
+```{py:method} VoltageReader.__init__(self, data_dir: str, timestamp: str, config: str | dict | None=None)
 ```
 
-```python
-subbands_found(self) -> list[int]
+```{py:method} VoltageReader.subbands_found(self) -> list[int]
 ```
 
 ````text
 List of discovered subband indices.
 ````
 
-```python
-read_subband(self, index: int, n_time: int | None=None, snaps: list[int] | None=None, freq_order: str='descending', trust_header: bool=False, verbose: bool=True, allow_gaps: bool=False, time_offset: int=0) -> dict
+```{py:method} VoltageReader.read_subband(self, index: int, n_time: int | None=None, snaps: list[int] | None=None, freq_order: str='descending', trust_header: bool=False, verbose: bool=True, allow_gaps: bool=False, time_offset: int=0) -> dict
 ```
 
 ````text
@@ -1027,8 +980,7 @@ dict with keys:
         Frequency axis for this subband.
 ````
 
-```python
-read_full_band(self, antenna_csv: str | None=None, n_time: int | None=None, snaps: list[int] | None=None, freq_order: str='descending', trust_header: bool=False, verbose: bool=True, allow_gaps: bool=False, subbands: list[int] | None=None, time_offset: int=0, seconds: float | None=None, offset_seconds: float=0.0) -> dict
+```{py:method} VoltageReader.read_full_band(self, antenna_csv: str | None=None, n_time: int | None=None, snaps: list[int] | None=None, freq_order: str='descending', trust_header: bool=False, verbose: bool=True, allow_gaps: bool=False, subbands: list[int] | None=None, time_offset: int=0, seconds: float | None=None, offset_seconds: float=0.0) -> dict
 ```
 
 ````text
@@ -1096,8 +1048,7 @@ dict with keys:
         zero-filled because no data was found for them.
 ````
 
-```python
-iter_full_band(self, seconds: float | None=None, offset_seconds: float=0.0, gulp_seconds: float | None=None, n_time: int | None=None, time_offset: int=0, gulp_samples: int | None=None, **read_kwargs)
+```{py:method} VoltageReader.iter_full_band(self, seconds: float | None=None, offset_seconds: float=0.0, gulp_seconds: float | None=None, n_time: int | None=None, time_offset: int=0, gulp_samples: int | None=None, **read_kwargs)
 ```
 
 ````text

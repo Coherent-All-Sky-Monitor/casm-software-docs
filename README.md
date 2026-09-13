@@ -13,6 +13,7 @@ source /home/casm/software/dev/casm_venvs/casm_offline_env/bin/activate
 python -m pip install -r requirements-docs.txt
 python -m sphinx -W --keep-going -b html docs _build/html
 python scripts/check_site.py
+python scripts/check_exports.py
 python -m http.server 8070 --bind 127.0.0.1 --directory _build/html
 ```
 
@@ -61,9 +62,18 @@ package. Add new repositories only after maintainership/scope is confirmed.
 
 ## Editing
 
+See `docs/maintaining-docs.md` for the code-change and documentation-release
+workflow. Cross-repository CI and automatic publication are planned, not enabled.
+Each build generates Markdown pages and `llms.txt` with `sphinx_llm.txt`;
+no model-generated summaries or scientific notebook execution is enabled.
+Sphinx source views read the recorded Python files in `docs/_code`, without
+importing the scientific packages.
+
 - `docs/packages/`: curated package guides and generated `*-api.md` references.
 - `docs/guides/`: task guides with explicit contracts and limitations.
 - `docs/_downloads/`: copied upstream manuals for this source snapshot.
+- `docs/_code/`: recorded Python source used by Sphinx's source-code viewer.
+- `docs/_static/tutorials/`: unchanged historical figures with provenance in the guides.
 - `docs/_static/casm.css`: visual styling over Furo.
 - `scripts/`: source extraction and local HTML integrity checks.
 

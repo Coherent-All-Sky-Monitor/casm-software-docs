@@ -90,20 +90,26 @@ def main() -> None:
         for relative in package["modules"]:
             source = read(relative).decode()
             module = relative.removeprefix("src/").removesuffix(".py").replace("/", ".")
+            source_copy = ROOT / "docs" / "_code" / Path(*module.split(".")).with_suffix(".py")
+            source_copy.parent.mkdir(parents=True, exist_ok=True)
+            source_copy.write_text(source)
             page.append(f"\n## {module}\n")
+            page.append(f"```{{py:currentmodule}} {module}\n```\n")
             # The hash captures dirty bytes; links explicitly target the git baseline.
             page.append(f"[Baseline source]({remote}/blob/{revision}/{relative}) · snapshot hash `{record['files'][relative][:12]}`\n")
             for node in ast.parse(source).body:
                 if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) or node.name.startswith("_"):
                     continue
-                page += [f"\n### {node.name}\n", "```python\n" + signature(node) + "\n```\n"]
+                kind = "class" if isinstance(node, ast.ClassDef) else "function"
+                declaration = signature(node).removeprefix("class ")
+                page += [f"\n### {node.name}\n", f"```{{py:{kind}}} {declaration}\n```\n"]
                 doc = ast.get_docstring(node)
                 if doc:
                     page.append("````text\n" + doc + "\n````\n")
                 if isinstance(node, ast.ClassDef):
                     for method in node.body:
                         if isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef)) and (not method.name.startswith("_") or method.name == "__init__"):
-                            page.append("```python\n" + signature(method) + "\n```\n")
+                            page.append(f"```{{py:method}} {node.name}.{signature(method)}\n```\n")
                             method_doc = ast.get_docstring(method)
                             if method_doc:
                                 page.append("````text\n" + method_doc + "\n````\n")

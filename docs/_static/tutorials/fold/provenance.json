@@ -1,0 +1,38 @@
+{
+  "review_date": "2026-09-13",
+  "method": "Existing PNGs copied byte-for-byte and visually inspected. No analysis or plot generation was rerun.",
+  "scientific_classification_sources": [
+    "/home/casm/software/dev/casm-wiki/detections.md",
+    "/home/casm/software/dev/casm-wiki/incidents-archive-2026-09-02.md"
+  ],
+  "assets": [
+    {
+      "file": "b457-20260904-detection.png",
+      "source": "/home/casm/software/dev/casm-wiki/evidence/2026-09-04/b457_latewin_lock_pdmp.png",
+      "sha256": "0d38ed3ac9163a44818dcd1c027688d25a03e2e2f642829509c188cf0f69b097",
+      "observation": "2026-09-04-08:44:42",
+      "window_utc": ["2026-09-04T11:44:00Z", "2026-09-04T13:14:00Z"],
+      "beam": 457,
+      "classification": "Detection in canonical pulsar ledger; no new detection assessment.",
+      "producer": "pdmp via September 1 foldkit, invoked by the September 4 campaign driver",
+      "driver": "/home/casm/software/vishnu/b0329_night_20260904/convert_and_fold.sh",
+      "driver_sha256": "ded6f7bec3e380b5ac56332fee282d59f4fc81510d198fb9811e6f3c19df949f",
+      "log": "/mnt/nvme3/vishnu/B0329/2026-09-04/from_corr2/fold_lock/b457_latewin_at_s04_lock_pdmp.log",
+      "limitations": "Different observation, window, pointing and calibration from the September 1 null. The two figures are not a sensitivity-ratio experiment. Campaign driver contains historical settings; it is not rerun by this tutorial."
+    },
+    {
+      "file": "b377-20260901-null.png",
+      "source": "/mnt/nvme5/vishnu/b0329_20260901/fold_lock/b377_sep01_lock_pdmp.png",
+      "sha256": "52a735fcd02a0d2165ff123a579caa8b62d08f7f0574a234f10d3ba6b404b6b0",
+      "observation": "2026-09-01-15:18:01",
+      "window_utc": ["2026-09-01T15:18:01Z", "2026-09-01T15:54:00Z"],
+      "beam": 377,
+      "classification": "Non-detection; published EQ-gain inference using this fold was retracted.",
+      "producer": "pdmp via September 1 foldkit",
+      "driver": "/mnt/nvme5/vishnu/b0329_20260901/foldkit/b0329_fold.sh",
+      "driver_sha256": "9e81ee88b6dc038dbf915f188c8dca38ed9fc8fb464bf323fd4a0499d277fb9b",
+      "log": "/mnt/nvme5/vishnu/b0329_20260901/fold_lock/b377_sep01_lock_pdmp.log",
+      "limitations": "S/N 5.55 is a period/DM search maximum on noise. DM and width passing empirical contaminant checks did not establish a pulse. Canonical ledger records original raw dump and filterbank as lost."
+    }
+  ]
+}
