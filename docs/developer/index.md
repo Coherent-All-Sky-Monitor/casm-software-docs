@@ -42,6 +42,8 @@ imaging-notes
 svd-notes
 ../guides/calibration-figures
 weights-notes
+calibration-walkthrough-notes
+injection-example-notes
 folding-design
 folding-notes
 ../upstream

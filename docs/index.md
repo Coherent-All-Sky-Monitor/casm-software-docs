@@ -23,8 +23,10 @@ follow the [tutorials](tutorials.md) in order.
 - [SVD diagnostics](guides/rank1-diagnostics.md),
   [sky imaging](guides/image-visibilities.md) and
   [pulsar folding](guides/fold-b0329.md): work with saved scientific results.
+- [Injection recovery](guides/injection-recovery.md): follow a test pulse through
+  T2/T3, inspect its saved plots and find the event products.
 
-```{figure} _static/tutorials/solar/solar-waterfall.png
+```{figure} _static/tutorials/solar/solar-waterfall.webp
 :alt: Solar observing dynamic spectrum with frequency bandpass and channel light curves.
 
 Solar observing data: changes in received power across time and frequency.
@@ -44,6 +46,8 @@ diagnostics. **casm_calibrator** solves and stores calibration products.
 The calibration-and-weights build belongs to `bf_weights_generator` and imaging
 to `casm-bf-imaging`. Their workflows are covered here; the initial API inventory
 covers the three packages above.
+[casm_t2 and casm_t3](packages/t2-t3.md) handle candidate selection and event
+processing, with injection recovery providing an end-to-end search check.
 
 CASM is being developed toward a 256-antenna FRB survey instrument at OVRO.
 Solar observations, calibration checks and injection recovery support its
@@ -71,6 +75,7 @@ guides/contracts
 packages/io
 packages/vis-analysis
 packages/calibrator
+packages/t2-t3
 reference
 packages/io-api
 packages/vis-analysis-api

@@ -39,22 +39,6 @@ The short code plots the saved primary curve. The original figure above also
 includes the comparison without static subtraction. Notice the frequency
 structure: a single median would hide narrow dips and changes across the band.
 
-## Look at the singular values
-
-The calibration notebook also saves this two-panel figure:
-
-```{figure} ../_static/tutorials/calibration/svd_vs_freq_20260820.png
-:alt: Singular values and leading-value fraction for the solar solve.
-
-The leading singular value separates from the others on the left. On the
-right, its share of their sum approaches 0.5 in the highlighted band.
-```
-
-Why 0.5 rather than 1? This phase-only solve removes the autocorrelation
-diagonal. For an ideal single coherent source, that preparation gives a
-leading-value fraction of 0.5. The highlighted frequency range belongs to
-this example; it is not a universal frequency mask.
-
 To compare two solves, keep the source window, antennas and frequency mask
 the same. A higher ratio alone does not prove that a calibration makes a
 better beam. Next, [watch Cyg A cross a fixed beam](check-calibration.md).

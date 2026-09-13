@@ -18,7 +18,7 @@ def main():
         assert page.locator(".package-card").count() == 0
         assert page.locator("article figure img").count() == 1
         assert page.locator("article figure img").get_attribute("src").endswith(
-            "solar-waterfall.png"
+            "solar-waterfall.webp"
         )
         page.screenshot(path=str(output / "desktop.png"), full_page=True)
         page.locator('article a[href="guides/read-visibilities.html"]').first.click()
@@ -32,7 +32,10 @@ def main():
         page.goto(URL + "/search.html?q=VisibilityReader", wait_until="networkidle")
         page.wait_for_selector("#search-results li", timeout=15000)
         assert page.locator("#search-results li").count() > 0
-        for tutorial in ("read-visibilities", "read-voltages", "solar-phase", "solar-waterfall", "check-calibration"):
+        for tutorial in (
+            "read-visibilities", "read-voltages", "solar-phase", "solar-waterfall",
+            "check-calibration", "generate-weights", "injection-recovery",
+        ):
             page.goto(URL + f"/guides/{tutorial}.html", wait_until="networkidle")
             assert page.locator("figure img").count() > 0, tutorial
             assert page.locator("figure img").evaluate_all(
@@ -42,7 +45,8 @@ def main():
         page.goto(URL + "/guides/check-calibration.html", wait_until="networkidle")
         page.screenshot(path=str(output / "calibration.png"), full_page=True)
         page.goto(URL + "/guides/rank1-diagnostics.html", wait_until="networkidle")
-        assert page.locator("figure img").count() == 2
+        assert page.locator("figure img").count() == 1
+        assert "Look at the singular values" not in page.locator("article").inner_text()
         assert page.locator("figure img").evaluate_all(
             "images => images.every(img => img.complete && img.naturalWidth > 0)"
         )

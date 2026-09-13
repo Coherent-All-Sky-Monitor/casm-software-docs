@@ -25,8 +25,12 @@ def main():
     for index, code in enumerate(blocks):
         exec(compile(code, f"{page}:block{index + 1}", "exec"), namespace)
     data = namespace["data"]
-    assert data.vis.shape == (4, 3072, 1)
+    assert data.vis.shape[1:] == (3072, 1)
+    assert 50 <= data.vis.shape[0] <= 90
+    assert not data.metadata.get("gaps")
+    assert not data.metadata.get("missing_files")
     print("Returned visibility bytes:", data.vis.nbytes)
+    print("Files:", data.metadata.get("files"))
     print("Saved:", path)
 
 

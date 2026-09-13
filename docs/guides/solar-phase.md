@@ -7,8 +7,9 @@ prediction for the Sun, then remove that predicted motion by fringe stopping.
 After [reading your first visibilities](read-visibilities.md), select a daytime
 window and its matching layout. For new observations use
 `/home/casm/software/dev/antenna_layouts/current`. The dated path below belongs
-to the historical example. This uses the same ten-minute recording as the
-first tutorial, with antenna 9 as the reference and antenna 19 as the target.
+to the historical example. Extend the first tutorial's observation to three
+hours, with antenna 9 as the reference and antenna 19 as the target, to see
+the phase evolve as the Sun moves.
 
 ```python
 from casm_io.correlator import AntennaMapping, read_visibilities
@@ -20,9 +21,10 @@ ant = ant.with_inactive([a for a in ant.active_antennas() if a not in (9, 19)])
 target_ids = sorted(a for a in ant.active_antennas() if a != 9)
 data = read_visibilities(
     data_root="/mnt/nvme4/data/casm",
-    time_start="2026-08-23 20:42:00", time_end="2026-08-23 20:52:00",
+    time_start="2026-08-23 19:20:00", time_end="2026-08-23 22:20:00",
     time_tz="UTC", ref=ant.packet_index(9),
     targets=[ant.packet_index(a) for a in target_ids],
+    workers=1,
 )
 print(data.vis.shape)  # time, frequency, reference-to-target baseline
 ```
@@ -66,16 +68,18 @@ illustration. Refresh the IERS tables before using this workflow for calibration
 ```{figure} ../_static/tutorials/solar/solar-phase-two-antennas.png
 :alt: Antenna 9 by antenna 19 phase in three panels: raw, Sun geometric prediction, and fringe-stopped, in red and blue.
 
-Output of the code above: four integrations on August 23, 2026,
-20:42:59–20:49:51 UTC. Frequency is vertical and elapsed time is horizontal.
+Output of the code above: 79 integrations on August 23, 2026,
+19:20:31–22:19:11 UTC.
+Frequency is vertical and elapsed time is horizontal.
 No static background subtraction, calibration or frequency mask is applied.
 ```
 
 Read across the three panels. The geometric prediction changes with time and
 frequency. Fringe stopping removes that predicted phase from the measured
-cross-correlation. The frequency bands that remain can carry instrumental
-delay; fringe stopping alone does not flatten that delay. This short window
-contains only four integrations, so it is a first look rather than a transit test.
+cross-correlation: the raw bands curve with time, while the stopped bands are
+more nearly horizontal. Residual structure remains, especially late in the
+window. The frequency bands can carry instrumental delay; fringe stopping
+alone does not flatten that delay.
 
 Red and blue show phase, not signal strength or “bad” and “good.” The endpoints
 −π and +π represent the same phase, so an abrupt red/blue boundary can be a wrap.

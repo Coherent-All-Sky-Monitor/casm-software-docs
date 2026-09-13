@@ -37,13 +37,15 @@ plot_waterfall(
 `tfac=48` averages 48 input samples per time bin, about 50 ms here. The output
 below was regenerated with these calls using the current installed modules.
 
-```{figure} ../_static/tutorials/solar/solar-waterfall.png
+```{figure} ../_static/tutorials/solar/solar-waterfall.webp
 :alt: Incoherent-beam solar dynamic spectrum, mean bandpass and channel light curves around 18:12:30 PDT on August 19 2026.
 
 Archived solar radio burst in the incoherent beam, August 19, 2026, local time
 (August 20 UTC). Frequency increases upward. The figure is historical data
 rendered with the current module, not a live observation.
 ```
+
+[Full-resolution PNG](../_static/tutorials/solar/solar-waterfall.png).
 
 Read the three panels together:
 

@@ -21,6 +21,10 @@ short Python examples with plots from existing CASM observations.
 
 ## Further analysis
 
+- [Generate calibration and beam weights](guides/generate-weights.md): follow
+  a solar solve through antenna corrections, the 512-beam sky grid and review.
+- [Follow an injection](guides/injection-recovery.md): inspect recovery results,
+  saved event plots and the paths used by T2/T3.
 - [Image the sky](guides/image-visibilities.md): make a source-centred dirty image.
 - [Find a pulsar](guides/fold-b0329.md): understand a folded B0329+54 recording.
 
@@ -36,4 +40,5 @@ guides/check-calibration
 guides/rank1-diagnostics
 guides/image-visibilities
 guides/fold-b0329
+guides/injection-recovery
 ```

@@ -4,9 +4,9 @@ This preview uses explicitly inspected source checkouts. Git revisions identify 
 
 | Package | Baseline revision | Tracked working-tree changes |
 |---|---|---|
-| casm_io | `22ef826d9f2b` | 0 |
-| casm_vis_analysis | `5039eb4714b5` | 3 |
-| casm_calibrator | `8b5fcf5b089d` | 0 |
+| casm_io | `73279e93fb41` | 0 |
+| casm_vis_analysis | `9ec630267fb8` | 3 |
+| casm_calibrator | `fe5a5fbfb44d` | 0 |
 
 ## Verification boundaries
 
@@ -23,6 +23,8 @@ The repository contains `sources.json` (the allowlist and selected modules), `so
 
 ## Version policy
 
-Documentation snapshot: `3ee877e0a4612dd1`. Coverage starts with this preview; no historical-version backfill is planned. Package version strings alone are insufficient to identify these checkouts, so revision plus file hashes are authoritative for this documentation.
+Documentation snapshot: `49b7cd30e5ea5d94`. Coverage starts with this preview; no historical-version backfill is planned. Package version strings alone are insufficient to identify these checkouts, so revision plus file hashes are authoritative for this documentation.
 
-Run `python scripts/snapshot_sources.py --source-root /home/casm/software/dev --check` before refreshing to detect source drift. Future releases should pair a reviewed software revision with a documentation snapshot; this preview does not tag or alter source repositories.
+Run `python scripts/snapshot_sources.py --source-root /home/casm/software/dev --check` before refreshing to detect source drift. Future releases should pair a reviewed software revision with a documentation snapshot. Snapshot generation does not edit source repositories.
+
+Source instruction updates may be committed locally before publication. GitHub baseline links for those commits become available after the owner pushes; the built-in source views work from the recorded copies now.

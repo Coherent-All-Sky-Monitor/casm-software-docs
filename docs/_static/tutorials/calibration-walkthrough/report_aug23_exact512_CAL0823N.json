@@ -1,0 +1,410 @@
+{
+  "params": {
+    "out_dir": "/mnt/nvme5/vishnu/cal_build_20260824",
+    "tag": "aug23_exact512_CAL0823N",
+    "cal_source": "sun",
+    "cal_ra": null,
+    "cal_dec": null,
+    "source_window": [
+      "2026-08-23 20:41:30",
+      "2026-08-23 21:41:30"
+    ],
+    "static_window": [
+      "2026-08-24 03:00:00",
+      "2026-08-24 03:30:00"
+    ],
+    "static_path": "/mnt/nvme5/vishnu/cal_build_20260824/static_aug23_exact512_CAL0823N.npz",
+    "static_window_tol_s": 300.0,
+    "static_notes": "night static from obs 2026-08-24-01:54:29 only. Window forced later than 02:56 UTC because 02:30-03:00 straddles three overlapping obs on disk (2026-08-23-19:18:14 ends 02:38:02, the 1105-byte stub 2026-08-24-01:42:35 advertises 01:42-02:55, and 2026-08-24-01:54:29). Altitudes: sun -11.3..-5.7, Cyg A 58.3..63.9, Cas A 30.3..33.9, Tau A -30.7. Cyg A is ~3 deg higher than the deployed Aug-20 02:45-03:15 static window (52.5..58.1).",
+    "antennas": [
+      9,
+      10,
+      15,
+      19,
+      22,
+      23,
+      24,
+      26,
+      30,
+      32,
+      36,
+      38,
+      40,
+      42,
+      44,
+      45
+    ],
+    "ref_ant": 9,
+    "layout_csv": "/home/casm/software/dev/antenna_layouts/casm_antenna_layout_2026-08-07.csv",
+    "min_alt_deg": 10.0,
+    "min_time_on_source_frac": 0.5,
+    "cal_path": null,
+    "make_weights": true,
+    "grid_mode": "exact",
+    "alt_min_deg": 20.0,
+    "alt_max_deg": 90.0,
+    "az_min_deg": 0.0,
+    "az_max_deg": 360.0,
+    "n_beams": 512,
+    "mult_min": 0.05,
+    "mult_max": 0.6,
+    "mult_n": 56,
+    "mult_break_below_target": false,
+    "trim": "lowest",
+    "exact_criterion": "rate",
+    "exact_floor_weight": 0.0,
+    "track_sources": [
+      "sun",
+      "b0329+54"
+    ],
+    "track_date": "2026-08-25",
+    "track_min_alt_deg": 0.0,
+    "track_pad_deg": 0.0,
+    "verify_pointing": true,
+    "verify_beams": [
+      0,
+      256,
+      511
+    ],
+    "min_subband_good_frac": 0.9,
+    "nearest_targets": [],
+    "nearest_sources": [
+      "sun",
+      "b0329+54"
+    ],
+    "nearest_date": "2026-08-25",
+    "prev_cal_path": "/mnt/nvme5/solar0819/cal_static_night/cal_sun_2026-08-19_thr1_phaseonly_16ant_nightstaticB.h5",
+    "diagnostics": true,
+    "notebook": true,
+    "execute_notebook": true,
+    "fringe_plot_max_baselines": 20,
+    "phase_baselines_per_class": 3,
+    "beam_check": true,
+    "beam_check_source": "cyg-a",
+    "beam_check_fallback": "cas-a",
+    "beam_check_date": "2026-08-24",
+    "beam_check_window": null,
+    "beam_check_minutes": 60.0,
+    "beam_check_off_alt_deg": -25.0,
+    "transit_sources": [
+      "sun",
+      "cyg-a",
+      "cas-a",
+      "b0329+54"
+    ],
+    "transit_date": "2026-08-25"
+  },
+  "antennas": [
+    9,
+    10,
+    15,
+    19,
+    22,
+    23,
+    24,
+    26,
+    30,
+    32,
+    36,
+    38,
+    40,
+    42,
+    44,
+    45
+  ],
+  "versions": {
+    "numpy": "2.4.2",
+    "python": "3.13.5"
+  },
+  "static_ab": {
+    "with_static_full": 5.87274043568332,
+    "with_static_band": 9.053555221141977,
+    "no_static_full": 4.097234475926335,
+    "no_static_band": 5.821820805749734
+  },
+  "cal": {
+    "n_time_averaged": 26,
+    "n_solved": 3072,
+    "rank1_median": 5.87274043568332,
+    "time_on_source_frac": 1.0
+  },
+  "pointings": {
+    "n": 512,
+    "alt_min": 22.0,
+    "alt_max": 90.0,
+    "alt_median": 43.0,
+    "az_min": 0.0,
+    "az_max": 358.8079470198676
+  },
+  "int8": {
+    "shape": [
+      2,
+      3072,
+      2,
+      512,
+      64
+    ],
+    "ch1500_min": -127,
+    "ch1500_max": 127,
+    "ch1500_mean_abs": 19.944427490234375
+  },
+  "weights_attrs": {
+    "created_utc": "2026-08-24T20:48:18.947716+00:00",
+    "format_type": "int8_snap_weights",
+    "n_antennas": "64",
+    "n_beams": "512",
+    "n_channels": "3072",
+    "n_pol": "2",
+    "scale_factor": "127.0",
+    "version": "2.0"
+  },
+  "cal_subbands": [
+    {
+      "subband": 0,
+      "chan_lo": 0,
+      "chan_hi": 511,
+      "freq_lo_mhz": 468.780517578125,
+      "freq_hi_mhz": 484.375,
+      "n_good": 512,
+      "n_chan": 512,
+      "good_frac": 1.0
+    },
+    {
+      "subband": 1,
+      "chan_lo": 512,
+      "chan_hi": 1023,
+      "freq_lo_mhz": 453.155517578125,
+      "freq_hi_mhz": 468.75,
+      "n_good": 512,
+      "n_chan": 512,
+      "good_frac": 1.0
+    },
+    {
+      "subband": 2,
+      "chan_lo": 1024,
+      "chan_hi": 1535,
+      "freq_lo_mhz": 437.530517578125,
+      "freq_hi_mhz": 453.125,
+      "n_good": 512,
+      "n_chan": 512,
+      "good_frac": 1.0
+    },
+    {
+      "subband": 3,
+      "chan_lo": 1536,
+      "chan_hi": 2047,
+      "freq_lo_mhz": 421.905517578125,
+      "freq_hi_mhz": 437.5,
+      "n_good": 512,
+      "n_chan": 512,
+      "good_frac": 1.0
+    },
+    {
+      "subband": 4,
+      "chan_lo": 2048,
+      "chan_hi": 2559,
+      "freq_lo_mhz": 406.280517578125,
+      "freq_hi_mhz": 421.875,
+      "n_good": 512,
+      "n_chan": 512,
+      "good_frac": 1.0
+    },
+    {
+      "subband": 5,
+      "chan_lo": 2560,
+      "chan_hi": 3071,
+      "freq_lo_mhz": 390.655517578125,
+      "freq_hi_mhz": 406.25,
+      "n_good": 512,
+      "n_chan": 512,
+      "good_frac": 1.0
+    }
+  ],
+  "pointing_fit": [
+    {
+      "beam": 0.0,
+      "stated_alt": 22.0,
+      "stated_az": 3.2335329341317367,
+      "fit_alt": 22.01000000000003,
+      "fit_az": 3.2200000000000015,
+      "coh_fit": 0.9999959457521097,
+      "coh_stated": 0.9999976488757234,
+      "nchan": 384.0,
+      "nant": 16.0,
+      "dalt": 0.010000000000029985,
+      "daz": -0.013532934131745833
+    },
+    {
+      "beam": 256.0,
+      "stated_alt": 43.0,
+      "stated_az": 328.5171102661597,
+      "fit_alt": 43.01000000000003,
+      "fit_az": 328.5299999999978,
+      "coh_fit": 0.9999963708849379,
+      "coh_stated": 0.9999976921092412,
+      "nchan": 384.0,
+      "nant": 16.0,
+      "dalt": 0.010000000000033538,
+      "daz": 0.012889733838107986
+    },
+    {
+      "beam": 511.0,
+      "stated_alt": 90.0,
+      "stated_az": 0.0,
+      "fit_alt": 89.98000000000003,
+      "fit_az": 339.6,
+      "coh_fit": 0.999943207952816,
+      "coh_stated": 0.999997696302675,
+      "nchan": 384.0,
+      "nant": 16.0,
+      "dalt": -0.0199999999999676,
+      "daz": -20.399999999999977
+    }
+  ],
+  "nearest_beams": [
+    {
+      "target": "sun transit 2026-08-25",
+      "target_alt": 63.2997535375865,
+      "target_az": 179.92058841021577,
+      "beam": 397,
+      "beam_alt": 60.0,
+      "beam_az": 180.0,
+      "sep_deg": 3.2999683259251125
+    },
+    {
+      "target": "b0329+54 transit 2026-08-25",
+      "target_alt": 72.56765679168086,
+      "target_az": 359.9484599039568,
+      "beam": 472,
+      "beam_alt": 73.0,
+      "beam_az": 356.57142857142856,
+      "sep_deg": 1.088832343875045
+    }
+  ],
+  "grid": {
+    "mode": "exact",
+    "criterion": "rate",
+    "floor_weight": 0.0,
+    "n_ant": 16,
+    "alt_min": 22.0,
+    "alt_max": 90.0,
+    "az_min": 0.0,
+    "az_max": 358.8079470198676,
+    "bounds": [
+      20.0,
+      90.0,
+      0.0,
+      360.0
+    ]
+  },
+  "phase_baselines": [
+    {
+      "index": 0,
+      "label": "Ant 9x10 |b|=0.4 m",
+      "length_m": 0.370911110779928
+    },
+    {
+      "index": 8,
+      "label": "Ant 9x32 |b|=0.8 m",
+      "length_m": 0.8147544152687974
+    },
+    {
+      "index": 6,
+      "label": "Ant 9x26 |b|=2.5 m",
+      "length_m": 2.5047419710022027
+    },
+    {
+      "index": 2,
+      "label": "Ant 9x19 |b|=5.0 m",
+      "length_m": 5.025725271092721
+    },
+    {
+      "index": 5,
+      "label": "Ant 9x24 |b|=5.1 m",
+      "length_m": 5.148962028603435
+    },
+    {
+      "index": 1,
+      "label": "Ant 9x15 |b|=5.3 m",
+      "length_m": 5.265963488451093
+    },
+    {
+      "index": 12,
+      "label": "Ant 9x42 |b|=9.2 m",
+      "length_m": 9.19086670761251
+    },
+    {
+      "index": 11,
+      "label": "Ant 9x40 |b|=9.5 m",
+      "length_m": 9.527889919630685
+    },
+    {
+      "index": 10,
+      "label": "Ant 9x38 |b|=9.6 m",
+      "length_m": 9.64112520645801
+    }
+  ],
+  "gain_delay_fits": {
+    "median_resid_rms_rad": 0.1995547990804335,
+    "max_abs_delay_ns": 223.88000000006923
+  },
+  "rank1_medians": {
+    "sun, static-subtracted": [
+      5.87274043568332,
+      9.053555221141977
+    ],
+    "sun, no static": [
+      4.097234475926335,
+      5.821820805749734
+    ]
+  },
+  "svd_vs_freq": {
+    "sigma1_median": 14.679125770816137,
+    "sigma1_perfect": 15.0,
+    "rank1_fraction_median": 0.4695094821157297,
+    "rank1_fraction_inband": 0.49999999999999994,
+    "rank1_fraction_perfect": 0.5,
+    "incoherent_floor": 0.0625
+  },
+  "cal_diff_band_avg_coherence": 0.9914036134772066,
+  "beam_check": {
+    "png": "/mnt/nvme5/vishnu/cal_build_20260824/figs/beam_check_cyga_aug23_exact512_CAL0823N.png",
+    "source": "cyg-a",
+    "window": [
+      "2026-08-24 05:13:00",
+      "2026-08-24 06:13:00"
+    ],
+    "n_integrations": 26,
+    "n_channels": 2425,
+    "alt_range": [
+      83.20682304645916,
+      86.42408243224244
+    ],
+    "summary": {
+      "new cal": {
+        "coh": 0.06457203135759892,
+        "scatter": 0.011220381036700864,
+        "err": 0.0022004977636955443
+      },
+      "previous cal": {
+        "coh": 0.06744458858752012,
+        "scatter": 0.01090934393586672,
+        "err": 0.002139498369595366
+      },
+      "null: -25 deg off": {
+        "coh": 0.01749938336928151,
+        "scatter": 0.06779333733759953,
+        "err": 0.013295367306769166
+      }
+    }
+  },
+  "transit_plot": {
+    "date": "2026-08-25",
+    "sources": [
+      "sun",
+      "cyg-a",
+      "cas-a",
+      "b0329+54"
+    ]
+  }
+}

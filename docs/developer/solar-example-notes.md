@@ -12,6 +12,12 @@ Regenerated on 2026-09-13 by executing the tutorial's `split_filterbank` and
 Output: `docs/_static/tutorials/solar/solar-waterfall.png`, SHA256
 `164fdb5eb1dd6cbd47ab724e0bfb056e27173f3a5f37cf91657a531350973215`.
 
+The site displays a WebP copy made by `scripts/prepare_web_figures.py` with
+Pillow, quality 90, at the original dimensions. It is 439,596 bytes instead
+of the PNG's 2,527,628 bytes (83% smaller). This is lossy web compression,
+not a new science rendering; the original PNG remains linked in the tutorial.
+Regenerate the WebP after changing the PNG. Both versions were visually checked.
+
 Input: `/mnt/nvme5/solar0819/solartrack_fil/ib_IB.fil`, 77,309,411,670 bytes.
 Header: `tstart=61272.01780093231`, `tsamp=0.001048576` seconds,
 `nchans=3072`, `nbits=32`, `nbeams=1`, `fch1=484.375` MHz,
@@ -59,19 +65,30 @@ historical mislabelled multi-beam headers need separate validation.
 `scripts/render_solar_phase_tutorial.py` executes the displayed Python blocks
 in `docs/guides/solar-phase.md` and saves the figure through Agg. Generated
 2026-09-13: `docs/_static/tutorials/solar/solar-phase-two-antennas.png`.
-The four-integration window, file and August-7 layout are the same as the
-[visibility example](io-example-notes.md). The directed reference-9 to target-19
-read returns `(4, 3072, 1)` complex64, 98,304 bytes. `with_inactive()` selects
+The three-hour window extends the same observation and uses the August-7
+layout from the [visibility example](io-example-notes.md). The directed
+reference-9 to target-19 read returns `(79, 3072, 1)` complex64, 1,941,504 bytes.
+`with_inactive()` selects
 only those two antennas in memory; no layout file is changed. No static
 background, frequency mask or calibration is applied.
+
+Requested interval: August 23, 19:20–22:20 UTC, rooted at
+`/mnt/nvme4/data/casm`. Data come from
+`visibilities_64ant/2026-08-23-19:18:14.dat.{0,1,2}`. Discovery also checks
+`2026-08-21-03:14:39.dat.52`; that truncated final part contributes zero
+integrations in this window. The reader reports no gaps or missing files.
+The single-worker, single-BLAS-thread execution completed within the 90-second
+timeout. Only the selected cross-correlation is materialized, not the full
+triangle. The new figure was visually checked: raw bands curve with time;
+stopped bands are flatter, with late-window residual structure still visible.
 
 The displayed snippet temporarily disables Astropy IERS downloads and permits
 older predictions for this illustration, restoring settings afterward.
 The installed `astropy-iers-data` is `0.2026.2.23.0.48.33`, using its
 `data/finals2000A.all` table. Its age check otherwise rejects this date.
 This is not a calibration validation; refresh Earth-orientation data before
-scientific calibration. The four integrations cover 20:42:59–20:49:51 UTC
-on August 23 and show only a short section of solar motion.
+scientific calibration. The 79 integrations cover 19:20:31–22:19:11 UTC
+on August 23, long enough to show geometric phase evolution.
 
 Renderer: `plot_fringe_diagnostic` in `src/casm_vis_analysis/plotting/fringe_diag.py`,
 SHA256 `ce1922df763a630997c75ebfab28ef1614bc36a1bb998a77c8749cd8420ca99d`.

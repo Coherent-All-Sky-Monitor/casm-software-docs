@@ -6,8 +6,10 @@ each source repository before documenting it. Those files remain canonical;
 do not maintain divergent copies here.
 
 - Default Python environment: `/home/casm/software/dev/casm_venvs/casm_offline_env`.
-- Source repositories are read-only. Write documentation and tooling here only;
-  maintain the canonical wiki as separately required by its instructions.
+- Source implementation is read-only for documentation tasks. The user has
+  authorized agent-instruction updates in the in-scope source repos to link the
+  central documentation maintenance policy. Other source edits require a task
+  that authorizes them. Maintain the canonical wiki under its own instructions.
 - Use `/home/casm/software/dev/antenna_layouts/current` in new-run examples.
   Historical observations require their matching layout; distinguish those
   explicitly. Never rewrite archived source snapshots or figure provenance to
