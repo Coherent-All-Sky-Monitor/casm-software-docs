@@ -25,7 +25,7 @@ Before building, review these fields in the JSON configuration:
 | Fields | Decision required |
 |---|---|
 | `out_dir`, `tag` | New output directory and unique product identity |
-| `layout_csv`, `antennas`, `ref_ant` | Dated geometry, explicit participating IDs, active reference |
+| `layout_csv`, `antennas`, `ref_ant` | `/home/casm/software/dev/antenna_layouts/current` for new observations; matching dated geometry for historical data, explicit participating IDs, active reference |
 | `cal_source`, `source_window` | Source and two UTC timestamps spanning the approved solve window |
 | `static_window`, `static_path` | Matched static template, or explicit absence of subtraction |
 | `grid_mode`, `n_beams`, `alt_min_deg` | Approved grid coverage; use `exact` for exact array-factor placement |

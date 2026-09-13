@@ -8,9 +8,14 @@ Use this guide after working through the [solar phase](solar-phase.md) and
 ## Choose the observation
 
 Start from the configuration saved with a recent reviewed product. In your
-copy, set the solar or bright-source time window, dated antenna layout,
+copy, set the solar or bright-source time window, antenna layout,
 participating antennas and a new output directory. Keep the diagnostics and
 notebook enabled, and select `grid_mode="exact"` for beam placement.
+
+For a new observation set `layout_csv` to
+`/home/casm/software/dev/antenna_layouts/current`. Verify its selected antennas
+before building and retain the resolved layout with the product. Reprocessing
+historical observations requires their matching dated layout instead.
 
 The solve window must contain a useful source signal. A longer interval is
 not automatically better; changing solar structure and interference can affect

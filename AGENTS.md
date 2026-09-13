@@ -8,6 +8,11 @@ do not maintain divergent copies here.
 - Default Python environment: `/home/casm/software/dev/casm_venvs/casm_offline_env`.
 - Source repositories are read-only. Write documentation and tooling here only;
   maintain the canonical wiki as separately required by its instructions.
+- Use `/home/casm/software/dev/antenna_layouts/current` in new-run examples.
+  Historical observations require their matching layout; distinguish those
+  explicitly. Never rewrite archived source snapshots or figure provenance to
+  imply that historical results used today's layout. Explain functional versus
+  include_in_beamforming, and the existing rebuild reset hazard.
 - Approved initial sources: casm_io, casm_vis_analysis, casm_calibrator.
   Do not add repositories based solely on a shared organization name.
 - Document the current recorded source snapshot onward. Historical-version

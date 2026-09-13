@@ -36,6 +36,18 @@ steering, private CSV parsing and antenna-number assumptions are not tutorial
 instructions. The beginner example selects two inputs, while the archived plot
 contains six and spans a longer interval. It is not its newly generated output.
 
+## Cross-correlation phase figure
+
+Source: `/mnt/nvme5/vishnu/cal_build_20260824/figs/phase_raw_sawtooth_aug23_exact512_CAL0823N.png`.
+Copy: `docs/_static/tutorials/io/cross-phase-sawtooth.png`, unchanged.
+The matching `cal_aug23_exact512_CAL0823N_diagnostics.ipynb` displays this
+figure in cell 5. `bf_weights_generator/recipe_diagnostics.py:plot_sawtooth`
+averages complex visibilities over the selected times before taking their
+angle, masking excluded frequencies. The recipe supplies static-subtracted
+visibilities. Thus "raw" in the figure means before fringe-stopping, not
+untouched correlator output. This is a historical multi-baseline illustration,
+not a claimed execution of the beginner's single-integration snippet.
+
 ## Voltage figure
 
 Source notebook:

@@ -5,7 +5,9 @@ changes with time and frequency. Compare the measured phase with the geometric
 prediction for the Sun, then remove that predicted motion by fringe stopping.
 
 After [reading your first visibilities](read-visibilities.md), select a daytime
-window and its dated layout. This uses the same ten-minute recording as the
+window and its matching layout. For new observations use
+`/home/casm/software/dev/antenna_layouts/current`. The dated path below belongs
+to the historical example. This uses the same ten-minute recording as the
 first tutorial, with antenna 9 as the reference.
 
 ```python

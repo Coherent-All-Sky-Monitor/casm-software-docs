@@ -15,7 +15,9 @@ source /home/casm/software/dev/casm_venvs/casm_offline_env/bin/activate
 
 This example uses files present on the CASM host at review time and a ten-minute
 daytime interval on August 19. Choose your own paths and times for another run.
-The layout CSV should describe the wiring on that date. Antenna numbers are
+For new observations use `/home/casm/software/dev/antenna_layouts/current`.
+This historical example keeps the layout matching its recording; do not pair
+old data with today's layout without checking the mapping. Antenna numbers are
 physical labels; `packet_index()` finds the corresponding inputs in the file.
 
 ```python
@@ -99,8 +101,9 @@ Use one of those options. Native order runs from high frequency to low frequency
 
 ## Look at the cross-correlation
 
-Amplitude tells you the strength of the shared signal; phase tells you its
-relative timing. Plot one integration before attempting to average phases:
+Amplitude measures the correlated signal strength. Phase includes geometric
+and instrumental delays; a delay produces a slope with frequency. Start with
+one integration so time averaging does not wash out a moving fringe:
 
 ```python
 fig, axes = plt.subplots(2, 1, sharex=True, figsize=(8, 5))
@@ -111,6 +114,19 @@ axes[1].set_ylabel("Phase (rad)")
 axes[1].set_xlabel("Frequency (MHz)")
 plt.show()
 ```
+
+```{figure} ../_static/tutorials/io/cross-phase-sawtooth.png
+:alt: Wrapped cross-correlation phase versus frequency for nine baselines referenced to antenna 9, showing repeated jumps between minus pi and pi.
+
+Archived phase spectra from August 23, 2026, 20:42:59–21:40:15 UTC.
+Each panel pairs antenna 9 with the antenna named at left. These are
+time-averaged, background-subtracted visibilities before Sun fringe-stopping,
+not output from the single-integration example above.
+```
+
+Follow the 9×19 panel: phase rises across frequency, reaches π, and reappears
+at −π. Those jumps are the phase wrapping, not breaks in the signal. Different
+baselines have different slopes; instrumental delays also contribute.
 
 Phase wraps between −π and π, so a sawtooth shape can be normal. Avoid averaging
 complex values over the whole band before correcting a phase slope: they can

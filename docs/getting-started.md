@@ -6,6 +6,20 @@ The tutorials use the same Python modules as the team's analysis notebooks.
 
 ## Open a Python session or notebook
 
+For new observations, the standard antenna layout is
+`/home/casm/software/dev/antenna_layouts/current`. It is a symlink managed by
+the existing layout tools. `functional` describes wiring;
+`include_in_beamforming` selects participation in weight generation.
+Neither proves which weights are currently deployed.
+
+Historical recordings need the layout used for that observation. The dated
+layouts named beside archived figures are reproduction information, not new-run
+defaults. Keep the resolved layout with each calibration product.
+
+Do not refresh the layout as part of running a tutorial: `casm-layout apply`
+currently resets beamforming membership from `functional`. Membership must be
+reviewed and reapplied after a wiring refresh.
+
 On the CASM host, the software is already installed in the shared environment:
 
 ```bash
