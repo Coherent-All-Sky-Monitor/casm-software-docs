@@ -5,7 +5,43 @@ many neighbouring directions. Use this optional tutorial to explore the sky
 around a source. To check a calibration using a source's rise and fall through
 a fixed beam, start with the [Cyg A transit tutorial](check-calibration.md).
 
-## What an existing image looks like
+## Plot one saved integration
+
+This 165 KB product contains an already computed 241 × 241 all-sky frame.
+Run from the documentation checkout root in the offline environment. Loading
+and plotting it does not read raw visibilities or apply calibration again.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from casm_imaging.imaging.allsky import plot_allsky_frame
+
+path = "docs/_static/tutorials/imaging/allsky-saved.npz"
+with np.load(path, allow_pickle=False) as saved:
+    snapshot = {key: saved[key] for key in ("image", "time_unix", "l_axis", "m_axis")}
+    snapshot["time_unix"] = float(snapshot["time_unix"])
+    snapshot["sources"] = dict(zip(saved["src_names"], saved["src_lma"]))
+assert snapshot["image"].shape == (241, 241)
+fig, ax = plt.subplots(figsize=(6, 6))
+artist = plot_allsky_frame(ax, snapshot, time_tz="UTC", cmap="viridis")
+fig.colorbar(artist, ax=ax, shrink=0.7, label="Saved image value (instrumental)")
+plt.show()
+```
+
+```{figure} ../_static/tutorials/imaging/allsky-saved.png
+:alt: Saved all-sky frame with horizon, altitude rings and source markers, east on the left.
+
+Output of the displayed code for the saved integration at Unix UTC
+1789299471. The horizon is the outer circle; zenith is at the centre.
+Source markers are the saved predicted positions, not fitted detections.
+```
+
+This redraw validates the saved-product plotting path. The product preserves
+its configuration fingerprint but not a full calibration/layout manifest, so
+it cannot establish that today's source recreates the original image values.
+See [bounded example provenance](../developer/bounded-examples.md).
+
+## Historical source-centred image
 
 ```{figure} ../_static/tutorials/imaging/cyga-transit-lm.png
 :alt: Cyg A dirty image with a central positive peak and alternating red and blue sidelobes.
@@ -20,7 +56,7 @@ responses: the surrounding pattern includes the sparse array's sidelobes,
 so each bright patch need not be another source. The cyan circles select a
 background annulus for the displayed image statistic. They are not beam edges.
 
-## Make a small image first
+## Prepare a new image (illustrative, not executed)
 
 Use an existing calibration and dated antenna layout with a short visibility
 window. The maintained `casm_imaging` package reads and beamforms the data.
@@ -65,5 +101,5 @@ peak/background statistic, not a pulsar detection significance.
 
 The [implementation notes](../developer/imaging-notes.md) contain frequency,
 mask and indexing contracts, a second historical image, and source/asset
-provenance. The examples were checked against the existing API; no new
-observation analysis was run to produce this tutorial.
+provenance. The saved-product block was executed with its matching figure;
+the new-analysis examples are illustrative. No raw observation was re-imaged.

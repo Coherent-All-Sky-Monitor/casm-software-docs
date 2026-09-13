@@ -5,7 +5,7 @@ direction near Cyg A's meridian crossing. As the sky rotates, Cyg A moves
 through the beam: its measured power should rise and fall. This checks whether
 the calibration produces a plausible response on another source.
 
-## Read an existing transit
+## Historical waterfall and annotations
 
 ```{figure} ../_static/tutorials/transit/cyga_stationary_beam_20260805.png
 :alt: Cyg A stationary-beam waterfall and orange power curve rising before transit, peaking shortly after it, and falling back toward the background.
@@ -41,7 +41,7 @@ from datetime import datetime, timezone
 import numpy as np
 import matplotlib.pyplot as plt
 
-path = "/mnt/nvme5/casm_pipeline/scratchpad/cyga_stationary_beam_20260805.npz"
+path = "docs/_static/tutorials/transit/cyga-light-curve.npz"
 with np.load(path, allow_pickle=False) as saved:
     times = saved["time_unix"]
     power = saved["lc"]
@@ -53,8 +53,15 @@ fig.autofmt_xdate()
 plt.show()
 ```
 
-This redraws the bottom curve with simple labels. The original figure above
-adds the frequency panel and transit annotations.
+Run from the documentation checkout root. The retained NPZ contains just
+the original saved time and light-curve arrays.
+
+```{figure} ../_static/tutorials/transit/cyga-light-curve.png
+:alt: Saved Cyg A stationary-beam light curve normalized to its peak against UTC.
+
+Output of the displayed code using the saved August-5 light curve. The
+historical figure above separately preserves the waterfall and annotations.
+```
 
 ## Form the beam from another observation
 

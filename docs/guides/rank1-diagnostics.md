@@ -13,7 +13,7 @@ The example file is an existing solar solve on the CASM host:
 import numpy as np
 import matplotlib.pyplot as plt
 
-path = "/mnt/nvme5/solar0819/recipe_demo_20260820/rank1_vs_freq_20260820.npz"
+path = "docs/_static/tutorials/calibration/rank1-primary.npz"
 with np.load(path, allow_pickle=False) as data:
     frequency = data["freq_mhz"]
     ratio = data["rank1"]
@@ -28,15 +28,15 @@ plt.show()
 The ratio is the largest singular value divided by the second largest.
 Higher values mean the leading component is more dominant in this solve.
 
-```{figure} ../_static/tutorials/calibration/rank1_vs_freq_20260820.png
-:alt: Solar rank-1 ratio before and after subtraction of a night-time static signal.
+```{figure} ../_static/tutorials/calibration/rank1-primary.png
+:alt: Saved primary solar rank-1 ratio against frequency.
 
-The saved August 19 solar analysis, shown with its original comparison curve.
-Subtracting a night-time static signal raises the ratio over much of the band.
+The saved August 19 solar solve's primary curve, plotted by the code above.
 ```
 
-The short code plots the saved primary curve. The original figure above also
-includes the comparison without static subtraction. Notice the frequency
+Run from the documentation checkout root. The small NPZ is retained with the
+documentation. The original comparison figure remains in the developer notes.
+Notice the frequency
 structure: a single median would hide narrow dips and changes across the band.
 
 To compare two solves, keep the source window, antennas and frequency mask

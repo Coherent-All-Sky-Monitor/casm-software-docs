@@ -1,8 +1,9 @@
 # I/O tutorial sources and verification
 
 The visibility tutorial's displayed Python blocks were executed on the CASM
-host on 2026-09-13, producing its two figures. The voltage figure remains an
-archived illustration; its beginner snippets have not been executed. Source
+host on 2026-09-13, producing its two figures. Voltage snippets now also have a
+[bounded executed example and matching figure](bounded-examples.md). The older
+voltage figure below remains an archived illustration. Source
 packages were not edited and no acquisition commands were run.
 
 ## Source snapshot

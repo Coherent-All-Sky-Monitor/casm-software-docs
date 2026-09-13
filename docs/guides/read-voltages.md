@@ -20,9 +20,15 @@ dump. This avoids combining separate dumps from the same observation.
 
 ```python
 from casm_io.voltage import VoltageReader
+from casm_io.voltage.header import parse_dada_header
+from pathlib import Path
 
-data_dir = "/path/to/gathered-dump"
-prefix = "2026-08-02-14:32:06_0205375108055040"  # replace with your dump
+data_dir = "/mnt/nvme4/data/casm/cand_dumps"
+prefix = "2026-08-02-14:32:06_0205375108055040"
+dump = Path(data_dir) / "stream_1" / f"{prefix}.000000.dada"
+header = parse_dada_header(str(dump))  # reads only the 4096-byte header
+print({k: header[k] for k in ("DUMP_UTC_START", "NCHAN", "TSAMP", "RESOLUTION")})
+assert header["NCHAN"] == "512" and header["RESOLUTION"] == "67584"
 reader = VoltageReader(data_dir, prefix)
 print("Streams found:", reader.subbands_found)
 ```
@@ -30,7 +36,7 @@ print("Streams found:", reader.subbands_found)
 Start small. This reads 0.01 seconds from one available stream and SNAP 0:
 
 ```python
-stream = reader.subbands_found[0]
+stream = 1
 result = reader.read_full_band(
     subbands=[stream], snaps=[0], seconds=0.01,
 )
@@ -63,20 +69,16 @@ ax.set(xlabel="Frequency (MHz)", ylabel="Mean |v|²",
 plt.show()
 ```
 
-```{figure} ../_static/tutorials/io/voltage-snap0.png
-:alt: Existing voltage notebook figure with a power spectrum for each of SNAP 0's twelve ADC inputs.
+```{figure} ../_static/tutorials/io/voltage-single-stream.png
+:alt: Mean voltage power for SNAP 0 ADC 0 over stream 1.
 
-Existing notebook output, labelled 2026-08-03 11:06:52–11:06:54 PDT.
-The notebook plots all 12 ADCs on logarithmic axes. Only streams 1–2 contained
-data in the saved read; missing streams were zero-filled. The tutorial above
-plots one ADC from one stream on a linear scale.
+Output of the code above: the first 305 samples (9.99424 ms) of the dump
+starting 2026-08-03 18:11:41.810 UTC, stream 1, SNAP 0, ADC 0.
 ```
 
-Compare the shape within each panel. Narrow spikes and broad ripples are easy
-to see; the archived panels have independent vertical scales. Empty frequency
-regions here are missing data, not evidence that the receiver saw no power.
-The saved notebook contains outputs from different runs, so this figure is a
-plotting example rather than a fully reproducible observation record.
+Inspect narrow spikes and broad changes across this single stream. Power is
+in instrumental sample units. No calibration or interference mask is applied.
+The returned voltage array is only 14,991,360 bytes.
 
 ## Choose a later interval or a frequency range
 

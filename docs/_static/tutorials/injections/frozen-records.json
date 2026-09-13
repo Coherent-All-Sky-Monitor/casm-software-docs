@@ -1,0 +1,26 @@
+{
+  "inj_20260913_0021": {
+    "file_id": "inj_20260913_0021",
+    "inject_utc": "2026-09-13T20:28:48.740+00:00",
+    "beam": 49,
+    "dm": 886.6518146806226,
+    "inject_snr": 20.6101667637822,
+    "rec_snr": null,
+    "rec_dm": null,
+    "rec_beam": null,
+    "outcome": "missed_t1",
+    "fail_reason": "lost at T1: no matching trial in beam 49 or its 8 sky neighbours within the window at DM 887 (+-133)"
+  },
+  "inj_20260913_0023": {
+    "file_id": "inj_20260913_0023",
+    "inject_utc": "2026-09-13T22:27:24.976+00:00",
+    "beam": 141,
+    "dm": 386.4305139731968,
+    "inject_snr": 21.9322909938559,
+    "rec_snr": 25.1319,
+    "rec_dm": 386.0,
+    "rec_beam": 141,
+    "outcome": "recovered",
+    "fail_reason": null
+  }
+}

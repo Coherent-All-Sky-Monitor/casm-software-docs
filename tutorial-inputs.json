@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "date": "2026-09-13",
+  "scope": "Tutorial inputs only; source release snapshot owned separately.",
+  "retained_inputs": [
+    {
+      "path": "docs/_static/tutorials/calibration/rank1-primary.npz",
+      "sha256": "e502163c9fa1c686e712de499e4f4a15e8a84f9febf4d3b6253a1b79ee663c01"
+    },
+    {
+      "path": "docs/_static/tutorials/imaging/allsky-saved.npz",
+      "sha256": "4b7942d6d5d3f5f7716f2c0d9635ff3a52c719e9a1fbfb99757f964bd424a39f"
+    },
+    {
+      "path": "docs/_static/tutorials/injections/frozen-records.json",
+      "sha256": "49c9cd579861e2a3c6b9f545a283a62372279ce4489dc3d31a5b8bd58474cd35"
+    },
+    {
+      "path": "docs/_static/tutorials/transit/cyga-light-curve.npz",
+      "sha256": "b12a8c1a7dcac9fd1e594b799051110d6114be9c9ff82c03c8850f9d0abf4888"
+    }
+  ],
+  "voltage": {
+    "path": "/mnt/nvme4/data/casm/cand_dumps/stream_1/2026-08-02-14:32:06_0205375108055040.000000.dada",
+    "bytes": 4152365056,
+    "seconds": 0.01,
+    "stream": 1,
+    "snap": 0,
+    "hash_scope": "4096-byte header only; full 4GB file deliberately not hashed",
+    "header_sha256": "f0218f7913bf9ec2a80e6a3e9fe7308ecafc09a9c2c9b43a7b3125f67292b729"
+  },
+  "checks": {
+    "voltage": "all Python blocks",
+    "rank1": "Python block 1",
+    "transit": "Python block 1",
+    "imaging": "Python block 1, saved-product redraw only",
+    "injection": "Python block 1, frozen record only",
+    "visibility_solar": "Previously verified; not regenerated",
+    "historical": "Archived notebook figures retained; exact raw inputs/runtime unavailable, not rerun"
+  },
+  "figures": [
+  {
+    "path": "docs/_static/tutorials/io/voltage-single-stream.png",
+    "sha256": "2258e322d94643df728304e910fc34048d1418faebe0d6609ddf668fa7f457a2"
+  },
+  {
+    "path": "docs/_static/tutorials/calibration/rank1-primary.png",
+    "sha256": "2ff72ec905d1d8b2f9351cdc3462b1f35f62c7a79220b48ff71b0e8e7d8348c1"
+  },
+  {
+    "path": "docs/_static/tutorials/transit/cyga-light-curve.png",
+    "sha256": "afa20cc69a9d73373a6b1eebe8a09b14e8bcfbf9d71157ee965f8d3473dc7054"
+  },
+  {
+    "path": "docs/_static/tutorials/imaging/allsky-saved.png",
+    "sha256": "49395d21cb5dd21c1725f17b5d03cfa777fea4bd0c1a5883d6af7d9b86b22ab2"
+  },
+  {
+    "path": "docs/_static/tutorials/injections/inj_20260913_0023.png",
+    "sha256": "33d762b9cdf9b57ebeb92f4b4d4c50ba6eef6777b7a72bed9aabdfa9687faf2d"
+  }
+],
+  "limits": {
+    "resident_memory_mib": 900,
+    "non_voltage_address_space_bytes": 1073741824,
+    "timeout_seconds_per_example": 90,
+    "workers": 1,
+    "blas_threads": 1
+  }
+}

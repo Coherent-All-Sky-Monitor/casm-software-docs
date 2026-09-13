@@ -8,7 +8,9 @@ myst:
 
 The beginner [calibration check](../guides/check-calibration.md) uses the
 existing stationary-beam transit product published in the CASM scratchpad.
-The PNG was visually inspected and copied unchanged on 2026-09-13.
+The historical PNG was visually inspected and copied unchanged on 2026-09-13.
+The tutorial also has a [matching executed light-curve redraw](bounded-examples.md)
+from retained arrays, separate from the historical waterfall.
 
 ## Source and dataset
 

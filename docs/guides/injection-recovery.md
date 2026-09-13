@@ -4,7 +4,23 @@ An injection checks whether a known synthetic pulse makes it through the
 search. Start with the ledger, then inspect the saved plot. This tutorial
 reads existing results; it does not send a pulse or request a dump.
 
-## Read one recovery
+## Read the frozen example
+
+From the documentation checkout root, read the retained record. This record
+and the figure below describe the same archived shot; the live ledger may
+later be reconciled or its archive paths removed.
+
+```python
+import json
+from pathlib import Path
+
+records = json.loads(Path("docs/_static/tutorials/injections/frozen-records.json").read_text())
+shot = records["inj_20260913_0023"]
+print(shot["file_id"], shot["outcome"])
+print(f"S/N: {shot['inject_snr']:.2f} injected, {shot['rec_snr']:.2f} recovered")
+```
+
+## Query the live ledger separately
 
 In `casm_offline_env`, open the live ledger read-only:
 
@@ -22,6 +38,9 @@ shot = connection.execute(
     "FROM injections WHERE file_id = ?",
     ("inj_20260913_0023",),
 ).fetchone()
+if shot is None:
+    connection.close()
+    raise LookupError("This historical shot is no longer in the live ledger")
 print(shot["file_id"], label(shot["outcome"]))
 print(f"S/N: {shot['inject_snr']:.2f} injected, {shot['rec_snr']:.2f} recovered")
 connection.close()
@@ -46,12 +65,12 @@ plot's boxcar statistic use different calculations.
 
 ## Inspect the saved plot
 
-In a notebook, display the plot named by that row:
+In a notebook, display the retained artifact, independently of the live row:
 
 ```python
 from IPython.display import Image, display
 
-display(Image(filename=shot["replay_png"]))
+display(Image(filename="docs/_static/tutorials/injections/inj_20260913_0023.png"))
 ```
 
 ```{figure} ../_static/tutorials/injections/inj_20260913_0023.png

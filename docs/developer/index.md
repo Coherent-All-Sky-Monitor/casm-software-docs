@@ -35,6 +35,7 @@ step where it affects a user's result or could cause a destructive operation.
 ../sources
 ../machine-readable
 io-example-notes
+bounded-examples
 solar-example-notes
 transit-example-notes
 calibration-transfer-notes

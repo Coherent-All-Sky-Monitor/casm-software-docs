@@ -52,6 +52,9 @@ The PNG was copied byte-for-byte to
 pixel changes. Its title names this injection and its event timestamp matches
 the JSON. The archive also contains a 231,211,291-byte filterbank, not read for
 this tutorial. The full source JSON and live database were not copied.
+Selected fields for both shots are now retained in
+`docs/_static/tutorials/injections/frozen-records.json`; see
+[bounded checks](bounded-examples.md). Later live query results may change.
 
 The plot is a replay because intensity dumps tap the stream before injection
 merging. Its pulse has been synthesized again over the recorded background.
