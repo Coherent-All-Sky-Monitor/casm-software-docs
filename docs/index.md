@@ -4,43 +4,39 @@ myst:
     description: "CASM data access, calibration and imaging tutorials with scientific figures and versioned API references."
 ---
 
-```{raw} html
-<div class="eyebrow">OVRO · Scientific software · Documentation preview</div>
-```
-
 # CASM analysis software
 
-```{raw} html
-<div class="hero">
-<p>Read an observation, make your first plots, and learn how to check the array. Worked examples from CASM at OVRO.</p>
-</div>
-<div class="package-grid">
-<a class="package-card" href="guides/read-visibilities.html"><small>01 / FIRST PLOTS</small><strong>Read an observation</strong><span>Load visibilities, slice time and frequency, and plot auto- and cross-correlations.</span><em>Start the tutorial →</em></a>
-<a class="package-card" href="guides/solar-waterfall.html"><small>02 / SOLAR SCIENCE</small><strong>See the Sun</strong><span>Follow solar phase and explore a dynamic spectrum with bandpass and light curves.</span><em>Plot a solar waterfall →</em></a>
-<a class="package-card" href="guides/check-calibration.html"><small>03 / BEAM CHECK</small><strong>Watch a transit</strong><span>See power rise and fall as Cyg A crosses a stationary beam.</span><em>Explore the transit →</em></a>
-</div>
-```
+Python tools for reading CASM observations, plotting visibilities and calibrating
+the array at Owens Valley Radio Observatory.
 
 New to these modules? Start with [Getting started](getting-started.md), then
 follow the [tutorials](tutorials.md) in order.
 
-## Find a task
+## Tutorials
 
-| I want to… | Start here |
-|---|---|
-| Read a bounded visibility interval | [Read visibilities](guides/read-visibilities.md) |
-| Understand array dimensions and labels | [Shapes, units and antenna IDs](guides/contracts.md) |
-| Open a saved voltage dump | [Read voltages](guides/read-voltages.md) |
-| Understand solar red/blue phase plots | [Solar phase](guides/solar-phase.md) |
-| Compare a calibration across observing days | [Check a calibration](guides/check-calibration.md) |
-| Generate calibration and beamforming weights | [Build weights](guides/generate-weights.md) |
-| Review and deploy a paired weights product | [Deploy weights](guides/deploy-weights.md) |
-| Interpret SVD rank-1 plots | [Rank-1 diagnostics](guides/rank1-diagnostics.md) |
-| Form an image from visibilities | [Visibility imaging](guides/image-visibilities.md) |
-| Fold a B0329+54 observation | [B0329+54 tutorial](guides/fold-b0329.md) |
-| Reproduce the solar plotting style | [Solar waterfall](guides/solar-waterfall.md) |
-| Find a function or command | [API and CLI index](reference.md) |
-| Check what version these docs describe | [Sources and verification](sources.md) |
+- [Visibilities and antenna spectra](guides/read-visibilities.md): read an
+  observation, select times and channels, and plot auto- and cross-correlations.
+- [Voltage dumps](guides/read-voltages.md): inspect recorded antenna signals.
+- [Solar phase](guides/solar-phase.md) and [dynamic spectra](guides/solar-waterfall.md):
+  follow the Sun in baseline phase and beam power.
+- [Cyg A transit](guides/check-calibration.md): check the response of a fixed beam.
+- [SVD diagnostics](guides/rank1-diagnostics.md),
+  [sky imaging](guides/image-visibilities.md) and
+  [pulsar folding](guides/fold-b0329.md): work with saved scientific results.
+
+```{figure} _static/tutorials/solar/solar-phase.png
+:alt: Recorded solar baseline phase before and after fringe stopping, shown in red and blue.
+
+Solar baseline phase from an August 19 observation. Read across each row to
+compare measured phase, geometric prediction and fringe-stopped phase.
+[Walk through this example](guides/solar-phase.md).
+```
+
+## Calibration procedures
+
+[Generate calibration and beam weights](guides/generate-weights.md), then
+[review and deploy the product](guides/deploy-weights.md). Deployment requires
+human approval.
 
 ## Software reference
 

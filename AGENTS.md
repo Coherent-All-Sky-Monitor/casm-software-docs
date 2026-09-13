@@ -34,3 +34,7 @@ do not maintain divergent copies here.
   notes linked from the tutorial. Keep action-critical warnings at the action.
   Cyg A calibration validation uses a stationary-beam transit curve; sky imaging
   is a separate tutorial. Preserve scientific captions in Markdown exports too.
+- Visual style: conventional technical documentation, restrained typography,
+  neutral surfaces and blue links. No promotional cards, numbered feature tiles,
+  slogans, decorative hero sections or purple UI/code accents. Scientific figure
+  palettes remain tied to the plotted quantity, not the site's theme.

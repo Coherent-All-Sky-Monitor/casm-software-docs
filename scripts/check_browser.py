@@ -15,11 +15,15 @@ def main():
         page = browser.new_page(viewport={"width": 1440, "height": 1000})
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.goto(URL, wait_until="networkidle")
-        assert page.locator(".package-card").count() == 3
+        assert page.locator(".package-card").count() == 0
+        assert page.locator("article figure img").count() == 1
         page.screenshot(path=str(output / "desktop.png"), full_page=True)
-        page.locator('.package-card[href="guides/read-visibilities.html"]').click()
+        page.locator('article a[href="guides/read-visibilities.html"]').first.click()
         page.wait_for_url("**/guides/read-visibilities.html")
         assert page.locator("h1").count() == 1
+        assert page.locator(".highlight .kn").first.evaluate(
+            "node => getComputedStyle(node).color"
+        ) == "rgb(40, 87, 126)"
         page.goto(URL + "/search.html?q=VisibilityReader", wait_until="networkidle")
         page.wait_for_selector("#search-results li", timeout=15000)
         assert page.locator("#search-results li").count() > 0
@@ -41,6 +45,9 @@ def main():
         assert page.locator(".sidebar-drawer").evaluate(
             'node => getComputedStyle(node).backgroundColor'
         ) == "rgb(12, 13, 15)"
+        assert page.locator(".highlight .kn").first.evaluate(
+            "node => getComputedStyle(node).color"
+        ) == "rgb(175, 196, 226)"
         page.screenshot(path=str(output / "dark-tutorial.png"), full_page=True)
         page.goto(URL + "/packages/io-api.html", wait_until="networkidle")
         page.locator(".viewcode-link").first.click()

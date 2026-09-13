@@ -15,8 +15,10 @@ html_static_path = ["_static"]
 html_css_files = ["casm.css"]
 html_theme_options = {
     "light_css_variables": {
-        "color-brand-primary": "#176b64", "color-brand-content": "#176b64",
-        "color-background-primary": "#fcfcf9", "color-background-secondary": "#f1f3ef",
+        "color-brand-primary": "#28577e", "color-brand-content": "#28577e",
+        "color-background-primary": "#ffffff", "color-background-secondary": "#f4f5f6",
+        "color-code-keyword": "#28577e", "color-code-string": "#775438",
+        "color-code-comment": "#626870",
         "font-stack": "Inter, ui-sans-serif, system-ui, -apple-system, sans-serif",
     },
     "dark_css_variables": {
@@ -29,6 +31,8 @@ html_theme_options = {
         "color-sidebar-caption-text": "#989faa",
         "color-sidebar-item-background--current": "#20242b",
         "color-sidebar-search-background": "#14161a",
+        "color-code-keyword": "#afc4e2", "color-code-string": "#d1b795",
+        "color-code-comment": "#a3a9b2",
     },
     "sidebar_hide_name": False,
 }
