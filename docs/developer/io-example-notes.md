@@ -71,6 +71,11 @@ delete files; opening it should not be followed by an indiscriminate Run All.
 
 ## Reader details kept out of the first walkthrough
 
+- The introductory read uses `data_root="/mnt"` discovery and header-derived
+  format, with UTC and descending frequency defaults. Current 64-antenna
+  recordings do not require an explicit format. This is not a hardcoded
+  64-antenna fallback: headerless files need `fmt`. The upstream CLAUDE.md's
+  narrower default root is stale; the inspected signature defaults to `/mnt`.
 - The top-level `read_visibilities(inputs=...)` returns the subset but drops
   `metadata['inputs']` and `nsig_subset` during stitching. The guide keeps its
   sorted input list explicitly. For two inputs the triangle is `[00, 01, 11]`.

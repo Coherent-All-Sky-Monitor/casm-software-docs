@@ -18,11 +18,10 @@ ant = AntennaMapping.load(
 )
 target_ids = sorted(a for a in ant.active_antennas() if a != 9)
 data = read_visibilities(
-    data_dir="/mnt/nvme4/data/casm/visibilities_64ant",
+    data_root="/mnt",
     time_start="2026-08-19 18:04:00", time_end="2026-08-19 18:14:00",
     time_tz="UTC", ref=ant.packet_index(9),
     targets=[ant.packet_index(a) for a in target_ids],
-    freq_order="descending", workers=1,
 )
 print(data.vis.shape)  # time, frequency, reference-to-target baseline
 ```

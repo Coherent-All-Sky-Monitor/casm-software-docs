@@ -14,7 +14,10 @@ source /home/casm/software/dev/casm_venvs/casm_offline_env/bin/activate
 ## Read two antennas
 
 This example uses files present on the CASM host at review time and a ten-minute
-daytime interval on August 19. Choose your own paths and times for another run.
+daytime interval on August 19. Give the reader a root directory and a time
+window; it finds the observation folders and joins the matching files.
+The current recordings use the 64-antenna format, which the reader detects
+from their headers. No format configuration is needed for this first example.
 For new observations use `/home/casm/software/dev/antenna_layouts/current`.
 This historical example keeps the layout matching its recording; do not pair
 old data with today's layout without checking the mapping. Antenna numbers are
@@ -29,18 +32,26 @@ ant = AntennaMapping.load(
 )
 inputs = sorted([ant.packet_index(9), ant.packet_index(10)])
 data = read_visibilities(
-    data_dir="/mnt/nvme4/data/casm/visibilities_64ant",
+    data_root="/mnt",
     time_start="2026-08-19 18:04:00",
     time_end="2026-08-19 18:14:00",
-    time_tz="UTC",
     inputs=inputs,
-    freq_order="descending",
-    workers=1,
 )
 print(data.vis.shape)                    # (time, frequency, baseline)
 print(data.freq_mhz[[0, -1]], "MHz")
 print(data.metadata.get("gaps", []))
 ```
+
+Times default to UTC and frequencies to descending order. The two-antenna
+selection keeps this first read small. Change the root and time window for
+your own data; you do not need to find individual files.
+
+For a narrower search, use a root such as `/mnt/nvme4/data/casm`.
+`data_dir` is an optional override for a specific observation directory tree.
+For old headerless recordings, supply `fmt=load_format("layout_64ant")`
+after importing `load_format` from `casm_io.correlator`; choose the appropriate
+format for other recording modes. The recording format and antenna layout CSV
+serve different purposes: one describes the binary data, the other the wiring.
 
 For two sorted inputs, the three baselines are `(first, first)`,
 `(first, second)` and `(second, second)`. Thus the outside columns hold
