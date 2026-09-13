@@ -1,0 +1,7 @@
+{
+  "packages": [
+    {"repo": "casm_io", "slug": "io", "modules": ["casm_io/correlator/reader.py", "casm_io/correlator/formats.py", "casm_io/correlator/mapping.py", "casm_io/correlator/baselines.py", "casm_io/filterbank/reader.py", "casm_io/voltage/reader.py"]},
+    {"repo": "casm_vis_analysis", "slug": "vis-analysis", "modules": ["src/casm_vis_analysis/runners.py", "src/casm_vis_analysis/sources.py", "src/casm_vis_analysis/fringe_stop.py", "src/casm_vis_analysis/delay.py", "src/casm_vis_analysis/solar_waterfall.py", "src/casm_vis_analysis/beam_power.py", "src/casm_vis_analysis/plotting/phase_freq.py"]},
+    {"repo": "casm_calibrator", "slug": "calibrator", "modules": ["src/casm_calibrator/__init__.py", "src/casm_calibrator/svd.py", "src/casm_calibrator/output.py"]}
+  ]
+}

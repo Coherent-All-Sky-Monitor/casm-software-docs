@@ -1,0 +1,221 @@
+# casm_vis_analysis
+
+Fringe-stopping, delay correction, off-source visibility tools, beamformer validation, and diagnostic plotting for CASM correlator visibilities.
+
+## Install
+
+```bash
+source ~/software/dev/casm_venvs/casm_offline_env/bin/activate
+cd /home/casm/software/dev/casm_vis_analysis
+pip install -e .
+```
+
+Requires `casm_io` (v0.2.0+). The layout pipeline additionally requires network access to CAsMan.
+
+## Primary example
+
+```python
+from casm_io.correlator import read_visibilities, load_format, AntennaMapping
+from casm_vis_analysis.fringe_stop import fringe_stop
+from casm_vis_analysis.beam_power import beam_power_vs_time
+
+fmt = load_format("layout_64ant")
+# No path -> the canonical $CASM_LAYOUT_DIR/current layout.
+ant = AntennaMapping.load().with_inactive([3])
+
+data = read_visibilities(
+    time_start="2026-05-16 11:30:00",
+    time_end="2026-05-16 14:30:00",
+    time_tz="America/Los_Angeles",
+    data_root="/mnt",
+    fmt=fmt,
+)
+
+# sign=-1 is the CASM convention — never flip it
+fs = fringe_stop(data, ant, ref_ant=10, source="sun", sign=-1)
+
+# fs["vis_for_calibration"] is what casm_calibrator.svd_calibrate consumes
+# fs["time_mask"] selects samples when the Sun is above min_alt_deg
+```
+
+## Python API
+
+| Function | Purpose |
+|---|---|
+| `fringe_stop(data, ant, *, ref_ant, source, sign=-1)` | Fringe-stop toward a source, returns `FringeStoppedData` dict |
+| `beam_power_vs_time(data, ant, sources, *, cal_weights)` | Coherent cross-baseline beam power vs time |
+| `build_static_visibility(date, *, fmt, data_root)` | Find quiet window, read it, return static-vis estimate |
+| `find_quiet_windows(time_unix, *, altitude_caps)` | Locate intervals where all named sources are below their caps |
+| `subtract_static_visibility(data, static_vis)` | Subtract static floor; returns a new data dict |
+| `save_static_visibility(path, static_vis, *, freq_mhz)` | Persist static estimate to NPZ |
+| `load_static_visibility(path)` | Reload saved static estimate |
+| `validate_source(int8_h5, data, ant, *, source, cal_weights)` | Per-source beam-transit pass/fail |
+| `validate_source_at_time(int8_h5, cal_weights, *, source, time_start, time_end)` | Same, but reads fresh visibilities internally |
+| `validate_beam_weights(int8_h5, data, ant, *, cal_weights)` | Multi-source orchestrator |
+| `plot_source_validation(result)` | Zenithal projection + per-beam power timeseries for `validate_source` output |
+| `print_source_validation_summary(result)` | Text summary: beam direction, transit times, PASS/FAIL per beam |
+| `RFIMask(bad_ranges_mhz)` | Frequency mask from contaminated MHz ranges; use `from_static()` for the shipped config |
+| `apply_rfi_mask(data, static)` | Attach `freq_mask` to a data dict in place |
+| `plot_phase_vs_freq(panels, freq_mhz)` | Phase vs frequency diagnostic; returns `list[Figure]` |
+
+Runner functions (match the CLIs exactly):
+
+```python
+from casm_vis_analysis import run_autocorr, run_waterfall, run_fringe_stop
+
+fs = run_fringe_stop(
+    format="layout_64ant",
+    layout="/home/casm/software/dev/antenna_layouts/casm_antenna_layout_may2026.csv",
+    time_start="2026-05-06 06:00:00",
+    time_end="2026-05-06 10:00:00",
+    time_tz="America/Los_Angeles",
+    data_root="/mnt",
+    ref_ant=10,
+    source="sun",
+    sign=-1,              # CASM convention
+    delay_model=["linear"],
+    show=True,            # render inline in Jupyter
+)
+# Returns: vis, vis_stopped, freq_mhz, time_unix, time_mask, tau_s,
+#          target_aids, target_labels, delay_fits, figures
+```
+
+## CLI tools
+
+Primary tools:
+
+| Command | Purpose |
+|---|---|
+| `casm-autocorr` | Per-SNAP autocorrelation power spectra |
+| `casm-waterfall` | Upper-triangle waterfall matrix |
+| `casm-fringe-stop` | Fringe-stop + optional delay correction + diagnostics |
+
+Supporting tools:
+
+| Command | Purpose |
+|---|---|
+| `casm-viz-data-span` | Survey a data directory and list observation time ranges |
+| `casm-fit-positions` | Solar fringe-stop antenna position fits |
+| `casm-validate-bf-weights` | Validate a deployed SNAP int8 weights file |
+| `casm-layout` | Sync the antenna layout with CAsMan: `status` / `diff` / `apply` (see below) |
+| `casm-sync-wiring` | *Legacy* — pull CAsMan wiring and regenerate `casm_wiring.csv` |
+| `casm-build-layout` | *Legacy* — build the `AntennaMapping`-compatible consumer CSV |
+
+All three primary CLIs share: `--data-dir`, `--obs`, `--format`, `--layout`, `--output-dir`, `--freq-order`, `--time-start`, `--time-end`, `--time-tz`, `--nfiles`, `--skip-nfiles`, `--show`, `--data-root`.
+
+`casm-fringe-stop` additionally accepts: `--ref-ant`, `--source`, `--sign`, `--min-alt`, `--save-npz`, `--rfi-mask`, `--delay-model`, `--antenna-delays`.
+
+```bash
+casm-fringe-stop \
+  --format layout_64ant \
+  --layout ~/software/dev/antenna_layouts/casm_antenna_layout_may2026.csv \
+  --time-start '2026-05-06 06:00:00' \
+  --time-end   '2026-05-06 10:00:00' \
+  --time-tz    America/Los_Angeles \
+  --data-root  /mnt \
+  --ref-ant 10 --source sun --sign -1 \
+  --delay-model linear --antenna-delays \
+  --save-npz \
+  --output-dir ./output
+```
+
+See [docs/cli_reference.md](docs/cli_reference.md) for every flag and all commands.
+
+## casm-waterfall input subsetting
+
+`run_waterfall` (and therefore `casm-waterfall`) derives the input set from
+the layout (or `snaps`) before reading anything, and passes it to casm_io as
+`inputs=`. casm_io then memmaps only the upper-triangle baselines among those
+inputs, instead of reading every baseline. The output plots are unchanged.
+For a day of data this drops memory use from roughly 130 GB to a few GB.
+See `tests/test_waterfall_subset.py` for the baseline-selection and
+conjugation checks.
+
+## Data selection
+
+Two modes, pick one:
+
+| Mode | How |
+|---|---|
+| Single observation | `obs="YYYY-MM-DD-HH:MM:SS"` with optional `data_dir`; trim further with `time_start`/`time_end`/`nfiles` |
+| Time range (auto-discovery) | `obs=None` + `time_start`/`time_end`; `data_root` scanned for `visibilities_*` dirs |
+
+Check what is on disk with `casm-viz-data-span` before choosing a window. An observation ID is its start timestamp and may run many hours.
+
+## Detailed documentation
+
+- [docs/sources_and_transits.md](docs/sources_and_transits.md) — source catalog, ENU direction vectors, transit window detection
+- [docs/fringe_stop.md](docs/fringe_stop.md) — sign convention, geometric delay, `FringeStoppedData`, `coherence_metric`, `auto_detect_sign`, `plot_phase_vs_freq`
+- [docs/rfi.md](docs/rfi.md) — `RFIMask`, `apply_rfi_mask`, mask propagation through the pipeline
+- [docs/delay.md](docs/delay.md) — delay fitting models, antenna decomposition, when to use each
+- [docs/svd_calibration_application.md](docs/svd_calibration_application.md) — applying calibration weights via `beam_power_vs_time`
+- [docs/beam_validation.md](docs/beam_validation.md) — `validate_source`, `validate_source_at_time`, `plot_source_validation`, `print_source_validation_summary`, `load_beams_from_int8` HDF5 schema
+- [docs/offsource.md](docs/offsource.md) — quiet-window detection, static-vis builder/subtractor
+- [docs/cli_reference.md](docs/cli_reference.md) — all CLI entry points and flags
+- [docs/walkthroughs.md](docs/walkthroughs.md) — end-to-end tutorial notebooks
+
+## Antenna layout pipeline
+
+The layout CSV that `AntennaMapping.load` reads is built from two sources.
+CAsMan (the assembly database) records which antenna sits in which grid cell
+and how it is wired to the SNAPs. The surveyed positions file
+(`antenna_layout_april_ovro.csv`) holds the actual coordinates of each grid
+cell. Coordinates never come from CAsMan.
+
+Use `casm-layout` to keep the layout in sync with CAsMan:
+
+```bash
+casm-layout status   # is the current layout up to date with CAsMan?
+casm-layout diff     # show exactly what changed
+casm-layout preview  # show the layout apply would write
+casm-layout apply    # write a new layout (asks for confirmation first)
+```
+
+Each of these downloads the latest CAsMan database snapshot from GitHub
+before comparing (skipped when nothing changed upstream). Use `--offline`
+to work with the local copy instead.
+
+Example:
+
+```
+$ casm-layout status
+CAsMan release: database-snapshot-20260720-191117 (already up to date)
+snap map: 4 entries (casm_snap_map.csv)
+overrides: 3 rows (casm_wiring_overrides.csv)
+CAsMan candidate: 17 P1 rows in mapped slots
+current layout: casm_antenna_layout_2026-07-01.csv
+
+8 antenna positions differ (4 removed, 4 enabled); 3 wiring-metadata changes
+run 'casm-layout diff' for details
+```
+
+`diff` lists every added, removed, moved, enabled and disabled position
+(one entry per SNAP input), plus the underlying wiring rows.
+
+`casm-layout preview` prints the layout that `apply` would write, marking each
+row as added, changed or unchanged against the current layout; `-o file.csv`
+saves it instead of printing. It writes nothing unless you pass `-o`.
+
+`status` and `diff` never write anything. `apply` shows the same diff, asks
+`Apply these changes? [y/N]`, and then rewrites `casm_wiring.csv` (the old
+file is kept as `.bak`), writes a new dated
+`casm_antenna_layout_YYYY-MM-DD.csv`, and points the `current` symlink at
+it. As a safety check it refuses to write if CAsMan returns fewer than 5
+antennas; `--force` overrides. In scripts, `-y` skips the confirmation.
+
+The default file locations can be changed with `--positions`,
+`--overrides`, `--snap-map`, `--wiring` and `--layout-dir`.
+
+CAsMan always wins: hand edits to `casm_wiring.csv` are lost on the next
+`apply`. Put manual fixes in `casm_wiring_overrides.csv` instead
+(`add` / `disable` / `replace` rows, keyed by chassis, slot and adc).
+
+See [docs/cli_reference.md](docs/cli_reference.md) for the full flag reference.
+
+## Testing
+
+```bash
+pytest tests/ -v
+```
+
+35 tests, all passing, using synthetic fixtures. No real data required.
