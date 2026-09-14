@@ -9,7 +9,7 @@ routes because the operator rejected its current plots. Other viewers and
 the existing scientific/backend imaging implementation remain unchanged.
 
 The opening page automatically shows rolling-24-hour T1 distributions, a
-long N-S baseline phase waterfall and an amplitude dynamic spectrum, alongside
+long N-S baseline raw phase waterfall and an amplitude dynamic spectrum, alongside
 injection recovery. No Render click is required. Visible live pages refresh
 every two minutes. Choosing a historical day/range pauses rolling; **Live ·
 rolling 24 h** restores it. Automatic views use bounded cache reads only.
@@ -47,7 +47,8 @@ At most six pairs are rendered together.
 
 Choose today, another date or explicit bounds, then a frequency range.
 Select phase waterfall, amplitude waterfall, phase/frequency, amplitude
-spectrum or autocorrelations. Raw and Sun-fringe-stopped processing reuse the
+spectrum or autocorrelations. Raw is the default; Sun fringe stopping remains
+an explicit choice. Both processing modes reuse the
 existing scientific modules. Cached views load automatically and update when
 controls change. Native reads and calibration comparisons still require
 **Render selection**. Narrow the bounds to examine a
@@ -82,10 +83,15 @@ variability and low-signal phase structure alone do not establish a fault.
 
 ## Compare calibration-day phase
 
-Open **Calibration-day comparison** and select the same baseline and frequency
-band for two observing windows. Use the saved calibration report/notebook
-linked from **Calibration** to identify the actual reference window.
-Match solar geometry and processing. The tool compares Sun-fringe-stopped
+Open **Calibration-day comparison**. The recorded calibration reference supplies
+its actual solve window and antenna set from a matching saved recipe report.
+Choose today or another local day; both windows are shown before reading data.
+The default is one long N-S baseline, with up to three selectable.
+**Read both windows and compare phase** explicitly reads at most one hour and
+64 MiB of selected native samples per window. An unfinished matching window
+requires choosing an earlier day. A missing report is unavailable, not a
+filename-derived date. Matching local clock time is only a starting point;
+review solar geometry and analog changes. The tool compares Sun-fringe-stopped
 phase spectra; it does not divide today's data by deployed calibration.
 Changed sawtooth structure calls for investigation, not automatic deployment.
 
@@ -120,12 +126,21 @@ and evidence ages. Disk capacity and short observation/data-flow checks follow;
 the full measurement table is expandable. A stale check is not proof of failed
 hardware, and a high disk percentage is not authority to delete data.
 
-**Antennas** starts with roughly the last hour of cached transmitted-band SNAP
-history. It reuses the existing history reader and scientific renderer.
-Full 4096-channel board plots are existing collector products with their
-actual acquisition times; opening this page does not query hardware or change
-polling. Selected history reads are bounded to 256 MiB and refuse time
-averaging that could hide gaps.
+**Antennas** starts with saved 4096-channel board spectra, using the existing
+scientific renderer on black surfaces, with frequency/power axes and PNG
+downloads. Each board's acquisition time is shown in OVRO local time.
+**Get latest spectra** explicitly submits the existing bounded diagnostic job
+through the production monitor queue, preserving its lease and cooldown.
+The reader selects the diagnostic autocorrelator mux and arms readout; this
+is not literally zero register writes. It does not program, change EQ,
+synchronize PPS or change observing configuration. Navigation only reads saved
+products; job state and overdue evidence remain separate from page refresh.
+The configured two-hour scheduler has a shared-liveness-timer starvation bug.
+The tested independent-timer fix is in the preview source, awaiting approval
+to update and restart the production monitor collector. Two-hour acquisition
+is not yet guaranteed. No duplicate reader or preview scheduler is added.
+**Selected input history** retains the roughly last-hour transmitted-band
+cache view, bounded to 256 MiB, refusing averaging that could hide gaps.
 
 **Source history** searches the canonical B0329 ledger and existing saved
 plots across its full history. Dated attempts include non-detections,
@@ -153,16 +168,18 @@ sensitivity.
 
 ## Implementation and documentation review
 
-Source revision `9aabc85`, branch `observation-preview`. Source checkout:
+Source revision `07c39a8`, branch `observation-preview`. Source checkout:
 `/home/casm/software/dev/casm_monitor/.claude/worktrees/observation-preview`.
 The owning manuals are `docs/api-science.md`, `docs/api-review.md`,
 `docs/api-commissioning.md` and `frontend/README.md`.
 Artifacts and the review database are isolated under
 `/home/casm/scratch/casm-observation-preview`. Production monitor Store handles
 are read-only. Workspace-local rendering, queue persistence and explicitly
-confirmed builds are authorized exceptions, not telescope operations.
+confirmed builds are authorized exceptions. The separately authorized SNAP
+diagnostic button bridges only its fixed production queue endpoint; general
+operational jobs remain disabled.
 
-This guide supersedes the fixed-baseline preview at `369c34e), which the
+This guide supersedes the fixed-baseline preview at `369c34e`, which the
 operator rejected as insufficient. The shared solar renderer remains
 `casm_vis_analysis` `af8ecd0`. This change affects monitor APIs, defaults,
 evidence persistence and build admission; source-local manuals and this guide
@@ -176,9 +193,10 @@ task. Historical tutorial figures are preserved without rerunning their jobs.
 Cross-repository CI/publishing, Grafana, Slack, fast-beam workflows, automatic
 RFI attribution and layout exclusion-policy implementation remain deferred.
 
-Verification on 2026-09-13 local date: 521 backend tests passed, including DM
-display/timezone checks. Browser checks cover automatic plots without clicks,
-local/UTC switching, historical dates, black theme and the simplified Readiness.
+Verification on 2026-09-13 local date: 541 backend tests passed, followed by
+69 focused checks covering the final plot labels and native-reference guard.
+Browser checks cover raw default phase, dark SNAP spectra, product-led comparison,
+automatic plots, local/UTC switching, historical dates and simplified Readiness.
 `frontend/check-time.cjs` checks PDT/PST, DST gaps/repeated hours and 23/25-hour
 days. Bounded real-data renders in the initial workspace verification exercised phase
 comparison, amplitude, autos and a short Cyg A/control interval. The selected
