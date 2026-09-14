@@ -6,21 +6,24 @@ The tutorials use the same Python modules as the team's analysis notebooks.
 
 ## Open a Python session or notebook
 
-For new observations, the standard antenna layout is
-`/home/casm/software/dev/antenna_layouts/current`. It is a symlink managed by
-the existing layout tools. `functional` describes wiring;
-`include_in_beamforming` selects participation in weight generation.
-Neither proves which weights are currently deployed.
+New runs use `/home/casm/software/dev/antenna_layouts/current`; historical
+figures name the dated CSV they used. `functional` describes wiring;
+`include_in_beamforming` selects participation in weight generation. Neither
+proves which weights are currently deployed. Keep the resolved layout with
+each calibration product.
 
-Historical recordings need the layout used for that observation. The dated
-layouts named beside archived figures are reproduction information, not new-run
-defaults. Keep the resolved layout with each calibration product.
+Do not refresh the layout as part of running a tutorial. `casm-layout apply`
+preserves reviewed membership for unchanged feed identities; new, changed, or
+ambiguous feeds remain excluded pending review. Tutorial reads do not need a
+layout refresh. Check which checkout your environment resolves before relying
+on this behaviour:
 
-Do not refresh the layout as part of running a tutorial. In this candidate,
-`casm-layout apply` preserves reviewed membership for unchanged feed identities;
-new, changed, or ambiguous feeds remain excluded pending review. Earlier
-installed versions reset membership from `functional`. Check the release before
-using an operational layout command; tutorial reads do not need a refresh.
+```
+python -c "import bf_weights_generator, casm_calibrator; print(bf_weights_generator.__file__); print(casm_calibrator.__file__)"
+```
+
+A path under `software/dev/worktrees/` is the audit candidate; a path under
+`software/dev/<repo>` is the main checkout.
 
 On the CASM host, the software is already installed in the shared environment:
 

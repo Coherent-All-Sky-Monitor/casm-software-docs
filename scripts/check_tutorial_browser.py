@@ -5,8 +5,8 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 FIGURES = {
     "read-voltages": "voltage-single-stream.png",
-    "rank1-diagnostics": "rank1-primary.png",
-    "check-calibration": "cyga-light-curve.png",
+    "rank1-diagnostics": "rank1-vs-freq.png",
+    "check-calibration": "cyga-beam-power.png",
     "image-visibilities": "allsky-saved.png",
     "injection-recovery": "inj_20260913_0023.png",
 }

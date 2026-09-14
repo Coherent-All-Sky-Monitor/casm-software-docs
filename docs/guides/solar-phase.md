@@ -34,6 +34,10 @@ by fringe stopping. Do not substitute the two-input triangle from the first
 tutorial. `with_inactive()` makes an in-memory selection for this example;
 it does not change the layout file or the live beamforming set.
 
+The two `iers.conf` settings below let the offline example run against the
+installed Earth-orientation tables. Refresh those tables before using this
+workflow for calibration.
+
 ```python
 import matplotlib.pyplot as plt
 from astropy.utils import iers
@@ -62,9 +66,6 @@ plt.show()
 
 The existing renderer uses **RdBu** with phase fixed to −π…+π radians:
 
-These offline settings permit older Earth-orientation predictions for this
-illustration. Refresh the IERS tables before using this workflow for calibration.
-
 ```{figure} ../_static/tutorials/solar/solar-phase-two-antennas.png
 :alt: Antenna 9 by antenna 19 phase in three panels: raw, Sun geometric prediction, and fringe-stopped, in red and blue.
 
@@ -90,6 +91,49 @@ The header gives the interval in local time; the horizontal axis uses elapsed
 hours. With more antennas, the renderer groups baselines by SNAP pair and may
 return several figures.
 
-Next, compare [calibration residuals and an independent source](check-calibration.md).
+## Score the result with coherence
 
-[Source, data, and verification notes](../developer/solar-example-notes.md).
+```{code-block} python
+import numpy as np
+from casm_vis_analysis.fringe_stop import coherence_metric
+
+coh = coherence_metric(fs["vis_stopped"], fs["freq_mask"])  # (time, baseline)
+print(np.nanmean(coh[fs["time_mask"]], axis=0))
+```
+
+`coherence_metric` averages unit phasors over frequency, keeping the channels
+where `freq_mask` is True. Judge a baseline on the fringe-stopped coherence,
+never on raw `|corr|`: the raw-amplitude cut called healthy antenna 30 dead on
+2026-08-19 at raw 0.0057 against fringe-stopped 0.978 (casm-wiki
+`antenna-health-triage.md`). A good baseline sits near 0.99 once its residual
+delay is removed; the delay is still in here, and a phase that wraps across the
+band pulls the frequency average down.
+
+Pass `rfi_mask=` to `fringe_stop` to set that mask, for example
+`rfi_mask=RFIMask(bad_ranges_mhz=[(465.3, 466.7)])` from
+`casm_vis_analysis.rfi` for the satellite emitter.
+It populates `fs["freq_mask"]` (True = good) for downstream steps and leaves
+`fs["vis_stopped"]` unmodified at flagged channels.
+
+## Extract one baseline's phase
+
+`fs["target_aids"]` holds the antenna IDs in the order of the baseline axis:
+
+```{code-block} python
+k = fs["target_aids"].index(19)               # baseline column for antenna 19
+phase = np.angle(fs["vis_stopped"][:, :, k])  # (time, frequency), radians
+```
+
+Next: [mask RFI and fit per-antenna delays](rfi-and-delay.md) removes the
+frequency slope left here, and
+[solve a calibration and plot rank-1](rank1-diagnostics.md) turns the
+fringe-stopped visibilities into gains. For an independent source, compare
+[calibration residuals](check-calibration.md).
+
+## Provenance
+
+Data: `/mnt/nvme4/data/casm`, `visibilities_64ant/2026-08-23-19:18:14.dat.{0,1,2}`,
+19:20–22:20 UTC on 2026-08-23 (79 integrations returned, 19:20:31–22:19:11 UTC).
+Layout: `casm_antenna_layout_2026-08-07.csv`, matching this recording.
+Figure rendered by `scripts/render_solar_phase_tutorial.py`, which executes the
+displayed blocks in this page and saves the figure in place of `plt.show()`.

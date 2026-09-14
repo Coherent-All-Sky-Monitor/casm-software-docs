@@ -5,8 +5,7 @@ visibility matrix and provides calibration products consumed by
 `bf_weights_generator`. It is the calibration engine, not the telescope
 deployment interface.
 
-This page includes the September 13 [audit candidate](../developer/audit-release.md);
-the [source snapshot](../sources.md) identifies its inspected revision.
+Source revisions and file hashes: `source-snapshot.json` in the repository.
 Examples are illustrative, signature-checked snippets, not validated observing
 recipes. Bounded regression solves do not establish an observing recipe.
 
@@ -53,7 +52,7 @@ upper triangle; the reference-to-target subset in `fs` is insufficient to
 construct the full antenna matrix. The function removes geometric phase on
 each baseline before averaging the selected times.
 
-The candidate validates the reference antenna's membership and requires matching
+`svd_calibrate` validates the reference antenna's membership and requires matching
 frequency and time axes between `fs` and `data`, including their order. Masks
 must have the exact axis length; malformed masks raise `ValueError` rather than
 being ignored. Solver masks use `True = include`. Nonfinite selected data are
@@ -147,7 +146,7 @@ new composed code should use `save_calibration`.
 ## Known documentation discrepancies
 
 Older `CLAUDE.md` says internal processing and saved frequencies are always
-ascending. At this revision, `svd_calibrate` carries `fs['freq_mhz']` into its
+ascending. Currently, `svd_calibrate` carries `fs['freq_mhz']` into its
 result and `save_calibration` preserves that order. Do not reverse arrays based
 on that old prose: compare actual frequency coordinates and antenna IDs.
 
@@ -163,6 +162,6 @@ frequency masks, geometry, and antenna membership.
 
 ## Upstream reading
 
-- [README](https://github.com/Coherent-All-Sky-Monitor/casm_calibrator/blob/8b5fcf5b089d6725e3c2c6b22d72c076e7ae74b3/README.md)
-- [SVD configuration](https://github.com/Coherent-All-Sky-Monitor/casm_calibrator/blob/8b5fcf5b089d6725e3c2c6b22d72c076e7ae74b3/docs/svd_calibration.md)
-- [Calibration I/O](https://github.com/Coherent-All-Sky-Monitor/casm_calibrator/blob/8b5fcf5b089d6725e3c2c6b22d72c076e7ae74b3/docs/calibration_io.md)
+- [README](https://github.com/Coherent-All-Sky-Monitor/casm_calibrator/blob/main/README.md)
+- [SVD configuration](https://github.com/Coherent-All-Sky-Monitor/casm_calibrator/blob/main/docs/svd_calibration.md)
+- [Calibration I/O](https://github.com/Coherent-All-Sky-Monitor/casm_calibrator/blob/main/docs/calibration_io.md)

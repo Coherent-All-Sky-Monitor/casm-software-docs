@@ -31,7 +31,7 @@ def main():
                 assert target.is_file(), f"{path.name}: missing {link}"
                 checked += 1
     transit = (SITE / "guides/check-calibration.html.md").read_text()
-    assert "Existing scratchpad result from 2026-08-05" in transit, "Figure caption lost in export"
+    assert "../_static/tutorials/transit/cyga-beam-power.png" in transit
     assert "../_static/tutorials/transit/cyga_stationary_beam_20260805.png" in transit
     assert "_downloads/" not in (SITE / "llms.txt").read_text()
 

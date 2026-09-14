@@ -17,11 +17,10 @@ to downstream packages.
 | Declared version | 1.0.0 |
 | Core dependencies | NumPy, pandas, Astropy, Matplotlib |
 | Optional dependency | `sigpyproc`, for filterbank I/O |
-| Reviewed source | `22ef826d9f2ba355388523265081da1468e5a4ff` |
-| Review date | 2026-09-13 |
 
-This preview documents the inspected source revision. Examples are illustrative
-and need user-supplied data; they are not a claim of validation on telescope data.
+Source revisions and file hashes: `source-snapshot.json` in the repository.
+Examples are illustrative and need user-supplied data; they are not a claim
+of validation on telescope data.
 
 ## Choose a reader
 
@@ -149,19 +148,18 @@ writers and conversion CLIs; those are outside this read-only walkthrough.
 
 ## Known discrepancies in upstream documentation
 
-These findings were observed in the reviewed revision and are documented here
-without modifying the source repository:
+These findings are documented here without modifying the source repository:
 
 - The correlator guide's format table understates integration and file duration.
   Use header-derived values; the shipped JSON values are described above.
 - Some examples import `triu_flat_index` from `casm_io.correlator`. It is exported
   from `casm_io.correlator.baselines`, not from the package initializer.
-- The candidate preserves `metadata['inputs']`, `nsig_subset`, validity and
+- `read_visibilities` preserves `metadata['inputs']`, `nsig_subset`, validity and
   missing-file evidence through top-level stitching. Earlier revisions dropped
   the selection fields; keep the sorted selection when reading old saved results.
 - Upstream documents a part-file-boundary `OverflowError` from memory mapping.
-  The candidate reproduces a truncated-file cause on a tiny fixture and rejects
-  it descriptively. The original historical boundary incident remains unverified.
-  Preserve the window, filenames, format and traceback if encountered.
+  The current reader reproduces a truncated-file cause on a tiny fixture and
+  rejects it descriptively. The original historical boundary incident remains
+  unverified. Preserve the window, filenames, format and traceback if encountered.
 
-Upstream reference: [README and detailed guides](https://github.com/Coherent-All-Sky-Monitor/casm_io/tree/22ef826d9f2ba355388523265081da1468e5a4ff).
+Upstream reference: [README and detailed guides](https://github.com/Coherent-All-Sky-Monitor/casm_io).

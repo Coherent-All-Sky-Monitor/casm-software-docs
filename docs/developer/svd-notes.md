@@ -4,9 +4,9 @@ Rank-1 diagnostics describe the visibility matrix used in a calibration solve.
 They help locate unusual channels and compare controlled solve variants.
 They do not measure beam sensitivity or FRB recovery.
 
-This tutorial uses the existing calibrator and recipe diagnostic functions.
-The examples operate on saved products or an already available in-memory result;
-they do not generate or deploy new calibration weights.
+These notes use the existing calibrator and recipe diagnostic functions on a
+solve you already have. To produce one, follow [Solve a solar calibration and
+plot rank-1 against frequency](../guides/rank1-diagnostics.md).
 
 ## What the numbers mean
 
@@ -26,6 +26,10 @@ prepared matrix has singular values `N-1, 1, ..., 1`. The ideal ratio is `N-1`
 and its rank-1 fraction is **0.5**. A fraction below 1 is therefore expected.
 With two antennas the zero-diagonal ratio cannot discriminate coherence.
 
+`_prepare_svd_input` zeros that diagonal in **all** modes, `raw` included;
+`complex` mode keeps amplitudes and differs in gain extraction. Default library
+thresholds are not the driver's fixed policy.
+
 This ceiling depends on matrix preparation. Short-baseline exclusions, amplitude
 weighting, other modes, missing information, and block/subband averaging change
 the experiment. Normalize comparisons by explicit membership and configuration;
@@ -38,7 +42,7 @@ do not compare raw ratios across different array sizes as an efficiency metric.
 
 Archived 16-antenna solar solve, 2026-08-19 20:41:30–21:41:30 UTC. Static
 subtraction raises the ratio across much of the band. That change alone does
-not demonstrate better beamforming. [Figure provenance](../guides/calibration-figures.md).
+not demonstrate better beamforming. [Figure provenance](calibration-figures.md).
 ```
 
 ```{figure} ../_static/tutorials/calibration/svd_vs_freq_20260820.png
@@ -47,7 +51,7 @@ not demonstrate better beamforming. [Figure provenance](../guides/calibration-fi
 The same solve's leading singular value approaches 15 and its fraction approaches
 0.5 in the highlighted historical analysis band. The legend's `1/N` line is a
 mathematical lower bound on the fraction, not a measured random-phase noise level.
-The highlighted band is not a default RFI mask. [Provenance](../guides/calibration-figures.md).
+The highlighted band is not a default RFI mask. [Provenance](calibration-figures.md).
 ```
 
 The [canonical build](../guides/generate-weights.md) saves
@@ -80,13 +84,35 @@ plt.show()
 ```
 
 The arrays share their stored frequency order; do not reverse one alone.
-Inspect nonfinite values explicitly. In the per-channel implementation,
-`sigma_2 == 0` produces an infinite ratio; that arithmetic branch alone is
-not evidence of a useful signal. Check the singular values and input support.
+
+Zero signal is rejected, not reported as a perfect ratio. `solver_matrix`
+(`casm_calibrator/validation.py`) raises `zero cross-correlation signal in
+selected calibration matrices` before any SVD runs when the selected matrices
+carry no off-diagonal signal, and the per-channel loop (`svd.py`) skips a
+channel whose `sigma[0]` is exactly 0, leaving ratio 0 and the channel
+unflagged. An infinite ratio therefore means `sigma_1 > 0` with `sigma_2 == 0`,
+a degenerate matrix rather than a good measurement: check the singular values
+and the input support before believing it.
 
 ## 2. Use the existing multi-panel diagnostic
 
-When `cal` is the in-memory `CalibrationResult` already returned by the driver:
+`cal` is the in-memory `CalibrationResult` from `svd_calibrate`:
+
+```python
+from casm_calibrator import SVDConfig, svd_calibrate
+from casm_calibrator.svd import SVDMode
+
+cal = svd_calibrate(
+    fs, ant, data=clean,
+    config=SVDConfig(threshold=1.0, svd_mode=SVDMode.PHASE_ONLY,
+                     block_size=1, masked_band_strategy="zero"),
+)
+```
+
+`fs` is the fringe-stopped Sun data and `clean` the static-subtracted
+full-triangle read; the [rank-1
+tutorial](../guides/rank1-diagnostics.md) builds both. The driver
+(`make_cal_and_weights`) returns the same object.
 
 ```python
 from casm_calibrator import plot_calibration
@@ -141,17 +167,3 @@ pulsar beamforming, and where calibration rankings depended on direction.
 
 Use the [phase and Cyg A guide](../guides/check-calibration.md) to test transfer. Keep
 injection recovery as a separate search-path measurement.
-
-## Current source versus older prose
-
-At calibrator revision `8b5fcf5b089d`, `_prepare_svd_input` zeros the diagonal in
-**all** modes, including `raw`. Older descriptions that raw mode retains autos
-do not describe this implementation. `complex` mode also exists and differs
-in gain extraction. Default library thresholds are not the driver's fixed policy.
-
-Reviewed 2026-09-13: `svd.py` SHA256
-`d3a9dff69b139be45da78577a3de457293d1bfb29c808ef63af2011298bdcf0f`;
-`recipe_diagnostics.py` at `bf_weights_generator` revision `06004c75afad`, SHA256
-`9ab94c4f545efc413383a3ce48db8c7aba17625946fc0fb3d13cad0b728dcdfc`.
-The calibrator checkout contains unrelated untracked experimental files;
-this tutorial uses the tracked SVD implementation, not those experiments.

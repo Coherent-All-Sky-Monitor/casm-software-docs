@@ -1,5 +1,8 @@
 """Execute selected displayed snippets offline, in bounded subprocesses.
 
+Full-data tutorials (rank-1, Cyg A, static template, cross-day phase, RFI and
+delay, beam dump) read tens of GB and have their own scripts/render_*_tutorial.py.
+
 Default: verify and render to a temporary directory. --render updates tutorial
 PNGs. Raw voltage data are optional unless --require-voltage is supplied.
 """
@@ -18,8 +21,6 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 CASES = {
     "voltage": ("read-voltages", None, "io/voltage-single-stream.png"),
-    "rank1": ("rank1-diagnostics", [0], "calibration/rank1-primary.png"),
-    "transit": ("check-calibration", [0], "transit/cyga-light-curve.png"),
     "imaging": ("image-visibilities", [0], "imaging/allsky-saved.png"),
     "injection": ("injection-recovery", [0], None),
 }
@@ -64,10 +65,6 @@ def worker(name, output):
         assert result.voltages[0].shape == (305, 512, 12)
         assert not result.filled_subbands
         assert namespace["corr"].vis.shape[2:] == (2, 2)
-    elif name == "rank1":
-        assert namespace["ratio"].shape == (3072,)
-    elif name == "transit":
-        assert namespace["power"].shape == (136,)
     elif name == "injection":
         assert namespace["shot"]["outcome"] == "recovered"
     print(f"PASS {name}; peak RSS {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024:.1f} MiB")

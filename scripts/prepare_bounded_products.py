@@ -1,18 +1,13 @@
-"""Freeze small existing tutorial products; never run during a site build."""
+"""Freeze the two injection ledger records; never run during a site build."""
 import json
 from pathlib import Path
 import sqlite3
-import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "docs/_static/tutorials"
 
 
 def main():
-    source = Path("/mnt/nvme5/casm_pipeline/scratchpad/cyga_stationary_beam_20260805.npz")
-    with np.load(source, allow_pickle=False) as saved:
-        np.savez(STATIC / "transit/cyga-light-curve.npz",
-                 time_unix=saved["time_unix"], lc=saved["lc"])
     connection = sqlite3.connect(
         "file:/mnt/nvme5/casm_pipeline/db/t2.sqlite?mode=ro", uri=True, timeout=5,
     )
@@ -28,7 +23,7 @@ def main():
     assert len(rows) == 2
     (STATIC / "injections/frozen-records.json").write_text(
         json.dumps({r["file_id"]: dict(r) for r in rows}, indent=2) + "\n")
-    print("Frozen light curve and two read-only ledger records")
+    print("Frozen two read-only ledger records")
 
 
 if __name__ == "__main__":

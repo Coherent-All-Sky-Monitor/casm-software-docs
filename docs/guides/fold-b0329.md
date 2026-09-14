@@ -8,6 +8,17 @@ You need a single-beam filterbank (`.fil`) and an ephemeris, the timing model
 that predicts the pulsar's rotations. Correlator visibilities are too slowly
 sampled for this task.
 
+## Get a filterbank of the right beam
+
+Beam dumps land as DADA blocks; [convert a beam dump to a
+filterbank](beamdump-to-filterbank.md) writes one `.fil` per beam in the dumped
+block. Choose the beam before the dump, from the weights that were live:
+`casm_t2.weights_registry.Registry.pointings_for(utc)` returns the product ID
+and the alt/az of all 512 beams under it, so the beam to fold is the one
+nearest the pulsar's alt/az at that time (`sky_for(utc, beam)` gives one beam's
+alt/az and RA/Dec). `t3-weights-watch` writes the registry rows at every
+weights reload.
+
 ## Follow the pulse through the plots
 
 ```{figure} ../_static/tutorials/fold/b457-20260904-detection.png
@@ -24,6 +35,15 @@ The repeated profile peak is the same pulse displayed over multiple rotations.
 The dispersion measure (DM) describes the frequency-dependent arrival delay.
 B0329's expected DM is about 26.76 pc cm⁻³. Search close to this value and
 check the pulse shape, rather than choosing whichever trial has the largest S/N.
+A free-DM `pdmp` on CASM B0329 data gets dragged by RFI down to DM 7-18 and
+reports an optimistic significance at a physically wrong DM, so run the
+DM-locked search near the catalogue value (casm-wiki `fold-recipe.md`).
+
+The bundled `B0329+54.par` has `PEPOCH 46473.0` (1986). A 40-year F0/F1
+extrapolation carries real period error, so expect a tilted phase-versus-time
+track and refold with the corrected period; the
+[implementation notes](../developer/folding-notes.md) give the period-feedback
+procedure and the BC/TC unit trap.
 
 ## Prepare and fold a recording
 

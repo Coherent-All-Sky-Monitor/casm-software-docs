@@ -5,12 +5,8 @@ with the [Cyg A transit tutorial](../guides/check-calibration.md) for the visual
 
 Two complementary checks help assess an existing calibration: compare baseline
 phase across days, and synthesize a known-source beam from independent
-visibilities. Neither requires changing SNAP settings or uploading weights.
-
-This is an analysis guide, not a calibration-generation or deployment recipe.
-Examples are illustrative and have not been run on telescope data for this
-preview. Operational builds remain in the existing
-`bf_weights_generator.make_cal_and_weights` driver.
+visibilities. Operational builds stay in
+`bf_weights_generator.make_cal_and_weights`.
 
 ## Prepare a comparable experiment
 
@@ -27,7 +23,7 @@ and a few baselines so selection errors and memory use are visible.
 Check the canonical wiki `weights-verification.md` before interpreting a product.
 In particular, synchronization/reflash events invalidate assumptions about a
 standing coherent calibration, and gain changes can invalidate an older static
-template's amplitudes. This guide authorizes no hardware action.
+template's amplitudes.
 
 ## 1. Compare the baseline sawtooth and residual
 
@@ -43,10 +39,14 @@ on common good channels. For the visibility orientation
 Reverse-baseline selection requires conjugation; never use antenna IDs as flat
 baseline-array indices.
 
-The existing wiki validation battery names `plot_baseline_phase_validation` and
-historical sawtooth scripts. Reuse the maintained routine appropriate to the
-selected product; inspect its actual package/signature before invoking it.
-For underlying plotting primitives, see [Visibility analysis](../packages/vis-analysis.md).
+`plot_baseline_phase_validation` is cell 28 of
+`casm_vis_analysis/notebooks/casm_calibration_and_beamforming.ipynb`; the
+package does not export it. It takes `(cal_h5, data_day, *, ref_ant,
+target_ant, rank1_thresh, window, fringe_stopped)` and compares `angle(V)` on
+the reference-to-target baseline with `angle(g_ref * conj(g_tar))` from the
+cal file. The packaged primitive underneath is
+`casm_vis_analysis.plotting.phase_freq.plot_phase_vs_freq`; see
+[Visibility analysis](../packages/vis-analysis.md).
 
 For every residual plot, report:
 
@@ -63,46 +63,26 @@ does not establish sensitivity or correct geometry in every direction.
 
 ## 2. Form a stationary Cyg A transit beam
 
-Choose a window covering a Cyg A transit with off-transit samples. Apply the
-candidate calibration to the visibilities, and synthesize a fixed beam at a
-chosen point on that track. Compare its response with the expected synthesized
-beam and a control pointing away from the source track.
+The [Cyg A tutorial](../guides/check-calibration.md) runs this end to end on
+real data: exact array-factor prediction, full-triangle read, static
+subtraction, `load_calibration_weights`, `beam_power_vs_time` with a fixed
+pointing and an altitude-offset control, and the half-max midpoint and on/off
+numbers. Use it rather than a second copy of the same call here.
 
-The existing `beam_power_vs_time` supports fixed `(label, altitude, azimuth)`
-pointings. A source-name string instead tracks the source; it will not measure
-the same stationary-beam transit shape.
+Points that matter when comparing candidates:
 
-```python
-from bf_weights_generator.snap_weights import load_calibration_weights
-from casm_vis_analysis.beam_power import beam_power_vs_time, plot_beam_power
-
-cal = load_calibration_weights("/path/to/candidate-calibration.h5")
-
-# data and ant come from the bounded, independent Cyg A window.
-# Set these angles from the selected source track and array-factor prediction.
-pointings = [
-    ("Cyg A fixed beam", target_alt_deg, target_az_deg),
-    ("Off-source control", control_alt_deg, control_az_deg),
-]
-result = beam_power_vs_time(
-    data, ant, sources=pointings,
-    cal_weights=cal,
-    freq_band_mhz=analysis_band_mhz,
-    sign=-1,
-)
-figure = plot_beam_power(result, time_tz="America/Los_Angeles")
-```
-
-Angles, band, and data variables above are intentional placeholders requiring
-scientific selection. The output is a frequency-averaged cross-baseline power
-series. It excludes autos and is not flux calibrated. Frequency alignment is
-checked by the library; do not suppress a mismatch or reverse only one array.
-
-Compare calibrations using identical evaluation data, antenna membership,
-weights normalization, masks, and controls. If you subtract a static template,
-label that metric separately from the raw-data result. A template recorded
-before an instrumental amplitude change is not interchangeable with a matched
-template recorded afterwards.
+- Identical evaluation data, antenna membership, weights normalization, masks
+  and control for every cal, or the comparison means nothing.
+- Label the static-subtracted metric separately from the raw one. The two
+  disagreed by a factor of nine on 2026-08-20 (66% versus 7% of the self-cal
+  ceiling).
+- A static template recorded before an instrumental amplitude change does not
+  transfer across it.
+- A source-name string in `sources` tracks the source and gives a flat
+  coherence level, not a transit shape. Use the `(label, alt, az)` tuple.
+- The output is frequency-averaged cross-baseline power, autos excluded, not
+  flux calibrated. The library checks frequency alignment; do not suppress a
+  mismatch or reverse only one array.
 
 ## 3. Check the beam grid separately
 
@@ -114,8 +94,8 @@ from such approximations; use the existing exact array-factor transit prediction
 in `bf_weights_generator` when timing or detailed shape matters.
 
 A built file's metadata does not prove which payload is serving on the nodes.
-That is a distinct operational verification described in wiki
-`weights-verification.md`; it is not established by this offline check.
+The as-deployed subband decode in wiki `weights-verification.md` (check b) is
+the only thing that does.
 
 ## Report what the experiment establishes
 

@@ -1,121 +1,243 @@
-# Check a calibration with a Cyg A transit
+# Beamform toward Cyg A and check a calibration
 
-Apply a solar calibration to visibilities and form a beam at one fixed
-direction near Cyg A's meridian crossing. As the sky rotates, Cyg A moves
-through the beam: its measured power should rise and fall. This checks whether
-the calibration produces a plausible response on another source.
+A solar calibration is solved on one source and used on the whole sky. The
+check that it transferred is a bright point source at night: point a fixed
+beam at Cyg A's meridian crossing, let the sky rotate the source through it,
+and see whether the power rises and falls at the predicted time while an
+off-source control does not. This is the referee that decides between
+calibration variants; the solve's rank-1 ratio is not
+(casm-wiki `rank1-metric-caveat.md`).
 
-## Historical waterfall and annotations
+## Pick a calibration and a window in the same instrument epoch
 
-```{figure} ../_static/tutorials/transit/cyga_stationary_beam_20260805.png
-:alt: Cyg A stationary-beam waterfall and orange power curve rising before transit, peaking shortly after it, and falling back toward the background.
+Any F-engine `--do_sync` or reflash voids a calibration, so the Cyg A window
+and the solve have to sit on the same side of every sync. The example below
+uses the August 23 solar calibration and the Cyg A transit of the following
+night, with no sync in between (casm-wiki `weights-verification.md`).
 
-Existing scratchpad result from 2026-08-05. Eighteen antennas were phased
-with an August-2 solar calibration toward a fixed direction, altitude
-86.43°, azimuth 0.47°. The dashed line marks Cyg A's 06:58 UTC meridian
-crossing; the dotted orange line marks the measured power maximum.
+```text
+cal_aug23_exact512_CAL0823N.h5          Sun, 2026-08-23 20:41-21:41 UTC, ref ant 9, 16 antennas
+static_aug23_exact512_CAL0823N.npz      night static, 2026-08-24 03:00-03:30 UTC
+weights_aug23_exact512_CAL0823N_16ant_512_int8.h5   the 512-beam grid built from that cal
 ```
 
-Read the bottom panel first. The orange curve grows as Cyg A approaches,
-peaks near the crossing, then falls toward the background. Its peak was
-scaled to one, so this plot shows shape rather than absolute sensitivity.
+## Predict the crossing with the exact array-factor tool
 
-The top panel shows the same crossing by frequency. A broad bright region
-appears around transit across much of the band; horizontal features and
-masked strips show why inspecting the waterfall matters alongside the average.
-The calculation removed a static visibility background estimated outside
-70 minutes either side of transit.
-
-This figure contains measured data and a transit-time marker. It has no
-predicted beam curve. Its annotation reports a roughly two-hour crossing
-and a peak after meridian transit; these are historical measurements, not
-proof of agreement with an exact beam model.
-
-## Plot the saved light curve
-
-You can explore the small saved result without rereading the original
-visibilities. In a notebook on the CASM host:
+Take the pointing and the predicted peak time from the exact array-factor
+response of the deployed grid, never from an analytic beam ellipse: the
+ellipse mispredicted on-sun peaks by 15-45 minutes
+(casm-wiki `incidents.md`, 2026-08-20). `casm-bf-source-transit --exact`
+prints the same table from the shell.
 
 ```python
-from datetime import datetime, timezone
-import numpy as np
-import matplotlib.pyplot as plt
+from bf_weights_generator.plot_transit import array_factor_response, exact_transit_report
 
-path = "docs/_static/tutorials/transit/cyga-light-curve.npz"
-with np.load(path, allow_pickle=False) as saved:
-    times = saved["time_unix"]
-    power = saved["lc"]
-utc = [datetime.fromtimestamp(t, timezone.utc) for t in times]
-fig, ax = plt.subplots(figsize=(9, 3))
-ax.plot(utc, power / np.nanmax(power))
-ax.set(xlabel="Time (UTC)", ylabel="Power / peak")
-fig.autofmt_xdate()
+CAL_DIR = "/mnt/nvme5/vishnu/cal_build_20260824"
+WEIGHTS = f"{CAL_DIR}/weights_aug23_exact512_CAL0823N_16ant_512_int8.h5"
+
+response = array_factor_response(
+    WEIGHTS, "cyg-a", date="2026-08-24", time_tz="UTC",
+    time_start="03:00", time_end="08:00", dt_minutes=0.5,
+)
+# Each row is one grid beam; take the one the source crosses at its highest
+# point. peak_alt/peak_az are the SOURCE alt/az at that predicted peak time,
+# not the stored centre of the grid beam.
+transit = max(exact_transit_report(response, threshold=0.0),
+              key=lambda row: row["peak_alt"])
+alt_deg, az_deg = transit["peak_alt"], transit["peak_az"]
+predicted_unix = transit["peak_time"].unix
+print(transit["peak_time"].utc.iso, f"alt {alt_deg:.3f} az {az_deg:.3f}")
+```
+
+Prints `2026-08-24 05:43:02.609 alt 86.423 az 1.232`.
+
+`exact_transit_report` fills `peak_alt`/`peak_az` from the source track at the
+predicted peak time (`plot_transit.py:503-505`), so the stationary beam below
+is pointed at the source position, not at the grid beam centre. That is a valid
+stationary-beam test of the calibration: the beam sits where the source will
+be. To check a **deployed** grid beam instead, read that beam's centre out of
+the weights file and point there; the source position and the beam centre
+differ by up to half a beam spacing.
+
+## Read the transit and remove the static background
+
+Read the full correlator triangle. `beam_power_vs_time` needs it: it rebuilds
+baseline indices from the triangle size. `fringe_stop` accepts a pre-filtered
+`ref=`/`targets=` read (`fringe_stop.py:255-259`) and rejects only input
+subtriangles, `inputs=` and `nsig_subset` (L277-283). Two hours centred on
+the crossing covers the response, which is about 90 minutes wide at half
+maximum.
+
+The raw cross-baseline sum is dominated by a static instrumental pedestal
+larger than Cyg A. Subtract the night static recorded with the same
+calibration, and mask the four known RFI lines before averaging in frequency.
+
+```python
+import numpy as np
+from bf_weights_generator.snap_weights import load_calibration_weights
+from casm_io.correlator import AntennaMapping, read_visibilities
+from casm_vis_analysis.offsource import load_static_visibility, subtract_static_visibility
+
+LAYOUT = "/home/casm/software/dev/antenna_layouts/casm_antenna_layout_2026-08-07.csv"
+ANTENNAS = [9, 10, 15, 19, 22, 23, 24, 26, 30, 32, 36, 38, 40, 42, 44, 45]
+
+data = read_visibilities(
+    data_root="/mnt/nvme4/data/casm",
+    time_start="2026-08-24 04:43:00", time_end="2026-08-24 06:43:00",
+    time_tz="UTC", workers=1, verbose=False,
+)
+print(data.vis.shape, data.metadata["files"])
+
+static = load_static_visibility(f"{CAL_DIR}/static_aug23_exact512_CAL0823N.npz")
+clean = subtract_static_visibility(data, static["static_vis"])
+freq_mhz = np.asarray(data.freq_mhz)
+flagged = np.zeros(freq_mhz.size, dtype=bool)          # True = drop the channel
+for lo, hi in [(462.0, 464.0), (450.0, 452.0), (436.5, 438.5), (400.0, 402.0)]:
+    flagged |= (freq_mhz > lo) & (freq_mhz < hi)
+
+cal = load_calibration_weights(f"{CAL_DIR}/cal_aug23_exact512_CAL0823N.h5")
+# drop channels the solve failed (weight 0 would read as phase 0)
+flagged |= ~cal.flags[::-1]                # cal ascending, read descending
+clean["freq_mask"] = flagged
+
+ant = AntennaMapping.load(LAYOUT)
+ant = ant.with_inactive([a for a in ant.active_antennas() if a not in ANTENNAS])
+```
+
+Prints `(52, 3072, 8256) ['2026-08-24-01:54:29.dat.2', '2026-08-24-01:54:29.dat.3']`.
+The read holds the whole triangle in memory: 10.5 GB for these 52
+integrations, and about 29 GB peak while the reader materialises each file
+and the static subtraction makes its copy. Budget for that before widening
+the window.
+
+Use the layout the calibration was built with, not `antenna_layouts/current`,
+and the same 16 antennas the solve used.
+
+## Apply the calibration and form the beam
+
+`load_calibration_weights` returns `ant_ids` exactly as stored in the HDF5,
+which are **1-indexed antenna numbers**, while correlator inputs are
+`packet_idx = antenna - 1`. `beam_power_vs_time` looks each active antenna up
+by identity (`cal_ant_ids.index(antenna_id)`) instead of using `ant_ids` as
+row indices, so the off-by-one cannot happen here. Hand-rolled beam code that
+indexes visibilities with `ant_ids` applies each antenna's calibration to its
+neighbour's signal: the transit still appears, with a fake 7 degree east
+pointing offset and frequency-dependent transit times
+(casm-wiki `conventions.md`).
+
+The off-source control is 25 degrees **below** the source in altitude, the
+same null the weights driver uses. An azimuth offset is useless this close to
+zenith: 25 degrees of azimuth at altitude 86 moves the beam 1.7 degrees, well
+inside it.
+
+```python
+from datetime import timezone
+
+import matplotlib.pyplot as plt
+from bf_weights_generator.snap_weights import load_calibration_weights
+from casm_vis_analysis.beam_power import beam_power_vs_time, plot_beam_power
+
+cal = load_calibration_weights(f"{CAL_DIR}/cal_aug23_exact512_CAL0823N.h5")
+result = beam_power_vs_time(
+    clean, ant,
+    sources=[("Cyg A", alt_deg, az_deg), ("off-source", alt_deg - 25.0, az_deg)],
+    cal_weights=cal, freq_band_mhz=(398.0, 480.0), sign=-1,
+)
+
+time_unix = result["time_unix"]
+on, off = result["power"]["Cyg A"], result["power"]["off-source"]
+# Half maximum of the peak: static subtraction puts the off-source level at 0,
+# so no baseline term is needed. Same rule as exact_transit_report.
+above = np.flatnonzero(on >= 0.5 * on.max())
+midpoint = 0.5 * (time_unix[above[0]] + time_unix[above[-1]])
+print(f"channels {result['n_chan_used']}, "
+      f"midpoint {(midpoint - predicted_unix) / 60:+.1f} min from prediction, "
+      f"width {(time_unix[above[-1]] - time_unix[above[0]]) / 60:.1f} min, "
+      f"on/off {on[above].mean() / np.abs(off).mean():.2f}")
+
+figure = plot_beam_power(result, time_tz="UTC")
+axis = figure.axes[0]
+axis.axvline(transit["peak_time"].to_datetime(timezone=timezone.utc),
+             color="k", ls="--", lw=0.9, label="predicted peak")
+axis.set_xlabel("Time (UTC, 2026-08-24)")
+axis.legend(fontsize=9, loc="upper left")
 plt.show()
 ```
 
-Run from the documentation checkout root. The retained NPZ contains just
-the original saved time and light-curve arrays.
+Prints `channels 2425, midpoint +2.8 min from prediction, width 91.6 min, on/off 4.05`.
 
-```{figure} ../_static/tutorials/transit/cyga-light-curve.png
-:alt: Saved Cyg A stationary-beam light curve normalized to its peak against UTC.
+```{figure} ../_static/tutorials/transit/cyga-beam-power.png
+:alt: Cyg A stationary-beam power rising and falling across two hours, with an off-source control near zero and a dashed line at the predicted peak.
 
-Output of the displayed code using the saved August-5 light curve. The
-historical figure above separately preserves the waterfall and annotations.
+Output of the code above. Fixed beam at altitude 86.423, azimuth 1.232,
+2425 channels over 398-480 MHz, 52 integrations on 2026-08-24,
+04:43:59-06:40:48 UTC, August 23 solar calibration with its night static
+subtracted.
 ```
 
-## Form the beam from another observation
+## What to look for
 
-1. Select visibilities before, during and after Cyg A's crossing, an existing
-   calibration, and the antenna layout for that epoch.
-2. Apply the same antenna set, channel mask and background treatment to each
-   calibration being compared. Keep the beam direction fixed throughout.
-3. Plot power against time with the expected crossing time marked. Inspect
-   the waterfall for broadband support, interference and missing data.
-4. Compare with an exact array-factor prediction and a separately checked
-   off-source direction before interpreting a timing or width discrepancy.
+The on-source curve rises and falls once, its half-maximum midpoint lands on
+the predicted crossing, and the control stays near zero. Here the midpoint is
+05:45:50 UTC against a predicted 05:43:03, and the mean in-band power over the
+half-maximum window is 4.05 times the mean off-source level. The control keeps
+a residual drift of about 0.5e6, a third of the on-source peak, so read the
+contrast rather than an absolute floor.
 
-The existing visibility-analysis module performs the beam sum. With prepared
-`data` (raw, or consistently static-subtracted), `ant` (the selected mapping)
-and `cal` (loaded calibration), the central call is:
+The 05:00 spike
+appears at full height in both pointings, which makes it interference rather
+than a beam response. The slow off-source wander sets the scale a shifted or
+broadened on-source curve has to be judged against; with one pointing only, a
+drift that size reads as a real response.
 
-This function needs the full correlator triangle, not the two-input subset
-from the first tutorial. Use the linked input-preparation example for this step.
+Quote the cross-only number. The visibility-domain achromaticity check on
+CAL0819 measured a per-channel half-max midpoint scatter of 0.95 minutes and
+a chromatic trend of +0.23 minutes across 390-484 MHz, a tenth of one
+integration; the same run with autocorrelations included gives -2.68 minutes
+and fails (casm-wiki `weights-verification.md`, check d).
+`beam_power_vs_time` returns cross-only power already, and returns it
+averaged over the band, so the per-channel version of that scatter cannot be
+computed from `result`: it needs the waterfall script named on that wiki page.
 
-```python
-from casm_vis_analysis.beam_power import beam_power_vs_time, plot_beam_power
+This is the measurement that adjudicates calibration variants: ranking cals by
+rank-1 has picked the worse one on sky (wiki `rank1-metric-caveat.md`). Re-run
+this page with each candidate cal on identical data, antennas, masks and
+control, and compare. The weights driver's own beam check on this build, a tracking beam
+rather than a stationary one, scored the new cal 0.0646 against 0.0674 for
+the previous cal and 0.0175 for the null, so it preferred the older
+calibration.
 
-result = beam_power_vs_time(
-    data, ant,
-    sources=[("Cyg A fixed beam", fixed_alt_deg, fixed_az_deg)],
-    cal_weights=cal, freq_band_mhz=(low_mhz, high_mhz), sign=-1,
-)
-figure = plot_beam_power(result, time_tz="UTC")
+One thing a single Cyg A check does not settle: with an antenna position
+error the best cal depends on the target direction, so a Cyg A referee ranks
+calibrations for Cyg A's direction only (casm-wiki `rank1-metric-caveat.md`).
+
+Passing the string `"cyg_a"` instead of the `(label, alt, az)` tuple tracks
+the source and measures something else: a flat coherence level across the
+window, 1.48e6 in these units, with no transit shape to time.
+
+## Historical reference
+
+```{figure} ../_static/tutorials/transit/cyga_stationary_beam_20260805.png
+:alt: Cyg A stationary-beam waterfall above an orange power curve peaking shortly after transit.
+
+The same measurement on 2026-08-05 with 18 antennas, an August 2 calibration
+and a 5-hour window, showing the per-channel waterfall this page's band
+average hides. Details in the
+[transit example notes](../developer/transit-example-notes.md).
 ```
 
-Choose the fixed angles from the selected observation, not from the August
-example. Passing `"cyg-a"` instead of the tuple would track the source and
-change this experiment. The function returns cross-baseline power and does
-not subtract a background by itself. This illustrative call does not reproduce
-the historical plot's masking and preprocessing automatically.
+## Next
 
-The [input preparation example](../developer/imaging-notes.md#1-select-a-small-fully-described-input)
-shows the required objects and checks. Start there with a few integrations,
-then budget a longer read for the complete transit.
+[Cross-day calibration checks](../developer/calibration-transfer-notes.md)
+compare baseline phase residuals between days with the same saved weights.
+Sky imaging is a separate [tutorial](image-visibilities.md).
 
-## What can you conclude?
+## Provenance
 
-A broad crossing with support across frequencies is useful evidence that
-the calibration and steering produce a response near Cyg A. It does not
-establish an absolute sensitivity, validate every sky direction, or explain
-all asymmetry in the curve. Without a predicted response and controls, a
-shifted peak alone does not identify a calibration fault.
-
-For complementary frequency-by-frequency inspection, use the
-[baseline phase example](solar-phase.md). Sky imaging is a separate
-[optional tutorial](image-visibilities.md).
-The [cross-day calibration example](../developer/calibration-transfer-notes.md)
-shows how to compare baseline phase residuals using the same saved weights.
-
-The [transit example notes](../developer/transit-example-notes.md) preserve
-the original script's processing details, evidence paths and checksums. This
-page reuses the saved scratchpad result; no new telescope analysis was run.
+Data: `/mnt/nvme4/data/casm/visibilities_64ant`, observation
+`2026-08-24-01:54:29`, files `.dat.2` and `.dat.3`, 04:43-06:43 UTC on
+2026-08-24 (52 integrations returned, 04:43:59-06:40:48 UTC).
+Calibration, static and beam grid: `/mnt/nvme5/vishnu/cal_build_20260824`.
+Layout: `casm_antenna_layout_2026-08-07.csv`, matching that calibration.
+Figure rendered by `scripts/render_cyga_tutorial.py`, which executes the
+displayed blocks in this page and saves the figure in place of `plt.show()`.

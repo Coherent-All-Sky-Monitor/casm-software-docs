@@ -11,6 +11,27 @@ of the data. Use a notebook with the `casm_offline_env` kernel, or activate it:
 source /home/casm/software/dev/casm_venvs/casm_offline_env/bin/activate
 ```
 
+## Find a recording
+
+`discover_observations(data_dir, fmt=None, verbose=False)` scans one directory of
+`.dat` files and returns a list of dicts with `base_str`, `n_files`, `time_start`,
+`time_end`, `fmt` and `data_dir`, sorted by start time. Headerless recordings need
+an explicit `fmt` and are otherwise skipped.
+
+```{code-block} python
+from casm_io.correlator import discover_observations
+
+for obs in discover_observations("/mnt/nvme4/data/casm/visibilities_64ant"):
+    print(obs["base_str"], obs["n_files"], obs["time_start"], obs["time_end"])
+```
+
+The same survey from the shell, as a table with UTC and Pacific spans:
+
+```bash
+casm-viz-data-span --data-dir /mnt/nvme4/data/casm/visibilities_64ant \
+  --format layout_64ant
+```
+
 ## Read two antennas
 
 This example uses files present on the CASM host at review time and a ten-minute
@@ -22,6 +43,9 @@ For new observations use `/home/casm/software/dev/antenna_layouts/current`.
 This historical example keeps the layout matching its recording; do not pair
 old data with today's layout without checking the mapping. Antenna numbers are
 physical labels; `packet_index()` finds the corresponding inputs in the file.
+Antenna 9 is the reference antenna every CASM solar solve fringe-stops against
+(casm-wiki `recipes.md`, `ref_ant=9`), so later tutorials reuse this baseline;
+antenna 19 is the other end of it.
 
 ```python
 import numpy as np
@@ -134,14 +158,38 @@ selection. These are raw cross-correlations, before background subtraction,
 fringe-stopping or calibration.
 ```
 
-Follow the phase between its jumps at ±π. Those jumps are phase wrapping,
-not breaks in the signal. Narrow-band interference and noisy channels can
-interrupt the smooth slope; instrumental delays also contribute.
+Follow the phase between its jumps at ±π: those jumps are phase wrapping, so a
+sawtooth is the normal appearance of a delay slope. Narrow-band interference and
+noisy channels interrupt the slope. Averaging complex values over the whole band
+before the slope is corrected makes them cancel. Check warnings and gaps before
+treating a quiet interval as a measurement.
 
-Phase wraps between −π and π, so a sawtooth shape can be normal. Avoid averaging
-complex values over the whole band before correcting a phase slope: they can
-cancel. Check warnings and gaps before treating a quiet interval as a measurement.
+## Exclude the 465 MHz emitter
+
+A narrowband satellite emitter sits at 465.3–466.7 MHz and damages any average
+that includes it (casm-wiki `rfi-flagging-465mhz.md`). Drop the band before
+plotting or averaging:
+
+```{code-block} python
+from casm_vis_analysis.rfi import RFIMask
+
+mask = RFIMask(bad_ranges_mhz=[(465.3, 466.7)], label="emitter_465")
+good = mask(freq)                        # True = keep this channel
+mean_cross = cross[:, good].mean(axis=1)  # band average without the emitter
+```
+
+`RFIMask` ships no default band list: pass the ranges, or load the versioned
+config with `RFIMask.from_static()`. Masking for a solve is covered in
+[mask RFI and fit delays](rfi-and-delay.md).
 
 Continue with [voltage dumps](read-voltages.md) to see where correlations come
-from. [Example sources and technical notes](../developer/io-example-notes.md)
-record the archived figure, reviewed code and limits of these examples.
+from.
+
+## Provenance
+
+Data: `/mnt/nvme4/data/casm`, `visibilities_64ant/2026-08-23-19:18:14.dat.1`,
+20:42–20:52 UTC on 2026-08-23 (actual integrations 20:42:59–20:49:51 UTC).
+Antenna mapping: `casm_antenna_layout_2026-08-07.csv`, the layout in force for
+this recording (antennas 9/19 map to inputs 8/18). Figures rendered by
+`scripts/render_visibility_tutorial.py`, which executes every displayed block
+in this page and saves the plots in place of `plt.show()`.

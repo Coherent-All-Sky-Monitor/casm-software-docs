@@ -199,17 +199,11 @@ selecting the highest fitted S/N after many trials changes its interpretation.
 Add accepted results or non-detections to the canonical wiki's attempt ledger,
 with dated evidence paths and the tested domain.
 
-This page was checked against wiki revision
-`f0ff6d1c95c5ed0a43dcfbb5f4461e43f58948ab`, `casm_io` revision
-`22ef826d9f2ba355388523265081da1468e5a4ff`, and the actual campaign files/logs:
-
-| Inspected file | SHA-256 |
-|---|---|
-| September 1 `foldkit/b0329_fold.sh` | `9e81ee88b6dc038dbf915f188c8dca38ed9fc8fb464bf323fd4a0499d277fb9b` |
-| September 1 `foldkit/B0329+54.par` | `e90bd55336091e14672207ed5bd9017c287514927c00a6bd6dacfb1a251fa35d` |
-| September 1 `foldkit/clfd_local.sh` | `3efe5c17fff1eabe565a3b21e8383d868571de39b2826345c344458492c361f2` |
-| September 1 `foldkit/rfi_time_mask.py` | `bd5e7a985841f0e20705ca24669573b6a6c22d404f31de188c4e833d7026d091` |
-| `casm_io/filterbank/clean.py` | `e6ae8c7272131559dbbde4ea86b44623fdd024d688bc2d72bc8d7f9e8f2c0fb8` |
+This page was checked against the actual campaign files and logs under
+`foldkit/` (`b0329_fold.sh`, `B0329+54.par`, `clfd_local.sh`,
+`rfi_time_mask.py`) and `casm_io/filterbank/clean.py`. Source revisions and
+file hashes: `source-snapshot.json` and `tutorial-inputs.json` in the
+repository.
 
 Existing example outputs are under
 `/mnt/nvme5/vishnu/b0329_20260901/fold_lock/`, with the terminal log at

@@ -8,7 +8,7 @@ This preview uses explicitly inspected source checkouts. Git revisions identify 
 | casm_vis_analysis | `83f0caefcac4` | 0 |
 | casm_calibrator | `30b16efc7b8a` | 0 |
 
-## Verification boundaries
+## What this checks
 
 - API signatures and command entry points are extracted from tracked source.
 - Existing manuals are preserved as downloads; curated pages identify known discrepancies.

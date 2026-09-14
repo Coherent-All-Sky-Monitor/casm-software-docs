@@ -84,12 +84,22 @@ separately. Do not publish or push without the operator's instruction.
 
 ## Isolated audit candidate
 
-The September 13 candidate is described in `docs/developer/audit-release.md`.
+This candidate is developed in
+`/home/casm/software/dev/worktrees/software-audit-20260913/` on the
+`audit/maintainability-20260913` branches. No production checkout, editable
+installation, service, or port-8070 site is switched by building this candidate.
+Run source tests against these worktrees, with explicit import paths; do not
+install editable worktrees into the environment used by running services.
+
 `scripts/check_release.py --source-root PATH --record` records eleven committed
 source repositories and checks that ten Python package imports resolve inside
 that candidate. Use `--check` thereafter to detect revision/source drift.
 This complements the three-package API snapshot; it does not run scientific
 validation or install anything into the production environment.
+
+On 2026-09-13, the operator retired the production `t3-janitor.service`
+(`systemctl --user disable --now`), the automatic dump/log age-quota reaper.
+See casm-wiki `incidents.md`.
 
 `scripts/check_bounded_tutorials.py --source-root PATH --require-voltage`
 executes the bounded examples and compares rendered figures with the retained

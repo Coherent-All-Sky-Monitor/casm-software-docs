@@ -5,10 +5,9 @@ fringe-stopped data, delay estimates, and synthesized-beam checks. Start here
 when investigating an antenna, a phase change, or whether calibration transfers
 to another source or observing day.
 
-This page includes the September 13 [audit candidate](../developer/audit-release.md);
-the [source snapshot](../sources.md) identifies its inspected revision.
-Examples are illustrative and were checked against source signatures; they have
-not been executed against telescope data for this preview.
+Source revisions and file hashes: `source-snapshot.json` in the repository.
+Examples are illustrative and were checked against source signatures; they
+have not been executed against telescope data for this preview.
 
 ## Choose a task
 
@@ -106,7 +105,7 @@ Antenna IDs, packet indices, SNAP ADC indices, and baseline-array indices are
 different namespaces. Use `AntennaMapping` and `casm_io` baseline helpers.
 The fringe-stop function handles reference/target ordering and conjugation.
 
-The candidate intersects `valid_integrations` with input and transit time masks;
+`fringe_stop` intersects `valid_integrations` with input and transit time masks;
 an empty valid selection raises. It rejects unsupported input-subset triangles
 before baseline indexing and validates labeled reference/target ordering.
 Use the full native triangle for the fringe-stop/calibration workflow rather
@@ -143,6 +142,6 @@ read-only diagnostic examples here.
 
 ## Upstream reading
 
-- [README](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/README.md)
-- [Fringe stopping](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/docs/fringe_stop.md)
-- [Beam validation](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/docs/beam_validation.md)
+- [README](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/main/README.md)
+- [Fringe stopping](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/main/docs/fringe_stop.md)
+- [Beam validation](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/main/docs/beam_validation.md)
