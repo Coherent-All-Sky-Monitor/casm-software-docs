@@ -58,7 +58,7 @@ class VisibilityFormat:
         Parameters
         ----------
         order : str
-            'descending' (native, highest freq first) or 'ascending' (lowest first).
+            'descending' (highest freq first) or 'ascending' (lowest first).
 
         Returns
         -------
@@ -77,10 +77,10 @@ class VisibilityFormat:
 
     def freq_to_channel(self, freq_mhz: float) -> int:
         """
-        Convert frequency in MHz to native (descending) channel index.
+        Convert frequency in MHz to native storage channel index.
 
-        Channel 0 corresponds to freq_top_mhz. Channel indices increase
-        as frequency decreases (native descending order).
+        Channel 0 is the highest center for descending-native formats and
+        the lowest center for ascending-native formats.
 
         Parameters
         ----------
@@ -108,13 +108,14 @@ class VisibilityFormat:
                 f"({self.freq_bottom_mhz:.4f} MHz)"
             )
         idx = round((self.freq_top_mhz - freq_mhz) / self.chan_bw_mhz)
-        return max(0, min(self.nchan - 1, idx))
+        idx = max(0, min(self.nchan - 1, idx))
+        return self.nchan - 1 - idx if self.native_order == "ascending" else idx
 
     def freq_range_to_channels(
         self, freq_lo: float, freq_hi: float
     ) -> tuple[int, int]:
         """
-        Convert frequency range to native (descending) channel indices.
+        Convert frequency range to native storage channel indices.
 
         Parameters
         ----------
@@ -140,8 +141,9 @@ class VisibilityFormat:
                 f"freq_lo ({freq_lo:.4f}) must be less than freq_hi ({freq_hi:.4f})"
             )
         # Higher freq -> lower channel index
-        ch_start = self.freq_to_channel(freq_hi)
-        ch_end = self.freq_to_channel(freq_lo) + 1
+        endpoints = (self.freq_to_channel(freq_hi), self.freq_to_channel(freq_lo))
+        ch_start = min(endpoints)
+        ch_end = max(endpoints) + 1
         ch_start = max(0, ch_start)
         ch_end = min(self.nchan, ch_end)
         return ch_start, ch_end

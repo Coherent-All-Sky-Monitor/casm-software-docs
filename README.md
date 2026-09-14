@@ -73,10 +73,35 @@ importing the scientific packages.
 - `docs/guides/`: task guides with explicit contracts and limitations.
 - `docs/_downloads/`: copied upstream manuals for this source snapshot.
 - `docs/_code/`: recorded Python source used by Sphinx's source-code viewer.
-- `docs/_static/tutorials/`: unchanged historical figures with provenance in the guides.
+- `docs/_static/tutorials/`: real-data example figures and retained historical products,
+  with provenance and execution boundaries in the guides.
 - `docs/_static/casm.css`: visual styling over Furo.
 - `scripts/`: source extraction and local HTML integrity checks.
 
 Do not edit a scientific repository to repair its documentation through this
 project. Record discrepancies with source locations and propose upstream fixes
 separately. Do not publish or push without the operator's instruction.
+
+## Isolated audit candidate
+
+This candidate is developed in
+`/home/casm/software/dev/worktrees/software-audit-20260913/` on the
+`audit/maintainability-20260913` branches. No production checkout, editable
+installation, service, or port-8070 site is switched by building this candidate.
+Run source tests against these worktrees, with explicit import paths; do not
+install editable worktrees into the environment used by running services.
+
+`scripts/check_release.py --source-root PATH --record` records eleven committed
+source repositories and checks that ten Python package imports resolve inside
+that candidate. Use `--check` thereafter to detect revision/source drift.
+This complements the three-package API snapshot; it does not run scientific
+validation or install anything into the production environment.
+
+On 2026-09-13, the operator retired the production `t3-janitor.service`
+(`systemctl --user disable --now`), the automatic dump/log age-quota reaper.
+See casm-wiki `incidents.md`.
+
+`scripts/check_bounded_tutorials.py --source-root PATH --require-voltage`
+executes the bounded examples and compares rendered figures with the retained
+PNGs. Historical examples without their original inputs remain explicitly
+limited to inspection or redraw of saved products.

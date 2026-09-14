@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 import numpy as np
+from .validation import solver_matrix
 
 
 class SVDMode(Enum):
@@ -181,6 +182,8 @@ class SVDCalibrator:
         -------
         SVDResult
         """
+        vis_avg = solver_matrix(vis_avg, self.config.ref_ant_idx,
+                                baseline_mask=self.baseline_mask)
         if self.config.block_size > 1:
             result = self._per_block_svd(vis_avg)
         else:
@@ -258,6 +261,8 @@ class SVDCalibrator:
 
             U, sigma, _Vh = np.linalg.svd(svd_input)
             singular_values[ch] = sigma
+            if sigma[0] == 0:
+                continue  # no signal; 0/0 must not become an infinite quality ratio
 
             if sigma[1] > 0:
                 rank1_ratios[ch] = sigma[0] / sigma[1]
@@ -316,6 +321,8 @@ class SVDCalibrator:
 
             U, sigma, _Vh = np.linalg.svd(svd_input)
 
+            if sigma[0] == 0:
+                continue
             if sigma[1] > 0:
                 block_ratios[b] = sigma[0] / sigma[1]
             else:
@@ -428,7 +435,7 @@ class SVDCalibrator:
         breaks the rank-1 assumption.
         """
         if mode == SVDMode.PHASE_ONLY:
-            out = np.exp(1j * np.angle(V))
+            out = np.where(V != 0, np.exp(1j * np.angle(V)), 0.0)
         elif mode == SVDMode.CROSS_ONLY:
             out = V.astype(np.complex128, copy=True)
         else:  # RAW / COMPLEX (both keep amplitude)

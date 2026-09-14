@@ -1,10 +1,29 @@
 # Follow an injection through the search
 
 An injection checks whether a known synthetic pulse makes it through the
-search. Start with the ledger, then inspect the saved plot. This tutorial
-reads existing results; it does not send a pulse or request a dump.
+search. Start with the ledger, then inspect the saved plot. The reading steps
+touch nothing live; the commands that fire or replay a shot are in the last
+section.
 
-## Read one recovery
+## Read the frozen example
+
+From the documentation checkout root, read the retained record. This record
+and the figure below describe the same archived shot; the live ledger may
+later be reconciled or its archive paths removed.
+
+```python
+import json
+from pathlib import Path
+
+from casm_t2.inject_outcome import label
+
+records = json.loads(Path("docs/_static/tutorials/injections/frozen-records.json").read_text())
+shot = records["inj_20260913_0023"]
+print(shot["file_id"], label(shot["outcome"]))
+print(f"S/N: {shot['inject_snr']:.2f} injected, {shot['rec_snr']:.2f} recovered")
+```
+
+## Query the live ledger separately
 
 In `casm_offline_env`, open the live ledger read-only:
 
@@ -22,6 +41,9 @@ shot = connection.execute(
     "FROM injections WHERE file_id = ?",
     ("inj_20260913_0023",),
 ).fetchone()
+if shot is None:
+    connection.close()
+    raise LookupError("This historical shot is no longer in the live ledger")
 print(shot["file_id"], label(shot["outcome"]))
 print(f"S/N: {shot['inject_snr']:.2f} injected, {shot['rec_snr']:.2f} recovered")
 connection.close()
@@ -46,12 +68,12 @@ plot's boxcar statistic use different calculations.
 
 ## Inspect the saved plot
 
-In a notebook, display the plot named by that row:
+In a notebook, display the retained artifact, independently of the live row:
 
 ```python
 from IPython.display import Image, display
 
-display(Image(filename=shot["replay_png"]))
+display(Image(filename="docs/_static/tutorials/injections/inj_20260913_0023.png"))
 ```
 
 ```{figure} ../_static/tutorials/injections/inj_20260913_0023.png
@@ -97,9 +119,73 @@ An unset outcome is unfinished or legacy bookkeeping, not automatically a
 miss. `gate_trigger` records trigger eligibility separately; known injections
 are excluded from ordinary candidate triggering by design.
 
-For a recovery fraction, count only completed, fired shots and compare like
-DM, width, S/N and observing conditions. A single recovery does not establish
+For a recovery fraction, count only completed, fired shots. In the ledger
+that is
+
+```sql
+SELECT outcome, COUNT(*) FROM injections
+WHERE outcome IN ('recovered', 'missed_t1', 'missed_t2')
+GROUP BY outcome;
+```
+
+`fire_failed` rows never reached the stream and a NULL outcome is
+unreconciled, so both are excluded from the denominator. Compare like DM,
+width, S/N and observing conditions. A single recovery does not establish
 full-array sensitivity.
 
+## Fire a shot, or replay one
+
+These commands change live state or write products; run them only under the
+approval that covers the operation.
+
+The injection daemon fires scheduled shots. One forced shot, then exit:
+
+```bash
+t2-inject --once --beam 22 --dm 400 --fwhm-ms 10 --target-snr 30
+```
+
+`--inject-snr` sets the true matched-filter S/N instead; `--target-snr` sets
+the S/N hella should report and is converted through the per-width
+`rec_per_true` table. The amplitude in stream counts is solved numerically,
+not analytically: the daemon reads the beam's live per-channel std from Redis,
+divides it by the bandpass factor 1.4, and bisects for the smallest integer
+amplitude whose uint8-truncated rendered pulse reaches the target S/N over the
+searched channels, with a floor of 4 counts. Keep the target reported S/N
+below 40: brighter shots tripped hella's 10000-peak cap on the injected
+stream's gulp, while shots at 43 and below did not.
+
+Rerender a shot from its retained dump:
+
+```bash
+t3-replay-injection --inject-id 675 \
+  --dump /mnt/nvme4/data/casm/cand_beam_dumps/stream_0 \
+  --out /tmp/inj_replay.png
+```
+
+`--inject-id` is the ledger row id, the database is opened read-only, and
+`--no-pulse` renders the same dump untouched for comparison.
+
+Offline, without the live pipeline, the injector writes a filterbank with a
+synthetic pulse and runs the searcher over a directory of them:
+
+```bash
+inject-frb --output /mnt/nvme3/vishnu/inj_test/shot.fil \
+  --dm 400 --fwhm 10 --snr 20
+run-hella --input_dir /mnt/nvme3/vishnu/inj_test --gpus 0
+```
+
+`--fwhm` is in samples and `--snr` is the target matched-filter S/N.
+`run-hella` reads `injections_manifest.csv` from `--input_dir` and matches
+candidates against the injected ground truth.
+
 Continue to [T2/T3 and event storage](../packages/t2-t3.md).
-[Source and event verification](../developer/injection-example-notes.md).
+
+## Provenance
+
+Archive: `/mnt/nvme3/T3/EVENTS/inj_20260913_0023/` (PNG and JSON copied
+unmodified into `docs/_static/tutorials/injections/`). Ledger: `t2.sqlite`,
+`injections` table, rows for `inj_20260913_0023` and `inj_20260913_0021`.
+Selected fields for both shots are frozen in
+`docs/_static/tutorials/injections/frozen-records.json`; the live ledger can
+change or reconcile after this page was written. Source revisions:
+`source-snapshot.json` in the repository.

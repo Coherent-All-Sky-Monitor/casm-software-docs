@@ -4,11 +4,9 @@ Follow one existing calibration run from the measured visibilities to its saved
 beam weights. The example uses the August 23, 2026 Sun observation, a matched
 nighttime static template, 16 antennas, and an exact 512-beam grid.
 
-You can download the [original diagnostic notebook](../_static/tutorials/calibration-walkthrough/cal_aug23_exact512_CAL0823N_diagnostics.ipynb)
-and read its embedded figures without running it. The notebook displays results
-already produced by the canonical recipe; its executed cells are image-display
-cells, not the scientific computation. The code below explains the library calls
-inside that recipe. **Use the canonical driver at the end for an actual build.**
+The [original diagnostic notebook](../_static/tutorials/calibration-walkthrough/cal_aug23_exact512_CAL0823N_diagnostics.ipynb)
+displays the recipe's figures; the code below explains its library calls, and
+the canonical driver at the end is what builds a product.
 
 ## Read the solar observation
 
@@ -29,7 +27,7 @@ ant = mapping.with_inactive(
     sorted(set(mapping.active_antennas()) - set(params["antennas"]))
 )
 data_raw = read_visibilities(
-    *params["source_window"], time_tz="UTC", data_root="/mnt",
+    *params["source_window"], time_tz="UTC", data_root="/mnt/nvme4/data/casm",
     fmt=fmt, verbose=False,
 )
 ```
@@ -37,12 +35,11 @@ data_raw = read_visibilities(
 The selected window is **20:41:30–21:41:30 UTC on August 23**. The recorded
 run contains 26 integrations. `vis` has axes **time, frequency, baseline**;
 the calibration needs the full triangle, not just baselines to the reference.
-This read can use several GB. Reading this walkthrough does not require running it.
+This read can use several GB.
 
-For a **new** observation, use `/home/casm/software/dev/antenna_layouts/current`
-and verify the selected membership. Keep this example's dated layout when
-replaying its historical data. `functional` describes wiring; `include_in_beamforming`
-gates weights. A layout rebuild can reset that gate, so check it explicitly.
+For a **new** observation, use the layout described in
+[getting started](../getting-started.md); keep this example's dated layout
+when replaying its historical data, and verify membership explicitly.
 
 ## Estimate and subtract the static background
 
@@ -65,6 +62,8 @@ The static represents persistent correlated background and instrumental pickup.
 It is not an empty-sky measurement: Cyg A and Cas A were above the horizon in
 this window. The source window and template must have compatible wiring,
 frequency axes, and gain state. Keep the original data for power diagnostics.
+Building a template for a new epoch is the
+[static-template tutorial](static-template.md).
 
 ## Remove the Sun's geometric phase
 
@@ -118,8 +117,19 @@ cal = svd_calibrate(fs, ant, data=data, config=config)
 
 For each frequency, the solver constructs an antenna-by-antenna matrix,
 removes source geometry before averaging, and estimates antenna gain phases.
-The phase-only matrix has its autocorrelation diagonal removed. Reference
-antenna 9 sets the common phase reference.
+The phase-only matrix has its autocorrelation diagonal removed.
+
+The reference antenna reaches the solve through `fs["ref_ant"]`, set by
+`fringe_stop`. `svd_calibrate` reads it and overwrites `SVDConfig.ref_ant_idx`
+with the reference's position in the active list, so setting `ref_ant_idx` on
+the config has no effect. Antenna 9 is the reference here because
+`fringe_stop(..., ref_ant=9)` was called above.
+
+`SVDMode.PHASE_ONLY` forces unit-amplitude gains, and the production choice is
+uniform amplitude for every antenna. The binary-mask incoherent beam requires
+equal per-antenna `|w|` for CB-IB subtraction, which an inverse-variance
+amplitude scheme breaks. Do not reintroduce amplitude weighting while
+subtraction is in use.
 
 ```{figure} ../_static/tutorials/calibration-walkthrough/rank1_vs_freq_aug23_exact512_CAL0823N.webp
 :alt: Rank-1 ratio versus frequency for this run, comparing static subtraction with no subtraction.
@@ -131,7 +141,9 @@ subtraction changes the matrix fit; a higher ratio alone does not prove a better
 
 The threshold above documents this recipe, not a universal readiness threshold.
 The channel flags and the frequency-dependent structure matter alongside the
-median. The Sun's changing structure also affects this diagnostic.
+median. The Sun's changing structure also affects this diagnostic. Solving one
+yourself and reading the singular spectrum is the
+[rank-1 tutorial](rank1-diagnostics.md).
 
 ## Inspect gains and calibration weights
 
@@ -173,6 +185,35 @@ This is the geometric stage inside the existing driver, not a second product
 builder. For each pointing, `generate_combined_weights` multiplies the stored
 calibration correction by its geometric steering phasor, then maps antennas to
 hardware slots. The driver converts and saves the int8 product with its metadata.
+Grid placement takes about 15 s for 512 beams; the visibility reads dominate
+the rest of the build.
+
+Two hard constraints on this stage:
+
+- **Exactly 512 beams.** The beamformer takes 512, not "about 512".
+  `generate_beam_grid_exact` is greedy max-coverage: it scores a dense alt-az
+  candidate lattice against the exact array-factor response on a
+  solid-angle-weighted sky grid and adds the candidate that most improves
+  coverage, one at a time, until `n_beams` pointings exist. There is no spacing
+  search and no trim step.
+- **`freq_order="descending"`.** That is the correlator's native channel order
+  and what the driver passes. An ascending file flips the payload against the
+  channel order the beamformer reads.
+
+**Layout gating trap.** The weights stage intersects the requested antenna list
+with the layout CSV's `include_in_beamforming` column: both that flag and
+`functional` must be 1 for a slot to be active. An antenna present in the
+calibration but flagged 0 in the layout silently drops out, and a near-empty
+weights file still passes the driver's own verification, which samples one
+channel's payload. Count the populated slots in the saved file before doing
+anything with it:
+
+```bash
+casm-bf-inspect /mnt/nvme5/vishnu/cal_build_20260824/weights_aug23_exact512_CAL0823N_16ant_512_int8.h5
+```
+
+The last two lines print SNAP inputs with non-zero weights and active antennas
+in the layout, both out of 64. They must equal the antenna count you asked for.
 
 ```{figure} ../_static/tutorials/calibration-walkthrough/beam_grid_aug23_exact512_CAL0823N.webp
 :alt: The saved exact 512-beam pointing grid in azimuth and altitude, coloured by beam index.
@@ -209,18 +250,56 @@ For precise transit timing use the existing exact array-factor report,
 `casm-bf-source-transit --exact`. Do not infer timing or guaranteed sensitivity
 from an approximate footprint or an altitude-coverage shaded region.
 
+## Build the IB companion
+
+The driver builds the coherent-beam file only. The incoherent beam is a
+separate file, a binary mask over the 132-slot `snap*12+adc` vector with no
+beam dimension, derived from the CB file so the two share the antenna set and
+frequency grid. It is generated by a script outside the packages:
+
+```bash
+python /home/casm/scratch/bf_experiment_v1/scripts/gen_ib_from_cb.py \
+  /mnt/nvme5/vishnu/cal_build_20260824/weights_aug23_exact512_CAL0823N_16ant_512_int8.h5 \
+  /mnt/nvme5/vishnu/cal_build_20260824/ib_aug23_exact512_CAL0823N.h5 \
+  8
+```
+
+Arguments are positional: CB file, output IB file, `bf_scale_factor`. Pass the
+live `bf_scale_factor` from the wiki ledger; it is metadata only. The third
+argument is stamped into `attrs["bf_scale_factor"]` (script L43, L65) and
+nothing else: every mask value is 1 regardless of it. The live value has been 8
+since 2026-09-02, so the script's built-in default of 64 and the `SCALE_IB=8`
+text in its docstring are both stale. The script prints the
+active CB slots it found, which must match the CB's populated slot count.
+Deploying a CB without its matching IB leaves antennas out of the incoherent
+sum and breaks the CB-IB subtraction condition.
+
 ## Check transfer before deployment
 
-Review cross-day baseline residuals and a **stationary Cyg A transit** using the
-[calibration-check tutorial](check-calibration.md). The archived notebook also
-contains a tracking Cyg A coherence diagnostic; it is useful additional evidence,
-but it is not the stationary transit-shape test. Compare a control direction and
-keep source geometry, channel masks, and antenna membership matched.
+Review [cross-day baseline residuals](cross-day-phase.md) and a **stationary
+Cyg A transit** using the [calibration-check tutorial](check-calibration.md).
+The archived notebook also contains a tracking Cyg A coherence diagnostic; it
+is useful additional evidence, but it is not the stationary transit-shape test.
+Compare a control direction and keep source geometry, channel masks, and
+antenna membership matched.
+
+This build's own beam check, from `/beam_check/summary` in the
+[saved report](../_static/tutorials/calibration-walkthrough/report_aug23_exact512_CAL0823N.json):
+
+| Direction | Coherence |
+|---|---|
+| New cal | 0.0646 ± 0.0022 |
+| Previous cal | 0.0674 ± 0.0021 |
+| Null, 25° off | 0.0175 |
+
+The new calibration scored below the previous one, by a difference comparable
+to the quoted errors (ratio 0.957). Both sit well above the null, so both
+work. This evidence does not favour replacing the deployed calibration, and
+the product was not deployed.
 
 Inspect the actual populated hardware slots, all requested diagnostics, and the
-[saved report](../_static/tutorials/calibration-walkthrough/report_aug23_exact512_CAL0823N.json).
-A missing or **SKIPPED** diagnostic is not a passed check. Prepare the matching
-incoherent-beam companion and review CB/IB membership together.
+report itself. A missing or **SKIPPED** diagnostic is not a passed check.
+Review CB and IB membership together.
 
 ## Run the canonical build when ready
 
@@ -238,13 +317,13 @@ python -m bf_weights_generator.make_cal_and_weights \
 ```
 
 After checking inputs and resource needs, the same invocation without
-`--print-params` performs the build. Do not run it merely to view these examples.
-For new data, first prepare a reviewed configuration with the current layout,
-appropriate windows, and explicit antenna membership.
+`--print-params` performs the build; use `--print-params` to preview a
+configuration without running it. For new data, first prepare a reviewed
+configuration with the current layout, appropriate windows, and explicit
+antenna membership.
 
 Generating files does not deploy them. The separate [deployment guide](deploy-weights.md)
 covers inspected staging, human-approved upload, registry verification, and the
-additional persistent choice to **save restart defaults**. This walkthrough
-performs none of those operations.
+additional persistent choice to **save restart defaults**.
 
 [Notebook provenance, cell map, and implementation notes](../developer/calibration-walkthrough-notes.md).

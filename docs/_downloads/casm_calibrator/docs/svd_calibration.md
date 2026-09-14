@@ -29,6 +29,80 @@ svd_calibrate(fs, ant, *, data, config=None, time_mask=None) -> CalibrationResul
 is structurally different from the ref+target subset carried on `fs`. Accepting
 it positionally would make it easy to pass the wrong thing silently.
 
+### Input validation and masks
+
+`data` must provide `vis`, `freq_mhz`, and `time_unix` (mapping keys or
+attributes). The visibility cube must have nonempty `(T, F, B)` dimensions,
+with `B = n_inputs*(n_inputs+1)/2`. Both frequency axes must be finite `(F,)`
+arrays and match exactly in value and order. Time coordinates must be finite
+`(T,)` arrays; when `fs['time_unix']` is present it must match the data exactly.
+When it is absent, data timestamps are used. The wrapper preserves the supplied
+frequency order, including descending order; it does not sort or resample.
+
+At least two active antennas are required, with unique integer packet indices
+inside the visibility input range. Selected visibility samples, antenna
+positions used for fringe stopping, and source directions must be finite.
+The low-level solver also rejects empty, nonsquare, nonfinite, or single-antenna
+matrices and reference indices outside the matrix before SVD.
+
+Reader baseline metadata is checked before matrix construction. `inputs` must
+be a sorted, unique list of native packet indices describing the stored
+subtriangle; every active antenna must be present. Calibration remaps packet
+indices to subtriangle ranks and retains antenna IDs in the output. It checks
+`nsig` and `nsig_subset` against the cube, and rejects ref/targets-only data even
+when its baseline count happens to be triangular. Conflicting top-level and
+nested metadata raises `ValueError`. Without selection metadata, the historical
+full native triangle contract applies.
+
+This subset support is specific to `svd_calibrate(data=...)` and the matrix
+helper. The upstream `casm_vis_analysis.fringe_stop` wrapper rejects input
+subsets; normal composed workflows should read the full native triangle.
+
+`time_mask` must be `(T,)`, with at least one True sample. An explicit mask
+overrides `fs['time_mask']`, but cannot enable unavailable integrations.
+`valid_integrations` from data's top level, reader metadata, and `fs` are
+intersected with the selected time mask. Missing availability preserves legacy
+behavior; False and unknown (`None`) rows are excluded. Availability accepts
+booleans or numeric 0/1, rejects malformed values/shapes, and an empty available
+selection raises `ValueError` before matrix construction. Thus zero-filled
+missing file rows cannot masquerade as a valid phase-only solve.
+
+`freq_mask` must be `(F,)`; malformed masks raise
+`ValueError` before matrix construction in both per-channel and subband modes.
+Boolean conversion remains supported, and True means include/good. All-False
+frequency masks remain supported. The existing `zero`, `geo_fallback`, and
+`extrapolate` policies are unchanged, including their behavior when every
+subband fails. Samples excluded by the time mask do not enter the finite
+visibility check or time average.
+
+In subband mode, frequency-masked channels also do not enter the finite check
+or average. NaNs restricted to these excluded channels are permitted, and the
+chosen masked-band output strategy still applies. The direct subband helper
+follows the same rule. The legacy per-channel/block solver still processes
+every channel before applying its output mask, so it requires finite data
+throughout the selected time samples.
+
+Selected matrices with no nonzero cross-correlation signal raise `ValueError`
+before phase normalization, including diagonal-only data and baseline masks
+that exclude all cross signal. This guard is independent of the quality
+threshold and masked-band output strategy. PHASE_ONLY preserves exact zero
+entries instead of converting them to unit phasors. Zero spectra in individual
+channels, blocks, or subbands receive zero quality and do not pass even at
+threshold zero. Existing interpolation/fill policies can still reconstruct
+failed channels from other signal-bearing channels; this does not constitute
+a measured solution at those channels. Deliberately all-frequency-masked
+subband calls retain their existing masked-band policy.
+
+### Helper replacement compatibility
+
+The historical root imports `_build_hermitian_matrix`, `_build_baseline_mask`,
+and `_subband_svd_with_smooth_fit` remain callable. Replacing any of them at
+`casm_calibrator.<name>` intercepts `svd_calibrate` again. Root replacements
+take precedence over bindings in `casm_calibrator.calibration`; otherwise the
+orchestration module's bindings are used. Replacements should accept the new
+optional matrix keywords `input_indices` and `freq_mask` when those selections
+are requested. Patching arbitrary implementation internals is not a public API.
+
 ### Why fringe-stop before time-averaging
 
 `svd_calibrate` builds the Hermitian matrix by fringe-stopping each baseline
@@ -41,7 +115,10 @@ is automatic when `fs['source']` is set.
 
 `svd_calibrate` maps `fs['ref_ant']` (an antenna ID) onto the 0-indexed
 position in `sorted(ant.active_antennas())` and injects that as `ref_ant_idx`
-in the config. Do not set `ref_ant_idx` manually in `SVDConfig` when calling
+in a copy of the config; the caller's config is unchanged. An inactive or
+unknown reference raises `ValueError` before matrix construction, so the
+recorded `ref_ant_id` always identifies the actual solve reference.
+Do not set `ref_ant_idx` manually in `SVDConfig` when calling
 `svd_calibrate`; it will be overwritten. Set it only when calling
 `SVDCalibrator.calibrate` directly on an externally-built matrix.
 
@@ -164,7 +241,9 @@ It improves image SNR by ~18% but degrades beam-transit SNR. See
 the safer choice until further testing.
 
 If every subband fails, `_subband_svd_with_smooth_fit` returns all-zero gains
-and all-False flags with no error. Always check
+and all-False flags under the default `zero` strategy. `geo_fallback` still
+sets masked channels to unit gains and True flags; `extrapolate` sets their
+flags True even when no fit is available and gains remain zero. Always check
 `int(np.sum(cal['flags']))` before writing or deploying a calibration file.
 
 #### `min_baseline_wavelengths`
@@ -192,9 +271,8 @@ sigma_2. Default `None` preserves current behavior (no cut).
 | `source` | — | str | Calibrator source name |
 | `layout_version` | — | dict | Antenna layout provenance (when available) |
 
-The `CalibrationResult` TypedDict docstring in `__init__.py` lists `gains` as
-`(n_chan, n_ant)` but `svd_calibrate` returns the SVDResult convention:
-`(n_ant, n_chan)`. Use `cal['gains'].shape` to confirm before indexing.
+`CalibrationResult` is defined in `results.py` and re-exported from the package.
+Both its schema and the returned gains use `(n_ant, n_chan)`.
 
 ## Low-level engine
 

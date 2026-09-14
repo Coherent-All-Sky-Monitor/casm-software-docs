@@ -17,6 +17,24 @@ vis_stopped = vis * exp(1j * phase)
 
 This is the compose-friendly wrapper. It accepts the dict returned by `read_visibilities`, performs all intermediate steps internally, and returns a fully populated result dict.
 
+Reader availability is part of the science selection: `valid_integrations`
+from reader metadata and/or the top level is intersected with any supplied
+`time_mask` and the transit mask. Both masks are returned, aligned with the
+unchanged time axis. Explicit `False` and unknown (`None`) availability exclude
+rows; absent availability retains legacy all-available behavior. Invalid mask
+shapes/types and an empty valid selection raise `ValueError`. The historical
+never-rises fallback still honors availability and any supplied time mask.
+The returned arrays are not zeroed or shortened; downstream averaging must
+use the returned `time_mask`.
+
+Input-subtriangle metadata (`inputs` or `nsig_subset`) is rejected before
+geometry or native-packet indexing, even when its shape resembles a full
+triangle. Read a full native triangle, or explicitly map ranks and use the
+array-level primitive. Reader `ref`/`targets` selections remain supported
+only when their packet reference and target order match the requested active
+antenna set. Unsupported baseline conventions are rejected. Unlabeled legacy
+ref-target arrays retain the documented shape-based interpretation.
+
 ```python
 from casm_vis_analysis.fringe_stop import fringe_stop
 

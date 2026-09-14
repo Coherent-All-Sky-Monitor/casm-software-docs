@@ -34,6 +34,8 @@ class FringeStoppedData(TypedDict, total=False):
     sign: int
     target_aids: list
     target_labels: list
+    valid_integrations: np.ndarray
+    time_mask: np.ndarray
 
 
 # ---------------------------------------------------------------------------
@@ -212,6 +214,25 @@ def _vis_dict_get(data, key):
     return getattr(data, key)
 
 
+def _optional(data, key, default=None):
+    try:
+        return _vis_dict_get(data, key)
+    except (AttributeError, KeyError):
+        return default
+
+
+def _row_mask(value, n_time, name, *, unknown_is_false=False):
+    """Validate availability/selection without treating strings as booleans."""
+    arr = np.asarray(value, dtype=object)
+    if arr.shape != (n_time,):
+        raise ValueError(f"{name} must have shape ({n_time},), got {arr.shape}")
+    if any(not isinstance(v, (bool, np.bool_)) and
+           not (unknown_is_false and v is None) for v in arr):
+        raise ValueError(f"{name} must contain booleans" +
+                         (" or None (unknown)" if unknown_is_false else ""))
+    return np.array([False if v is None else v for v in arr], dtype=bool)
+
+
 def fringe_stop(data, ant, *, ref_ant, source, sign=-1,
                 min_alt_deg=10.0, rfi_mask=None) -> FringeStoppedData:
     """Compose-friendly fringe-stop.
@@ -233,7 +254,14 @@ def fringe_stop(data, ant, *, ref_ant, source, sign=-1,
       * full upper-triangle ``(T, F, n_inputs*(n_inputs+1)/2)`` — sliced
         internally via ``triu_flat_index``;
       * pre-filtered ``(T, F, n_targets)`` — used as-is when the baseline
-        count exactly matches ``len(active_antennas) - 1``.
+        count exactly matches ``len(active_antennas) - 1`` and any ref/targets
+        metadata matches the requested packet order. Input subtriangles
+        (inputs/nsig_subset metadata) are explicitly unsupported.
+
+    Returned time_mask intersects transit selection, any input time_mask,
+    and valid_integrations from the top level and reader metadata. Unknown
+    availability is excluded; absent availability preserves legacy behavior.
+    Empty valid selections raise ValueError. Array shapes are unchanged.
 
     The lower-level array primitives (``compute_baselines_enu``,
     ``geometric_delay``, ``fringe_stop_array``) remain available for
@@ -245,6 +273,28 @@ def fringe_stop(data, ant, *, ref_ant, source, sign=-1,
     vis = _vis_dict_get(data, "vis")
     freq_mhz = _vis_dict_get(data, "freq_mhz")
     time_unix = _vis_dict_get(data, "time_unix")
+    metadata = _optional(data, "metadata", {}) or {}
+    # A subtriangle's ranks are not native packet indices. Reject before any
+    # shape-based dispatch or geometry can silently relabel its baselines.
+    for container in (data, metadata):
+        if any(_optional(container, key) is not None
+               for key in ("inputs", "nsig_subset")):
+            raise ValueError("fringe_stop does not support inputs/nsig_subset subsets; "
+                             "read the full native triangle or use fringe_stop_array "
+                             "with explicitly mapped baselines")
+
+    valid_integrations = np.ones(len(time_unix), dtype=bool)
+    for container in (data, metadata):
+        availability = _optional(container, "valid_integrations")
+        if availability is not None:
+            valid_integrations &= _row_mask(
+                availability, len(time_unix), "valid_integrations", unknown_is_false=True)
+    selected_times = valid_integrations.copy()
+    supplied_time_mask = _optional(data, "time_mask")
+    if supplied_time_mask is not None:
+        selected_times &= _row_mask(supplied_time_mask, len(time_unix), "time_mask")
+    if not np.any(selected_times):
+        raise ValueError("No valid integrations remain for fringe_stop")
 
     active_sorted = sorted(ant.active_antennas())
     if ref_ant not in active_sorted:
@@ -253,13 +303,33 @@ def fringe_stop(data, ant, *, ref_ant, source, sign=-1,
             f"({active_sorted[:5]}{'...' if len(active_sorted) > 5 else ''})"
         )
     target_aids = [a for a in active_sorted if a != ref_ant]
+    ref_pidx = ant.packet_index(ref_ant)
+    target_pidxs = [ant.packet_index(aid) for aid in target_aids]
+    selection_marked = False
+    for container in (data, metadata):
+        stored_ref = _optional(container, "ref")
+        stored_targets = _optional(container, "targets")
+        convention = _optional(container, "baseline_convention")
+        if stored_ref is not None or stored_targets is not None:
+            selection_marked = True
+            if (stored_ref != ref_pidx or stored_targets is None or
+                    list(stored_targets) != target_pidxs):
+                raise ValueError("Reader ref/targets metadata does not match the requested "
+                                 "reference and active target packet order")
+        if convention is not None and (
+                stored_ref is None or convention !=
+                "V(ref,target) with conjugation when ref>target"):
+            raise ValueError("Unsupported baseline_convention for fringe_stop")
 
     # Slice ref<->target baselines if vis is full upper-triangle.
     # If shape exactly matches len(target_aids), assume pre-filtered;
     # otherwise treat as full triangle and slice. Order matters because
     # tiny mappings can produce ambiguous baseline counts.
     n_bl = vis.shape[-1]
-    if n_bl == len(target_aids):
+    if selection_marked and n_bl != len(target_aids):
+        raise ValueError("ref/targets metadata does not match the visibility baseline count")
+    native_nsig = _optional(metadata, "nsig")
+    if n_bl == len(target_aids) and (selection_marked or native_nsig is None):
         vis_used = vis
     else:
         n_full = int((-1 + (1 + 8 * n_bl) ** 0.5) / 2)
@@ -271,6 +341,10 @@ def fringe_stop(data, ant, *, ref_ant, source, sign=-1,
                 f"If you pre-filtered with different ref/targets, slice "
                 f"externally and call fringe_stop_array() directly."
             )
+        if native_nsig is not None and n_full != native_nsig:
+            raise ValueError("Native nsig metadata does not match the full baseline triangle")
+        if any(p < 0 or p >= n_full for p in [ref_pidx, *target_pidxs]):
+            raise ValueError("Requested antenna packet indices are outside the native triangle")
         ref_pidx = ant.packet_index(ref_ant)
         target_pidxs = [ant.packet_index(aid) for aid in target_aids]
         # The upper-triangle index expects i <= j. Some targets may have
@@ -356,6 +430,10 @@ def fringe_stop(data, ant, *, ref_ant, source, sign=-1,
         # Source never rises -- keep all samples and let the user decide.
         time_mask = np.ones(len(time_unix), dtype=bool)
 
+    time_mask &= selected_times
+    if not np.any(time_mask):
+        raise ValueError("No valid integrations remain in the transit/time selection")
+
     return {
         "vis": vis_used,
         "vis_stopped": fs["vis_stopped"],
@@ -365,6 +443,7 @@ def fringe_stop(data, ant, *, ref_ant, source, sign=-1,
         "freq_mhz": freq_mhz,
         "time_unix": time_unix,
         "time_mask": time_mask,
+        "valid_integrations": valid_integrations,
         "freq_mask": freq_mask,
         "source": source,
         "ref_ant": ref_ant,

@@ -1,5 +1,9 @@
 """Exercise the served documentation and capture desktop/mobile previews."""
 from pathlib import Path
+import argparse
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from threading import Thread
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,6 +19,9 @@ def main():
         page = browser.new_page(viewport={"width": 1440, "height": 1000})
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.goto(URL, wait_until="networkidle")
+        banner = page.locator("article .admonition").filter(has_text="isolated candidate software")
+        assert banner.count() == 1
+        assert banner.locator('a[href="developer/audit-release.html"]').count() == 1
         assert page.locator(".package-card").count() == 0
         assert page.locator("article figure img").count() == 1
         assert page.locator("article figure img").get_attribute("src").endswith(
@@ -68,6 +75,7 @@ def main():
         page.set_viewport_size({"width": 390, "height": 844})
         page.goto(URL, wait_until="networkidle")
         assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+        assert page.locator("article .admonition").filter(has_text="isolated candidate software").is_visible()
         page.screenshot(path=str(output / "mobile.png"), full_page=True)
         browser.close()
     assert not errors, errors
@@ -75,4 +83,20 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--local-build", action="store_true",
+                        help="Test this checkout on a temporary loopback port; leave 8070 untouched")
+    args = parser.parse_args()
+    if args.local_build:
+        handler = partial(SimpleHTTPRequestHandler, directory=str(ROOT / "_build/html"))
+        with ThreadingHTTPServer(("127.0.0.1", 0), handler) as server:
+            URL = f"http://127.0.0.1:{server.server_port}"
+            thread = Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                main()
+            finally:
+                server.shutdown()
+                thread.join()
+    else:
+        main()

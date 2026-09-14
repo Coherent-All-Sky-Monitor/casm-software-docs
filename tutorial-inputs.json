@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "date": "2026-09-14",
+  "scope": "Tutorial inputs only; source release snapshot owned separately.",
+  "retained_inputs": [
+    {
+      "path": "docs/_static/tutorials/imaging/allsky-saved.npz",
+      "sha256": "4b7942d6d5d3f5f7716f2c0d9635ff3a52c719e9a1fbfb99757f964bd424a39f"
+    },
+    {
+      "path": "docs/_static/tutorials/injections/frozen-records.json",
+      "sha256": "49c9cd579861e2a3c6b9f545a283a62372279ce4489dc3d31a5b8bd58474cd35"
+    }
+  ],
+  "voltage": {
+    "path": "/mnt/nvme4/data/casm/cand_dumps/stream_1/2026-08-02-14:32:06_0205375108055040.000000.dada",
+    "bytes": 4152365056,
+    "seconds": 0.01,
+    "stream": 1,
+    "snap": 0,
+    "hash_scope": "4096-byte header only; full 4GB file deliberately not hashed",
+    "header_sha256": "f0218f7913bf9ec2a80e6a3e9fe7308ecafc09a9c2c9b43a7b3125f67292b729"
+  },
+  "checks": {
+    "voltage": "all Python blocks",
+    "imaging": "Python block 1, saved-product redraw only",
+    "injection": "Python block 1, frozen record only",
+    "visibility_solar": "Previously verified; not regenerated",
+    "historical": "Archived notebook figures retained; exact raw inputs/runtime unavailable, not rerun",
+    "rank1": "all Python blocks, scripts/render_rank1_tutorial.py, 2026-08-23 Sun window, 17 GB peak",
+    "transit": "all Python blocks, scripts/render_cyga_tutorial.py, 2026-08-24 Cyg A transit, 29 GB peak",
+    "static": "all Python blocks, scripts/render_static_template_tutorial.py, 16 GB peak",
+    "cross_day_phase": "all Python blocks, scripts/render_cross_day_phase_tutorial.py, 5 GB peak",
+    "rfi_delay": "all Python blocks, scripts/render_rfi_delay_tutorial.py, 10 GB peak",
+    "beamdump": "all Python blocks, scripts/render_beamdump_tutorial.py"
+  },
+  "figures": [
+    {
+      "path": "docs/_static/tutorials/io/voltage-single-stream.png",
+      "sha256": "2258e322d94643df728304e910fc34048d1418faebe0d6609ddf668fa7f457a2"
+    },
+    {
+      "path": "docs/_static/tutorials/imaging/allsky-saved.png",
+      "sha256": "49395d21cb5dd21c1725f17b5d03cfa777fea4bd0c1a5883d6af7d9b86b22ab2"
+    },
+    {
+      "path": "docs/_static/tutorials/injections/inj_20260913_0023.png",
+      "sha256": "33d762b9cdf9b57ebeb92f4b4d4c50ba6eef6777b7a72bed9aabdfa9687faf2d"
+    },
+    {
+      "path": "docs/_static/tutorials/calibration/rank1-vs-freq.png",
+      "sha256": "c6fdd81d378adea48dfa731f0325387ab4a4a7ea2d0a0ff4c6dc00a4ff5f8f13"
+    },
+    {
+      "path": "docs/_static/tutorials/calibration/svd-vs-freq.png",
+      "sha256": "16b94fb2834895b7ead7fb0c696a96717711409da7ca9b767fea4876e16b26e0"
+    },
+    {
+      "path": "docs/_static/tutorials/transit/cyga-beam-power.png",
+      "sha256": "b6168f2dc67dc0f45d549198d16d45f57b8b263ce664edfb19bd2365bcabc601"
+    },
+    {
+      "path": "docs/_static/tutorials/transit/cyga_stationary_beam_20260805.png",
+      "sha256": "f81295a82c8d37f7a496110e84e30675599321a41f148f5cbaf449372149ad96"
+    },
+    {
+      "path": "docs/_static/tutorials/phase/cross-day-phase.png",
+      "sha256": "08dde31c8c420a2d9ff7933c3719af0df4e9ee4dfc0568d61d4fff2cae68e4ad"
+    },
+    {
+      "path": "docs/_static/tutorials/static/quiet-window-altitudes.png",
+      "sha256": "edfd72b123d4abb1635cd4345f7d306cf594674d0d694c9f576890f21c32e6db"
+    },
+    {
+      "path": "docs/_static/tutorials/static/template-vs-deployed.png",
+      "sha256": "3bc446173b1d28c840bb9d063425b70047ae9ac10b2df348d2951c0359ce5dd9"
+    },
+    {
+      "path": "docs/_static/tutorials/static/sun-baseline-before-after.png",
+      "sha256": "563be6d43e5ba43c7891e26f7cc5eb9977ec4318d7290562cbff2f0d9d76eb8d"
+    },
+    {
+      "path": "docs/_static/tutorials/delay/rfi-mask-spectrum.png",
+      "sha256": "9580ecf572796c183a40f456bfff7a515fe95f355283f8d9591ca66c75275741"
+    },
+    {
+      "path": "docs/_static/tutorials/delay/delay-phase-vs-freq.png",
+      "sha256": "dea3c47e7d0922438d3cf4d214f567e41d8b2b77f31ca2bbb5c37af51c2be299"
+    },
+    {
+      "path": "docs/_static/tutorials/filterbank/beamdump-quicklook.png",
+      "sha256": "308b3cc8c35158fc1ffe2e50bba65fc3d0578fe3f30d0e4404a1134aebcafe8c"
+    }
+  ],
+  "limits": {
+    "resident_memory_mib": 900,
+    "non_voltage_address_space_bytes": 1073741824,
+    "timeout_seconds_per_example": 90,
+    "workers": 1,
+    "blas_threads": 1,
+    "scope": "scripts/check_bounded_tutorials.py cases only; full-data renders are unbounded"
+  }
+}

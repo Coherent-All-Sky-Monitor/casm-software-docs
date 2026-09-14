@@ -111,6 +111,37 @@ v = result.vis[:, :, bl_idx]
 
 `inputs` is mutually exclusive with `ref`/`targets`; passing both raises `ValueError`. `metadata["nsig_subset"]` records the subset size and `metadata["baseline_convention"]` spells out the indexing rule.
 
+### Metadata and validity when stitching
+
+`read_visibilities()` preserves the reader's resolved `inputs`, `nsig_subset`,
+`baseline_convention`, `ref`, `targets` (including automatically chosen targets),
+and native `channels` (including ranges resolved from MHz).
+
+`metadata["observation_metadata"]` is a list in concatenation order containing
+each observation's complete reader metadata, including `base_str`, `data_dir`,
+`files`, integer-keyed `file_headers`, `missing_files`, and `short_files`.
+Use this list for lossless provenance: file index 0 in two observations refers
+to two different files. For compatibility, top-level `file_headers` remains
+integer-keyed and keeps the **first** header at a repeated index; it is only a
+legacy projection. Top-level `missing_files` is the sorted union of missing
+indices; the observation records identify which observation each belongs to.
+
+Both reading APIs expose `metadata["valid_integrations"]`, a list aligned with
+the returned time axis: `True` means read from a file, `False` means zero-filled
+for a missing file. This is availability, not a scientific quality flag; valid
+data can also be zero. A stitched legacy/custom reader result without this
+field receives `None` entries (unknown), rather than inferred validity.
+
+Existing missing-data behavior is retained: explicit `nfiles` reads warn and
+zero-fill absent files, time-window reads raise for missing required indices,
+and a read without time/file limits reads available files only. Whole-integration
+short files return only their available rows; `short_files` lists omitted
+requested local integration intervals as `file_index`, `start_integration`,
+`stop_integration` (exclusive). Inter-observation `gaps` remain separate and are
+not filled with rows. Empty or partial-integration payloads raise `ValueError`
+on both full and subset reads. Stitching rejects inconsistent input counts,
+integration times, selections, or returned frequency axes.
+
 ### Parallel reads (`workers=`)
 
 Files are read in parallel by default. `workers` sets how many files are read concurrently; it defaults to `min(8, n_files)` and is overridden by the `CASM_IO_WORKERS` environment variable. Results are assembled in file order, so output does not depend on the worker count.
@@ -287,11 +318,26 @@ Pass `verbose=False` to silence all output.
 
 **`nfiles` and `time_end` are mutually exclusive** in `VisibilityReader.read()`. Passing both raises `ValueError`.
 
-**Frequency order**: native order is descending (highest channel first). Channel 0 is the highest frequency. `freq_range_to_channels(lo, hi)` returns `(ch_start, ch_end)` where `ch_start` corresponds to `freq_hi` because higher frequency = lower channel index.
+**Frequency order**: CASM's usual native order is descending (highest channel first).
+Ascending-native formats are also supported: positive header `CHANBW` means
+`FREQ_START` is the lowest, first stored channel. `channels` and
+`freq_range_to_channels(lo, hi)` always index native storage. `freq_order`
+selects ascending or descending output and reverses data and labels together.
+For format objects, `freq_top_mhz` is always the highest channel center;
+`freq_bottom_mhz` retains the legacy value `freq_top_mhz - nchan * chan_bw_mhz`.
 
 ## Known issues
 
-**`OverflowError: memory mapped length must be positive` on a window spanning a part-0/part-1 file boundary.** Observed on obs `2026-09-02-01:22:46` for the window 01:48-02:28 UTC. Open bug, not yet fixed.
+**Historical part-boundary OverflowError:** reported for observation
+`2026-09-02-01:22:46`, 01:48–02:28 UTC. Tiny on-disk fixtures crossing `.dat.0`
+and `.dat.1` pass with sequential/parallel reads and both native frequency
+orders. A truncated header can leave a negative payload length; the reader
+now rejects it before constructing a memory map, with a path and byte count
+in `ValueError`. Running this tiny truncated-header regression against the
+pre-fix reader reproduced the exact `OverflowError: memory mapped length must
+be positive`. This guards a reproducible malformed-file failure path, but
+the original production observation was not read during this audit and its
+specific failure remains unverified.
 
 ## Low-level utilities
 

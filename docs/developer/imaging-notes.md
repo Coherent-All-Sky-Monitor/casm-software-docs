@@ -5,9 +5,10 @@ cross-correlations toward chosen directions. Start with a few integrations to
 check coordinates, antenna membership and signs; a complete source transit is
 a separate, larger experiment.
 
-These examples are illustrative, checked against source code, and have not been
-executed on telescope observations. They read existing data and calibration
-products. They do not generate or upload beamformer weights.
+These blocks read existing data and calibration products. They do not generate
+or upload beamformer weights. A runnable source-centred image with a real
+calibration and window is in the
+[imaging tutorial](../guides/image-visibilities.md).
 
 ## An existing observation: Cyg A through and after transit
 
@@ -182,7 +183,7 @@ Their agreement over a short window is only a consistency check.
 For stationary Cyg A validation, extend the selected window deliberately,
 retain off-transit coverage, and add a fixed off-source control chosen using
 the exact array factor. A nearby beam can contain a sidelobe response and is
-not automatically a null. See [Check a calibration with a Cyg A transit](../guides/check-calibration.md).
+not automatically a null. See [Beamform toward Cyg A and check a calibration](../guides/check-calibration.md).
 
 ## 4. Make a small source-tracking dirty image
 
@@ -255,48 +256,15 @@ Keep the scientific interpretation with the canonical wiki's
 `beam-response-interpretation.md`; a calibration that works in one direction
 need not transfer to all directions.
 
-Source inspection on 2026-09-13 used these local revisions:
+Figure source: `/home/casm/software/dev/casm_vis_analysis/notebooks/casm_calibration_and_beamforming.ipynb`,
+zero-based cell 33, first and second PNG outputs. Cell 1 records the June-28
+source windows, June-27 static night and `cal_sun_2026_06_28_thr1.h5` output
+name. Cell 33 calls `image_around_source(grid="lm")` for the two windows.
+These are historical outputs, not a fully reconstructed execution environment;
+asset extraction preserved the PNG bytes without re-rendering.
 
-- `casm_io`: `22ef826d9f2ba355388523265081da1468e5a4ff`.
-- `casm_vis_analysis`: `5039eb4714b5c62eb72b6b8f82527c787ca4f214`.
-- `bf_weights_generator`: `06004c75afad0af6ea3f3f2206944f342cb04730`.
-- `casm-bf-imaging`: `99abb35796a21dbd1d4770904fc28397c36d3383`.
-  Local commit ownership was checked against Vishnu's author identity, in
-  addition to the canonical wiki's software-map routing.
-
-The inspected imaging and weights-generator repositories were clean. The
-I/O checkout had untracked example data; visibility-analysis had edited and
-untracked notebooks and plots. The inspected module files were unchanged.
-The figures above were extracted from committed notebook content, avoiding
-the edited working-copy notebook's different date settings.
-
-Figure source: `/home/casm/software/dev/casm_vis_analysis/notebooks/casm_calibration_and_beamforming.ipynb`
-at commit `36ed400367f8e5b448b445adedc36b49f3b915c9`, zero-based cell 33,
-first and second PNG outputs. Cell 1 records the June-28 source windows,
-June-27 static night and `cal_sun_2026_06_28_thr1.h5` output name. Cell 33
-calls `image_around_source(grid="lm")` for the two windows. The imaging code
-reference is the `99abb35` change described by the wiki's June timeline and
-the notebook's July-8 imaging milestone; the notebook does not embed a
-complete runtime dependency lock or an immutable layout-file hash. These
-are historical outputs, not a fully reconstructed execution environment.
-
-Asset extraction preserved the PNG bytes without re-rendering. Notebook and
-asset SHA-256 digests:
-
-```text
-757ae658733d2a826880a96d1d5164ca789750a31b9dad5f91363ce09c629b41  committed notebook
-fb6a3809f9473214fed0c1e71a09acd8ad0c0ad69f163f74f4383cb33cbbe286  cyga-transit-lm.png
-648a140a0fe3c95cb75e8ac76b64b3c30dc00917653ee4f12af15322801fd7f5  cyga-post-transit-lm.png
-```
-
-Inspected file SHA-256 digests (paths relative to their owning repositories):
-
-```text
-c2cf1b1a38714bd463cc1e050585abd396fb8487ca9f6d16f65978f9cf83a60a  src/casm_vis_analysis/beam_power.py
-fc97309e31fc7eafde7c680036b6469bc269927c3d0a1eef4688c8aeb5b1f0c3  casm_imaging/imaging/pipeline.py
-480e11748447bbc83179d6bee7e90595432481d2bc519bcf6fa59d4e2110e665  casm_imaging/imaging/calvis.py
-acda09c43fa9ca2fd2d161b4efb0322d3383cd9958557441e7c9f3eac3b8bf75  casm_imaging/imaging/psf.py
-```
+Source revisions and file hashes: `source-snapshot.json` and
+`tutorial-inputs.json` in the repository.
 
 Preserve input file identities, the dated layout and selected antenna IDs,
 calibration hash, requested and actual time coverage, frequency centers,

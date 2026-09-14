@@ -126,6 +126,12 @@ An observation ID is its start timestamp. An observation may run many hours; che
 
 ## casm-fit-positions
 
+Argument parsing remains in `cli.fit_positions_main`; execution lives in
+`position_fit_runner.run_fit_positions(args, argument_error=...)`. The runner
+accepts the parsed namespace. CLI defaults, numerical kernels, plots, and
+corrected-layout output are unchanged. Position-fit NPZ `mask` and kernel
+`freq_mask` arguments use **True = good**.
+
 Fit antenna ENU positions by minimising circular variance of fringe-stop coherence vs position offset. Used to correct position entries in the layout CSV.
 
 ```bash
@@ -191,6 +197,27 @@ Extra flags:
 | `--output` | — | Save the validation figure to this path |
 
 ## casm-layout
+
+Beamforming review is separate from wiring truth. Rebuilds preserve
+`include_in_beamforming` only for unchanged identities:
+`(snap, adc, row, col, snap_ip, slot, antenna_part_num)`. Renumbering the
+`antenna` column or changing surveyed coordinates does not discard review.
+Both reviewed exclusions (0) and inclusions (1) survive for functional feeds.
+New, replaced, moved, rewired, previously nonfunctional, or ambiguous feeds
+default to **0**, even when CAsMan says `functional=1`. Missing part numbers
+match only missing part numbers on otherwise identical wiring; losing or
+gaining a known part number requires review. Legacy layouts without a gate and
+first builds start excluded. No gate is inferred from `functional`.
+
+Inspect `preview -o candidate.csv` and the wiring diff, review antenna health,
+then explicitly set `include_in_beamforming=1` for approved feeds in the
+resulting consumer layout. `--yes` and `--force` do not approve beamforming
+inclusion. Existing exclusions require an explicit edit to re-enable them.
+Gate changes appear in the metadata diff, and the command reports the number
+of excluded wired feeds. Preview and apply use the same preservation policy.
+The legacy `casm-build-layout` also preserves review from `current` (or the
+newest dated/legacy layout) in the output directory, falling back to the
+existing explicit output file when no current layout can be resolved there.
 
 The primary interface to the antenna-layout pipeline. Wraps the two
 lower-level stages below (`casm-sync-wiring`, `casm-build-layout`) behind

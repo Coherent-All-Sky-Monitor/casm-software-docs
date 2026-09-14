@@ -2,23 +2,35 @@
 
 This example plots 30 seconds from an archived solar observation: August 20,
 2026, 01:12:15–01:12:45 UTC, or August 19, 18:12:15–18:12:45 PDT at OVRO.
-It uses a single-beam filterbank, not visibilities.
+It uses a single-beam filterbank, not visibilities. On a new day, make that
+filterbank first: [convert a beam dump to a
+filterbank](beamdump-to-filterbank.md).
 
 ## Extract a short interval
 
 Run in `casm_offline_env`. The reader seeks directly to the selected samples,
-so this example reads about 352 MB rather than the full 77 GB file. The sample
-numbers below select this particular observation's 30-second window.
+so this example reads about 352 MB rather than the full 77 GB file. Compute the
+sample numbers from the header rather than copying them: `tstart` is the MJD of
+sample 0 and `tsamp` the sample interval in seconds.
+
+```python
+from astropy.time import Time
+from casm_io.filterbank.header import read_sigproc_header
+
+fil = "/mnt/nvme5/solar0819/solartrack_fil/ib_IB.fil"
+header, _ = read_sigproc_header(fil)
+t_utc = Time("2026-08-20T01:12:15", format="isot", scale="utc")
+start_sample = round((t_utc.mjd - header["tstart"]) * 86400.0 / header["tsamp"])
+nsamples = round(30.0 / header["tsamp"])   # 30 s window
+print(start_sample, nsamples)              # 2667427 28610
+```
 
 ```python
 from casm_io.filterbank.split import split_filterbank
 from casm_vis_analysis.solar_waterfall import plot_waterfall
 
 cutout = "solar_IB_20260820_011215.fil"
-split_filterbank(
-    "/mnt/nvme5/solar0819/solartrack_fil/ib_IB.fil",
-    cutout, start_sample=2667427, nsamples=28610,
-)
+split_filterbank(fil, cutout, start_sample=start_sample, nsamples=nsamples)
 ```
 
 This creates a new filterbank with its start time adjusted automatically. The
@@ -36,6 +48,19 @@ plot_waterfall(
 
 `tfac=48` averages 48 input samples per time bin, about 50 ms here. The output
 below was regenerated with these calls using the current installed modules.
+
+The same plot from the shell, one filterbank per run:
+
+```bash
+python -m casm_vis_analysis.solar_waterfall solar_IB_20260820_011215.fil \
+  --out-dir . --beam IB --tfac 48 --tz America/Los_Angeles --cmap inferno
+```
+
+`--chans I,J,K,L` picks the light-curve channels, `--role` appends a label such
+as `Null` to the title, and `--out-name` sets the PNG basename. The
+`casm-solar-waterfall` console script declared by `casm_vis_analysis` calls the
+same entry point; it is absent from the installed `casm_offline_env`, so use
+the module form there.
 
 ```{figure} ../_static/tutorials/solar/solar-waterfall.webp
 :alt: Incoherent-beam solar dynamic spectrum, mean bandpass and channel light curves around 18:12:30 PDT on August 19 2026.
@@ -98,4 +123,13 @@ cannot resolve the short burst structure in the historical filterbank example.
 The [monitoring guide](monitoring.md) describes the preview's selection and
 provenance.
 
-[Source, data, and verification notes](../developer/solar-example-notes.md).
+## Provenance
+
+Data: `/mnt/nvme5/solar0819/solartrack_fil/ib_IB.fil` (header `tstart=61272.01780093231`,
+`tsamp=0.001048576` s, `nbeams=1`). `start_sample=2667427` selects
+2026-08-20 01:12:15 UTC; `nsamples=28610` covers the 30-second window. Solar
+identification for this event is independent of this plot: see casm-wiki
+`solar-burst-2026-08-20.md`.
+Figure rendered by the shared dynamic-spectrum renderer (`plot_waterfall`) from the
+saved 30-second cutout; the colour bar is power divided by the channel mean and the
+displayed frequency axis increases upward.

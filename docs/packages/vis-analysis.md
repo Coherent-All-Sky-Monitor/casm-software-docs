@@ -5,11 +5,11 @@ fringe-stopped data, delay estimates, and synthesized-beam checks. Start here
 when investigating an antenna, a phase change, or whether calibration transfers
 to another source or observing day.
 
-The foundational examples describe revision `5039eb4714b5`, inspected on 2026-09-13.
-Examples are illustrative and were checked against source signatures; they have
-not been executed against telescope data for this preview.
-The prepared-array solar renderer was added at `af8ecd0`; see the
-[solar waterfall guide](../guides/solar-waterfall.md) and refreshed API snapshot.
+Source revisions and file hashes: `source-snapshot.json` in the repository.
+Examples are illustrative and were checked against source signatures; they
+have not been executed against telescope data for this preview.
+`plot_dynamic_spectrum` renders a prepared amplitude array with the same style as
+`plot_waterfall`; see the [solar waterfall guide](../guides/solar-waterfall.md).
 
 ## Choose a task
 
@@ -107,6 +107,12 @@ Antenna IDs, packet indices, SNAP ADC indices, and baseline-array indices are
 different namespaces. Use `AntennaMapping` and `casm_io` baseline helpers.
 The fringe-stop function handles reference/target ordering and conjugation.
 
+`fringe_stop` intersects `valid_integrations` with input and transit time masks;
+an empty valid selection raises. It rejects unsupported input-subset triangles
+before baseline indexing and validates labeled reference/target ordering.
+Use the full native triangle for the fringe-stop/calibration workflow rather
+than treating a plotting subset as a relabeled full observation.
+
 `run_waterfall` reads a subset triangle for the selected inputs. Its returned
 `inputs` and `nsig` describe that subset; indices from the full correlator
 triangle cannot be reused directly. `run_autocorr` and `run_fringe_stop` do not
@@ -138,6 +144,6 @@ read-only diagnostic examples here.
 
 ## Upstream reading
 
-- [README](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/README.md)
-- [Fringe stopping](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/docs/fringe_stop.md)
-- [Beam validation](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/5039eb4714b5c62eb72b6b8f82527c787ca4f214/docs/beam_validation.md)
+- [README](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/main/README.md)
+- [Fringe stopping](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/main/docs/fringe_stop.md)
+- [Beam validation](https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis/blob/main/docs/beam_validation.md)
