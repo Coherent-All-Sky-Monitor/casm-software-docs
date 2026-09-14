@@ -80,7 +80,7 @@
     },
     {
       "repository": "casm_vis_analysis",
-      "revision": "9ec630267fb8a5c4df3a6ff964c58539a38c7084",
+      "revision": "af8ecd07fcd761cb733d622c266a8d2188444414",
       "remote": "https://github.com/Coherent-All-Sky-Monitor/casm_vis_analysis",
       "tracked_changes": [
         "notebooks/casm_calibration_and_beamforming.ipynb",
@@ -93,13 +93,13 @@
         "src/casm_vis_analysis/sources.py": "b005477ce6ed7acc3efeeb788ba3b97a7a3e28d16e6b22b122424850d96ea272",
         "src/casm_vis_analysis/fringe_stop.py": "8c12b5c4323c927c8d5b293002716fb5688ea4ed62e7f85a32254a4db7c29ae4",
         "src/casm_vis_analysis/delay.py": "b1541157146dd30b9866fc8e8cb1c88999392fe868a0faa1c89ec9f056d05e1d",
-        "src/casm_vis_analysis/solar_waterfall.py": "5553a9572f9fc20a50d7a18c5ca45b2f68a459cea39f2cd0e8d4ac3fa749a188",
+        "src/casm_vis_analysis/solar_waterfall.py": "034bcf149a27b9826b9dbfafd4de4c207f48547e8cc9d81278597819553ad849",
         "src/casm_vis_analysis/beam_power.py": "c2cf1b1a38714bd463cc1e050585abd396fb8487ca9f6d16f65978f9cf83a60a",
         "src/casm_vis_analysis/plotting/phase_freq.py": "b2db11cb02150de51090e8d9f5e62f9b8dd559fe3f638c44bb1218ea7d139a09",
         "AGENTS.md": "27ab631a28befdec14fb4df73fe3488ea97d7719b0fd6fa64147f9c428b7180f",
         "CLAUDE.md": "1fab48f5b680b76a2d686909218d0f8bba3745c693daacdd0c05928b5a3fa068",
         "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
-        "README.md": "114ac1df0591b867cb8dbb7f16ed740155d799c70a47972511a48c3b13443a49",
+        "README.md": "ed21c4cdc59ed3e34f828a8439e756a03e9c550ad438400cb5da835193ad082f",
         "docs/beam_validation.md": "863a95022bfd0fff97e8fcc359ee8cc7e337df228e83a538e968b1ed80e711fb",
         "docs/cli_reference.md": "29a00d53b10b23cc654bd1471e777fa30f4bd89d912340039ac21b7c63de21ab",
         "docs/delay.md": "8e0d36b94c8009f5c95820d0d4b308c05d0126b50a05f471684ffcc0471d4c23",
@@ -144,6 +144,7 @@
         "tests/test_output.py": "2c71cc471d4315cd62f3a68dd1550abeecf5f452d28e020db933b3863a743cef",
         "tests/test_phase2_additions.py": "e7aa576147dcd6b84bc7892d07da341fe7f2bcb85844959b9f05efb14a244e5d",
         "tests/test_position_fit.py": "9fb5d30d691f7b0e1260ae8c68834adb6a6838b134bdb9e25ba4f75666bbc64d",
+        "tests/test_solar_arrays.py": "8458e1fed3392ea39cf05b84f9bbca032cbb2f7468bfd1a64a8c3a93e027ab58",
         "tests/test_sources.py": "1c8ea5b280c560796ac620fd4b92e62ef1241db64b8b3a06f80ff7cdf8e3dcca",
         "tests/test_waterfall_subset.py": "1d29a0e3adeab8d0e21098f690eb4abc90f2eaf0104ca049735b8acc780e80df"
       },
@@ -179,5 +180,5 @@
       "package_version": "1.0.0"
     }
   ],
-  "snapshot_id": "49b7cd30e5ea5d94"
+  "snapshot_id": "e4a399424ca726e2"
 }

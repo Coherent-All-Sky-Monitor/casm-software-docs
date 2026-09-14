@@ -88,6 +88,7 @@ packages/calibrator-api
 
 guides/generate-weights
 guides/deploy-weights
+guides/monitoring
 ```
 
 ```{toctree}

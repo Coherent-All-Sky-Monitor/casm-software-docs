@@ -73,7 +73,7 @@ for fresh checkouts. Third-party repositories are outside this rollout.
 | `casm-bf-imaging` | Sky imaging tutorial and imaging notes |
 | `casm_t2` | T2/T3 guide, injection recovery and event-storage paths |
 | `casm_t3` | T2/T3 guide, event plots, labels and saved products |
-| `casm_monitor` | Monitoring-facing workflow descriptions and links when covered |
+| `casm_monitor` | `guides/monitoring.md`, solar prepared-array guidance, injection evidence and artifact links |
 
 ## Automation to add after review
 

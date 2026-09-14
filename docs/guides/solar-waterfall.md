@@ -68,4 +68,34 @@ For another existing filterbank, `plot_waterfall` reads its entire duration.
 Extract a short interval first for a quick look. For solar visibility phase,
 continue to [the phase tutorial](solar-phase.md).
 
+## Use the same style with prepared visibility amplitudes
+
+The monitor uses `plot_dynamic_spectrum` from the same module for a bounded
+array already loaded from its visibility cache. It accepts real nonnegative
+`(time, frequency)` samples, Unix bin-centre timestamps and monotonic frequency
+centres in MHz. It does not read data or identify the signal as solar.
+
+```python
+from casm_vis_analysis.solar_waterfall import plot_dynamic_spectrum
+
+# amplitude and axes come from a selected, documented visibility baseline.
+figure = plot_dynamic_spectrum(
+    amplitude, time_unix, freq_mhz,
+    title="CASM correlated amplitude: selected baseline",
+    quantity="Correlated amplitude", integration_s=integration_seconds,
+)
+```
+
+This is an API example with prepared-array placeholders, not the recipe for
+the archived filterbank figure above. The renderer leaves missing integrations
+and invalid channels as gaps. Its interval-dependent normalization is shared
+with `plot_waterfall`; a zero channel mean is masked. With no output path it
+returns a Figure, otherwise it saves and closes the figure and returns the path.
+
+A visibility magnitude is correlated amplitude in instrumental units, not a
+recorded beam-power stream or calibrated solar flux. At correlator cadence it
+cannot resolve the short burst structure in the historical filterbank example.
+The [monitoring guide](monitoring.md) describes the preview's selection and
+provenance.
+
 [Source, data, and verification notes](../developer/solar-example-notes.md).

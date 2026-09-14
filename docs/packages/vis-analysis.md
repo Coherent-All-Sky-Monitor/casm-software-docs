@@ -5,9 +5,11 @@ fringe-stopped data, delay estimates, and synthesized-beam checks. Start here
 when investigating an antenna, a phase change, or whether calibration transfers
 to another source or observing day.
 
-This page describes source revision `5039eb4714b5` inspected on 2026-09-13.
+The foundational examples describe revision `5039eb4714b5`, inspected on 2026-09-13.
 Examples are illustrative and were checked against source signatures; they have
 not been executed against telescope data for this preview.
+The prepared-array solar renderer was added at `af8ecd0`; see the
+[solar waterfall guide](../guides/solar-waterfall.md) and refreshed API snapshot.
 
 ## Choose a task
 

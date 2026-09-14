@@ -1,20 +1,22 @@
 # Solar example provenance and limits
 
-Tutorial figures were checked on 2026-09-13. No source package was edited or
-recording requested. Python signatures and rendering options were checked against
-`casm_vis_analysis` revision `5039eb4714b5c62eb72b6b8f82527c787ca4f214`.
+Tutorial figures were checked on 2026-09-13. The filterbank figure was subsequently
+refreshed for the shared dynamic-spectrum renderer at `casm_vis_analysis`
+revision `af8ecd0`; the phase example remains checked against revision
+`5039eb4714b5c62eb72b6b8f82527c787ca4f214`. No recording was requested.
 Per-figure inputs and execution details follow.
 
 ## Three-panel filterbank waterfall
 
-Regenerated on 2026-09-13 by executing the tutorial's `split_filterbank` and
-`plot_waterfall` calls, changing only output paths to the documentation tree.
+Extracted on 2026-09-13 using the tutorial's `split_filterbank` call. Refreshed
+for renderer `af8ecd0` using the same saved bounded cutout and tutorial
+`plot_waterfall` parameters; the full source observation was not read again.
 Output: `docs/_static/tutorials/solar/solar-waterfall.png`, SHA256
-`164fdb5eb1dd6cbd47ab724e0bfb056e27173f3a5f37cf91657a531350973215`.
+`219778e56396cde990cd506507de25a421d8c1c089ccca40e9877677edb46610`.
 
 The site displays a WebP copy made by `scripts/prepare_web_figures.py` with
-Pillow, quality 90, at the original dimensions. It is 439,596 bytes instead
-of the PNG's 2,527,628 bytes (83% smaller). This is lossy web compression,
+Pillow, quality 90, at the original dimensions. It is 635,990 bytes instead
+of the PNG's 1,735,811 bytes (63% smaller). This is lossy web compression,
 not a new science rendering; the original PNG remains linked in the tutorial.
 Regenerate the WebP after changing the PNG. Both versions were visually checked.
 
@@ -32,19 +34,20 @@ Extraction used `casm_io.filterbank.split.split_filterbank` at revision
 `22ef826d9f2ba355388523265081da1468e5a4ff`; module SHA256
 `a64cc9335d8abd07bceddcfebb8bd42ced420c96db6095b4c6be838cc3227f18`.
 Its seek-and-read path fetched 351,559,680 payload bytes. The combined
-extraction and rendering took 4.40 seconds with peak RSS 810,852 KiB.
+original extraction and rendering took 4.40 seconds with peak RSS 810,852 KiB.
 No conversion of the whole observation or new science implementation was used.
 
 Renderer: `src/casm_vis_analysis/solar_waterfall.py`, SHA256
-`5553a9572f9fc20a50d7a18c5ca45b2f68a459cea39f2cd0e8d4ac3fa749a188`.
+`034bcf149a27b9826b9dbfafd4de4c207f48547e8cc9d81278597819553ad849`.
 Parameters: `beam="IB"`, `tfac=48`, `tz="America/Los_Angeles"`,
 `cmap="inferno"`; default channel selection `(505, 1200, 1500, 2000)`.
 The renderer averages 48 samples per bin (50.331648 ms), retaining 596 complete
 bins and dropping two final samples. It divides each channel by its temporal
 mean over those bins, including the burst, and clips the waterfall colour range
-at the fifth/ninety-fifth percentiles. It provides no colour bar. Peak values
+at the fifth/ninety-fifth percentiles. The colour bar explicitly labels power
+divided by the channel mean. Peak values
 are not calibrated fluxes, and are not directly comparable to an off-event
-baseline excess. The descending frequency axis was visually checked against
+baseline excess. The increasing displayed frequency axis was visually checked against
 the bandpass and channel-frequency labels.
 
 The solar identification is historical, not derived from this plotting run.
