@@ -3,7 +3,16 @@
 The dark monitoring workspace runs separately at **http://localhost:8061/**.
 Observation, Readiness and Antennas are the primary tabs. The monitor on 8060,
 T2/T3 on 8050, scratchpad on 8501 and Medusa remain unchanged. Forward port
-8061 to use the preview remotely. No Plotly code is loaded by this interface.
+8061 to use the preview remotely. The page background is black and no Plotly
+code is loaded. Imaging is removed from this preview's navigation and frontend
+routes because the operator rejected its current plots. Other viewers and
+the existing scientific/backend imaging implementation remain unchanged.
+
+The opening page automatically shows rolling-24-hour T1 distributions, a
+long N-S baseline phase waterfall and an amplitude dynamic spectrum, alongside
+injection recovery. No Render click is required. Visible live pages refresh
+every two minutes. Choosing a historical day/range pauses rolling; **Live ·
+rolling 24 h** restores it. Automatic views use bounded cache reads only.
 
 ## Start with recovery and search pressure
 
@@ -14,7 +23,8 @@ unavailable, not zero failures. The seven-day trend uses UTC dates; the headline
 is a rolling interval. Read [injection recovery](injection-recovery.md) before
 interpreting a saved replay as live search evidence.
 
-Open **T1 / RFI**, select an interval and inspect emitted candidates per gulp,
+Open **T1 / RFI** to see the past 24 hours immediately, then change the interval
+if needed. Inspect emitted candidates per gulp,
 beam/time, DM/time and width distributions. Hella's 10,000 raw-peak cap applies
 per gulp. Stored candidates are post-clustering: their count cannot establish
 whether the raw-peak cap was reached. The separate log table shows explicit cap
@@ -23,6 +33,8 @@ tail, not guaranteed full-day coverage. No warning in that tail does not prove
 a cap-free day. Follow the interval link into visibilities to inspect frequency
 structure. RFI, satellites, bad channels and storage problems are investigation
 hypotheses until supported by evidence.
+The DM plot is limited to 0–1000 pc cm^-3. All recorded bins/counts remain in
+the evidence; no search limit or collector setting is changed by this display.
 
 ## Select a baseline and render
 
@@ -33,12 +45,20 @@ The nearby-row filter is a geometric separation filter, not a verified plank
 adjacency graph. Hardware identities remain in the selection/provenance panel.
 At most six pairs are rendered together.
 
-Choose today, another date or explicit UTC bounds, then a frequency range.
+Choose today, another date or explicit bounds, then a frequency range.
 Select phase waterfall, amplitude waterfall, phase/frequency, amplitude
 spectrum or autocorrelations. Raw and Sun-fringe-stopped processing reuse the
-existing scientific modules. Click **Render selection**; changing controls
-alone does not read data. Narrow the bounds and render again to examine a
+existing scientific modules. Cached views load automatically and update when
+controls change. Native reads and calibration comparisons still require
+**Render selection**. Narrow the bounds to examine a
 feature. Every product provides PNG, numerical NPZ and JSON provenance downloads.
+
+The selection and plot clock defaults to OVRO local time, using PDT/PST for
+the actual date. A UTC toggle changes the displayed clock, not the selected
+instants. Date buttons use local midnight in the selected zone. API timestamps
+remain UTC. A nonexistent spring-forward local time is rejected; a repeated
+fall-back hour selects the earlier occurrence, with UTC available to select
+the later one. Local dates can span 23 or 25 hours across these transitions.
 
 The resolution choice is explicit:
 
@@ -95,6 +115,11 @@ Readiness can also save its infrastructure evidence without a plot.
 
 ## Antennas and source history
 
+Readiness opens with **What needs attention?**, using existing monitor flags
+and evidence ages. Disk capacity and short observation/data-flow checks follow;
+the full measurement table is expandable. A stale check is not proof of failed
+hardware, and a high disk percentage is not authority to delete data.
+
 **Antennas** starts with roughly the last hour of cached transmitted-band SNAP
 history. It reuses the existing history reader and scientific renderer.
 Full 4096-channel board plots are existing collector products with their
@@ -128,7 +153,7 @@ sensitivity.
 
 ## Implementation and documentation review
 
-Source revision `fb97f57`, branch `observation-preview`. Source checkout:
+Source revision `9aabc85`, branch `observation-preview`. Source checkout:
 `/home/casm/software/dev/casm_monitor/.claude/worktrees/observation-preview`.
 The owning manuals are `docs/api-science.md`, `docs/api-review.md`,
 `docs/api-commissioning.md` and `frontend/README.md`.
@@ -151,8 +176,11 @@ task. Historical tutorial figures are preserved without rerunning their jobs.
 Cross-repository CI/publishing, Grafana, Slack, fast-beam workflows, automatic
 RFI attribution and layout exclusion-policy implementation remain deferred.
 
-Verification on 2026-09-13 local date: 521 backend tests passed, the browser
-workflow checks passed, and bounded real-data renders exercised phase
+Verification on 2026-09-13 local date: 521 backend tests passed, including DM
+display/timezone checks. Browser checks cover automatic plots without clicks,
+local/UTC switching, historical dates, black theme and the simplified Readiness.
+`frontend/check-time.cjs` checks PDT/PST, DST gaps/repeated hours and 23/25-hour
+days. Bounded real-data renders in the initial workspace verification exercised phase
 comparison, amplitude, autos and a short Cyg A/control interval. The selected
 last-hour transmitted-band SNAP cache was unavailable and returned an explicit
 404; fixture tests cover that adapter. No Kafka repair or hardware query was
