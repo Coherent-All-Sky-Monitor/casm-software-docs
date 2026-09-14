@@ -4,9 +4,10 @@ Use the existing `bf_weights_generator.make_cal_and_weights` driver to build a
 calibration, coherent-beam weights, verification report, and diagnostic notebook.
 It coordinates the scientific packages and never uploads its products.
 
-This tutorial covers the driver at revision `06004c75afad`. Commands use current
-interfaces; the build requires an operator-reviewed configuration and available
-visibility data. No science job was run to prepare this tutorial.
+The initial review covered revision `06004c75afad`; candidate changes are
+identified below and in the [audit release](audit-release.md). The build requires
+an operator-reviewed configuration and available visibility data. No full
+calibration/weights build was run to prepare this tutorial.
 
 ## 1. Select the environment and inputs
 
@@ -33,11 +34,11 @@ Before building, review these fields in the JSON configuration:
 | `beam_check_window`, `beam_check_source` | Independent bright-source evaluation |
 | `diagnostics`, `notebook`, `execute_notebook` | Keep the reviewable diagnostic outputs enabled |
 
-The driver defaults to the historical `bounds` grid, so select `grid_mode="exact"`
-explicitly for the currently required exact-model placement. Default active
-antennas come from the layout, which may differ from the deployed product.
-Check both the solve membership and `include_in_beamforming` before building.
-Use a fresh `out_dir`: calibration writing inside the driver allows overwrite.
+The candidate defaults to `grid_mode="exact"`. Historical `bounds` and `track`
+modes remain explicit compatibility choices. Active antennas come from the
+layout, which may differ from the deployed product; review membership before
+building. Use a fresh product identity and output paths. The candidate checks
+for existing outputs before the solve and rejects conflicting products.
 
 ## 2. Preview the resolved parameter block
 
@@ -139,14 +140,17 @@ and older `bounds`/`track` placement examples are not current operating defaults
 
 Reviewed source: `bf_weights_generator/make_cal_and_weights.py`, SHA256
 `d63f2c2a146361ce6e5ff0578e80356ee2763176735d091ffdcdc39a6fc58600`.
-The source repository was clean at inspection on 2026-09-13. This tutorial adds
-documentation only; it does not change the driver or its policy.
+The historical source repository was clean at its initial inspection on
+2026-09-13. This hash identifies that review, not the updated candidate driver.
 
 ## Deployment source
 
 Source revision `06004c75afad0af6ea3f3f2206944f342cb04730`, clean at inspection
 on 2026-09-13. [Deployment implementation](https://github.com/Coherent-All-Sky-Monitor/bf_weights_generator/blob/06004c75afad0af6ea3f3f2206944f342cb04730/bf_weights_generator/deploy_bf_weights.py)
 SHA256: `b78b99da7aa8bc3db9b4e9dfcfcd13cb53c2df76df4aa5428475261685445ab3`.
-The registry call is not gated by `--dry-run`, so offline previews need
-`--no-registry`. This is established by code inspection, not a live reproduction.
-Source fixes are outside this documentation task.
+That historical revision did not gate registry recording on `--dry-run`.
+The isolated candidate now returns a plan before all writes, including registry
+recording and output-directory creation. Regression tests mock the effect
+boundary, including `--upload --dry-run`. See the [audit release](audit-release.md)
+for candidate versions; the historical hashes above identify the original review,
+not the updated implementation or an already deployed service.

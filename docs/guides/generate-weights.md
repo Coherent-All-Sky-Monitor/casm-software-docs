@@ -42,7 +42,9 @@ This read can use several GB. Reading this walkthrough does not require running 
 For a **new** observation, use `/home/casm/software/dev/antenna_layouts/current`
 and verify the selected membership. Keep this example's dated layout when
 replaying its historical data. `functional` describes wiring; `include_in_beamforming`
-gates weights. A layout rebuild can reset that gate, so check it explicitly.
+gates weights. The candidate preserves reviewed gates for unchanged feeds and
+excludes changed feeds pending review; older versions reset gates on rebuild.
+Check membership explicitly and retain the original historical layout.
 
 ## Estimate and subtract the static background
 

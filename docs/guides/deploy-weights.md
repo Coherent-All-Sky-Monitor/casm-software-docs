@@ -34,14 +34,14 @@ python -m bf_weights_generator.deploy_bf_weights \
   /path/to/verified-cb.h5 \
   --ib-weights /path/to/verified-ib.h5 \
   --output-dir /path/to/new-staging-directory \
-  --dry-run --no-registry
+  --dry-run
 ```
 
-At the inspected revision, `--dry-run` suppresses payload and FIFO writes but
-still creates `--output-dir`. `--no-registry` is deliberate **only for this
-offline preview**: the current final registry-recording call is not guarded
-by `--dry-run`. Do not combine `--upload` with a registry-enabled dry run;
-it can record live-stream events without sending payloads.
+In this candidate, `--dry-run` returns the deployment plan before any output
+directory, payload, FIFO, defaults, or registry write. `--upload --dry-run`
+also performs no upload or registry recording. Older installed versions had
+registry side effects and needed `--no-registry` for offline previews; verify
+that the tested candidate is installed before relying on the new behavior.
 
 The preview reads and converts the weight files, so allow memory for that work.
 Inspect CB/IB file types, selected streams, header values, sizes, and destinations.

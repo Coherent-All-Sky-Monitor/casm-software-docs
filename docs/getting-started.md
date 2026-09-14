@@ -16,9 +16,11 @@ Historical recordings need the layout used for that observation. The dated
 layouts named beside archived figures are reproduction information, not new-run
 defaults. Keep the resolved layout with each calibration product.
 
-Do not refresh the layout as part of running a tutorial: `casm-layout apply`
-currently resets beamforming membership from `functional`. Membership must be
-reviewed and reapplied after a wiring refresh.
+Do not refresh the layout as part of running a tutorial. In this candidate,
+`casm-layout apply` preserves reviewed membership for unchanged feed identities;
+new, changed, or ambiguous feeds remain excluded pending review. Earlier
+installed versions reset membership from `functional`. Check the release before
+using an operational layout command; tutorial reads do not need a refresh.
 
 On the CASM host, the software is already installed in the shared environment:
 

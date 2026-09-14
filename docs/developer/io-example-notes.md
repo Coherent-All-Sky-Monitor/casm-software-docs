@@ -74,9 +74,10 @@ delete files; opening it should not be followed by an indiscriminate Run All.
   recordings do not require an explicit format. This is not a hardcoded
   64-antenna fallback: headerless files need `fmt`. The upstream CLAUDE.md's
   narrower default root is stale; the inspected signature defaults to `/mnt`.
-- The top-level `read_visibilities(inputs=...)` returns the subset but drops
-  `metadata['inputs']` and `nsig_subset` during stitching. The guide keeps its
-  sorted input list explicitly. For two inputs the triangle is `[00, 01, 11]`.
+- The candidate `read_visibilities(inputs=...)` preserves `metadata['inputs']`,
+  `nsig_subset`, baseline convention, observation-scoped headers and missing-file
+  evidence through stitching. Earlier revisions dropped subset and missing-file
+  metadata. For two inputs the triangle is `[00, 01, 11]`.
 - `ref`/`targets` cannot request autocorrelations: targets must not include ref.
   The guide uses `inputs` so both autos and the cross arrive in one read.
 - `triu_flat_index` lives in `casm_io.correlator.baselines`, not the correlator
@@ -84,8 +85,10 @@ delete files; opening it should not be followed by an indiscriminate Run All.
 - Current header-bearing data supply their format; old headerless files need
   an explicitly verified format. The upstream format table has stale durations.
   The shipped 64-antenna JSON has 137.438953472 s integrations, 32 per file.
-- Channel or baseline selection takes the memory-mapped path. The upstream
-  documented boundary `OverflowError` remains a known issue, not a tutorial fix.
+- Channel or baseline selection takes the memory-mapped path. The candidate
+  rejects a truncated header/payload with a descriptive `ValueError`; a tiny
+  regression reproduces the previous `OverflowError`. The separately reported
+  historical part-boundary incident has not been reproduced on its original data.
 - Returned frequencies, not legacy band constants, should label every plot.
   Frequency selections and channel-index selections are mutually exclusive.
 - An explicit worker count takes precedence over `CASM_IO_WORKERS` in source.

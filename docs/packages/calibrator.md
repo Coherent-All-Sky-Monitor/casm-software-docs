@@ -5,9 +5,10 @@ visibility matrix and provides calibration products consumed by
 `bf_weights_generator`. It is the calibration engine, not the telescope
 deployment interface.
 
-This page describes source revision `8b5fcf5b089d` inspected on 2026-09-13.
+This page includes the September 13 [audit candidate](../developer/audit-release.md);
+the [source snapshot](../sources.md) identifies its inspected revision.
 Examples are illustrative, signature-checked snippets, not validated observing
-recipes. No solve, output write, or deployment was performed for this preview.
+recipes. Bounded regression solves do not establish an observing recipe.
 
 ## Start with the right workflow
 
@@ -52,6 +53,24 @@ upper triangle; the reference-to-target subset in `fs` is insufficient to
 construct the full antenna matrix. The function removes geometric phase on
 each baseline before averaging the selected times.
 
+The candidate validates the reference antenna's membership and requires matching
+frequency and time axes between `fs` and `data`, including their order. Masks
+must have the exact axis length; malformed masks raise `ValueError` rather than
+being ignored. Solver masks use `True = include`. Nonfinite selected data are
+rejected. These checks run before the solve and do not establish scientific
+suitability of a valid-shaped input.
+
+Reader input identities are validated before matrix indexing. The lower-level
+calibrator can remap a labeled subtriangle only when it contains every active
+antenna; `fringe_stop` still requires a supported full-triangle input. Missing
+rows and zero-signal selections cannot produce a successful solve. In subband
+mode, nonfinite values confined to excluded frequency channels do not invalidate
+the included channels; this exception does not apply to per-channel mode.
+
+The package root retains public imports. Matrix preparation, input validation,
+subband solving, and product persistence now live in separate implementation
+modules listed in the refreshed API reference.
+
 The following shows the solver interface, assuming `fs`, `ant`, and `data`
 were prepared by the existing pipeline:
 
@@ -72,6 +91,8 @@ print(int(cal["flags"].sum()), len(cal["flags"]))
 This uses library defaults for omitted solver fields to illustrate the call;
 it does not recommend those values for a deployment. Explicit `time_mask=`
 overrides `fs['time_mask']`; otherwise the function inherits that selection.
+Reader availability still limits that mask: missing integrations cannot be
+re-enabled by an explicit selection, and an empty available selection raises.
 
 ## Interpret a calibration result
 

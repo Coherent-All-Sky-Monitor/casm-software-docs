@@ -156,11 +156,12 @@ without modifying the source repository:
   Use header-derived values; the shipped JSON values are described above.
 - Some examples import `triu_flat_index` from `casm_io.correlator`. It is exported
   from `casm_io.correlator.baselines`, not from the package initializer.
-- `VisibilityReader.read(inputs=...)` records `metadata['inputs']` and
-  `nsig_subset`; the top-level stitching function does not retain those fields.
-  Keep the sorted selection explicitly when using `read_visibilities(inputs=...)`.
+- The candidate preserves `metadata['inputs']`, `nsig_subset`, validity and
+  missing-file evidence through top-level stitching. Earlier revisions dropped
+  the selection fields; keep the sorted selection when reading old saved results.
 - Upstream documents a part-file-boundary `OverflowError` from memory mapping.
-  This preview has not reproduced or fixed it. Preserve the window, filenames,
-  format, and traceback if encountered; do not silently drop failed intervals.
+  The candidate reproduces a truncated-file cause on a tiny fixture and rejects
+  it descriptively. The original historical boundary incident remains unverified.
+  Preserve the window, filenames, format and traceback if encountered.
 
 Upstream reference: [README and detailed guides](https://github.com/Coherent-All-Sky-Monitor/casm_io/tree/22ef826d9f2ba355388523265081da1468e5a4ff).

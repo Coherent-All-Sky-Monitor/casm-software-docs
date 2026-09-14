@@ -73,10 +73,25 @@ importing the scientific packages.
 - `docs/guides/`: task guides with explicit contracts and limitations.
 - `docs/_downloads/`: copied upstream manuals for this source snapshot.
 - `docs/_code/`: recorded Python source used by Sphinx's source-code viewer.
-- `docs/_static/tutorials/`: unchanged historical figures with provenance in the guides.
+- `docs/_static/tutorials/`: real-data example figures and retained historical products,
+  with provenance and execution boundaries in the guides.
 - `docs/_static/casm.css`: visual styling over Furo.
 - `scripts/`: source extraction and local HTML integrity checks.
 
 Do not edit a scientific repository to repair its documentation through this
 project. Record discrepancies with source locations and propose upstream fixes
 separately. Do not publish or push without the operator's instruction.
+
+## Isolated audit candidate
+
+The September 13 candidate is described in `docs/developer/audit-release.md`.
+`scripts/check_release.py --source-root PATH --record` records eleven committed
+source repositories and checks that ten Python package imports resolve inside
+that candidate. Use `--check` thereafter to detect revision/source drift.
+This complements the three-package API snapshot; it does not run scientific
+validation or install anything into the production environment.
+
+`scripts/check_bounded_tutorials.py --source-root PATH --require-voltage`
+executes the bounded examples and compares rendered figures with the retained
+PNGs. Historical examples without their original inputs remain explicitly
+limited to inspection or redraw of saved products.

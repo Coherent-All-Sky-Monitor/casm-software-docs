@@ -9,6 +9,12 @@ myst:
 Python tools for reading CASM observations, plotting visibilities and calibrating
 the array at Owens Valley Radio Observatory.
 
+```{note}
+September 13 audit preview: these pages describe the isolated candidate software,
+not a production upgrade. See [release status](developer/audit-release.md) for
+verification boundaries and the approved janitor retirement.
+```
+
 New to these modules? Start with [Getting started](getting-started.md), then
 follow the [tutorials](tutorials.md) in order.
 

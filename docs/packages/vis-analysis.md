@@ -5,7 +5,8 @@ fringe-stopped data, delay estimates, and synthesized-beam checks. Start here
 when investigating an antenna, a phase change, or whether calibration transfers
 to another source or observing day.
 
-This page describes source revision `5039eb4714b5` inspected on 2026-09-13.
+This page includes the September 13 [audit candidate](../developer/audit-release.md);
+the [source snapshot](../sources.md) identifies its inspected revision.
 Examples are illustrative and were checked against source signatures; they have
 not been executed against telescope data for this preview.
 
@@ -104,6 +105,12 @@ returns a list of figures, including when there is just one figure.
 Antenna IDs, packet indices, SNAP ADC indices, and baseline-array indices are
 different namespaces. Use `AntennaMapping` and `casm_io` baseline helpers.
 The fringe-stop function handles reference/target ordering and conjugation.
+
+The candidate intersects `valid_integrations` with input and transit time masks;
+an empty valid selection raises. It rejects unsupported input-subset triangles
+before baseline indexing and validates labeled reference/target ordering.
+Use the full native triangle for the fringe-stop/calibration workflow rather
+than treating a plotting subset as a relabeled full observation.
 
 `run_waterfall` reads a subset triangle for the selected inputs. Its returned
 `inputs` and `nsig` describe that subset; indices from the full correlator
