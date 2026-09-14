@@ -153,7 +153,7 @@
     },
     {
       "repository": "casm_calibrator",
-      "revision": "80142218ef7158f37e2d9fd4a485f3c3da7bc90d",
+      "revision": "30b16efc7b8a42b87712daabd3198e0775266376",
       "remote": "https://github.com/Coherent-All-Sky-Monitor/casm_calibrator",
       "tracked_changes": [],
       "files": {
@@ -162,21 +162,21 @@
         "src/casm_calibrator/calibration.py": "6c9365c7184ef18dfc41252d70ea2dcec817c2a01c2236cb776d140bf47b5d2e",
         "src/casm_calibrator/results.py": "3db07539aa5b148beda9ab99f0c6cbe0a14fbde01424006149b1fbc0457e5fc1",
         "src/casm_calibrator/products.py": "ac4838f12318545ced39e482e58ab2d8d37d88aed55588e9613f56aace57810b",
-        "src/casm_calibrator/svd.py": "b9489b0270c0a591c3aa6f5d35995787e89793a6237fe23574b4e480743de7f7",
+        "src/casm_calibrator/svd.py": "9d97099c4250fc9a45e4b511610f6005b54ded3f6ea20a5c14c2ca837608a41c",
         "src/casm_calibrator/output.py": "5c6705df0f14f3445f9866e268a84f1baa3b213753c80c2fe3097b12daeabed9",
         "AGENTS.md": "5e45975e4d34db9907db249e98c4dcf3648ade74bbf200a34125edaa91985d30",
         "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
         "README.md": "e85343690b03d114f9ab201107da5fe6ba947fc42a04c20bae92fa0ecc561934",
         "docs/calibration_io.md": "511d70d2968ec133fe006d151708292a005537b7bdbb1b89567a0df59452cbc9",
         "docs/calibration_workflow.md": "c40a3695315d47ff1162ebdefb11810bd38f8863b9f3ef9ffa46285fb2f5c735",
-        "docs/svd_calibration.md": "18465c763fd77f073a740f76e0535583bb770fd366d35ce1b54ccb5b6ac05a53",
+        "docs/svd_calibration.md": "77814da7dac1a998aef971d05dc470adb595202a3c7bd0b778a311006bb005c1",
         "src/casm_calibrator/cli.py": "1491e60ba1c35f0a2dfde26e036888d4639131a7bfccec62560bb83b7bd82848",
         "src/casm_calibrator/diagnostics.py": "8f03f68812e06b519b7ad91a204edae83cfa167ff4a9521a2362f381b5bda022",
         "src/casm_calibrator/fringe_stop.py": "68a4898625b6503ff46c7abaf9d85bfebf6fdc4b333167c78a93e1a167941ae8",
         "src/casm_calibrator/matrix.py": "b84e7bb1f6ef6a9843c4728d59d69a81a505c984a5ce5362596a55e38361fe28",
         "src/casm_calibrator/rfi.py": "1a527f6728734ccc6dd988374dd2876ab936ab8d77891bd4c30bd50f61918317",
-        "src/casm_calibrator/subband.py": "fca89ac9eef953976d9862af6fc7171e60f1773bd704c89875dfb8329b6517ca",
-        "src/casm_calibrator/validation.py": "ef0872c34c9fd07ff2a1b3f8a982f928f134855ff418aaa574b6b19040f4814d",
+        "src/casm_calibrator/subband.py": "bf42fd438a9ecc64c2cd7ae0b19a0cfa3afe364d87b679fcc4bebc8d02c1f6b0",
+        "src/casm_calibrator/validation.py": "3c601b21b7cc6a738d7611969111044b81c1c081a472da7c4470357324b423a6",
         "src/casm_calibrator/visibility.py": "85d20bf234fe720d78183f04f7ebbb3ef306198dcb87a8413ccc1c2c2574ce57",
         "tests/conftest.py": "1d6a97b65a96c3f2d08217737e4ccc43542b51d107e16ce5dc7451763f195b20",
         "tests/test_calibration.py": "5b71af6f1fb55d76d35264b80f994463da3cd7dd84df5538b046469d1653ef7b",
@@ -184,10 +184,11 @@
         "tests/test_reader_contracts.py": "acd0a87e3e38367eb6b9927a342f89475ba4c1d6899f6aec9ef617d1bb85d30f",
         "tests/test_rfi.py": "64c547301322b9df37bdb8c4013bccfda3d1f8bc3d8bfc21a5279eb21aaf64dd",
         "tests/test_svd.py": "80bf830519e7d5b456494a645b11ee7f964c4a3b6977d80842c3c11d15acbab2",
-        "tests/test_visibility.py": "1cc0aacbfb1030a3444893cade88c11f86df2971368f52636276da68fd6e98b0"
+        "tests/test_visibility.py": "1cc0aacbfb1030a3444893cade88c11f86df2971368f52636276da68fd6e98b0",
+        "tests/test_zero_signal.py": "275df7959488b1c48e003f7fcce33621a6966dfdcaeee9428f499123d2d6ff68"
       },
       "package_version": "1.0.0"
     }
   ],
-  "snapshot_id": "f28ca3c578a4105b"
+  "snapshot_id": "9fa6e52b8a3e440a"
 }

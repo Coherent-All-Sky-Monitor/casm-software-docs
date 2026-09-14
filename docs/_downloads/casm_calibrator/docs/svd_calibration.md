@@ -82,6 +82,17 @@ follows the same rule. The legacy per-channel/block solver still processes
 every channel before applying its output mask, so it requires finite data
 throughout the selected time samples.
 
+Selected matrices with no nonzero cross-correlation signal raise `ValueError`
+before phase normalization, including diagonal-only data and baseline masks
+that exclude all cross signal. This guard is independent of the quality
+threshold and masked-band output strategy. PHASE_ONLY preserves exact zero
+entries instead of converting them to unit phasors. Zero spectra in individual
+channels, blocks, or subbands receive zero quality and do not pass even at
+threshold zero. Existing interpolation/fill policies can still reconstruct
+failed channels from other signal-bearing channels; this does not constitute
+a measured solution at those channels. Deliberately all-frequency-masked
+subband calls retain their existing masked-band policy.
+
 ### Helper replacement compatibility
 
 The historical root imports `_build_hermitian_matrix`, `_build_baseline_mask`,
