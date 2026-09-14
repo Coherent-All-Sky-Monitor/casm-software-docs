@@ -164,6 +164,11 @@ cell. Coordinates never come from CAsMan.
 
 Use `casm-layout` to keep the layout in sync with CAsMan:
 
+Rebuilds preserve reviewed beamforming gates for unchanged feed identities.
+New or changed wiring defaults to `include_in_beamforming=0` pending explicit
+review; `functional=1` alone never enables beamforming. This also applies to
+legacy builds and first layouts. See [review policy](docs/cli_reference.md#casm-layout).
+
 ```bash
 casm-layout status   # is the current layout up to date with CAsMan?
 casm-layout diff     # show exactly what changed

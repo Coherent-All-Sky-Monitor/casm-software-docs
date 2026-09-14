@@ -101,7 +101,13 @@ casm-svd-calibrate \
 
 ```
 src/casm_calibrator/
-    __init__.py      svd_calibrate, save_calibration, plot_calibration, CalibrationResult
+    __init__.py      Thin public re-exports (including historical private helpers)
+    calibration.py   svd_calibrate orchestration and input alignment
+    matrix.py        Full-triangle assembly and baseline selection
+    subband.py       Subband SVD and gain interpolation
+    validation.py    Shared array, mask, and solver contracts
+    results.py       CalibrationResult schema
+    products.py      save_calibration and plot_calibration
     svd.py           SVDCalibrator, SVDConfig, SVDMode, SVDResult
     output.py        CalibrationWeightsWriter (legacy SVDResult writer)
     visibility.py    VisibilityLoader, VisibilityMatrix
@@ -119,7 +125,10 @@ src/casm_calibrator/
 ## Testing
 
 ```bash
-pytest tests/ -v
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:../casm_io python -m pytest tests/ -v -p no:cacheprovider
 ```
 
-27 tests, all passing. Tests use synthetic fixtures; no real data required.
+Tests use synthetic fixtures and tiny full-triangle matrices; no real data is
+required. Use an existing environment with the dependencies available. The
+command above selects this checkout and a sibling `casm_io` checkout without
+installing either package.

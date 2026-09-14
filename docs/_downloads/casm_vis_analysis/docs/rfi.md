@@ -4,6 +4,11 @@
 
 ## Convention
 
+Internal position-fit runner variables use `good_freq_mask`; RFI attachment
+uses `static_bad_mask`, `dynamic_bad_mask`, and `combined_bad_mask`. Existing
+public `freq_mask` keys and parameters retain their polarity and names.
+The `casm-fit-positions --rfi-mask` NPZ key `mask` remains True = good.
+
 Throughout the codebase, `freq_mask` stored on a data dict uses **True = flagged (bad)**. This is the opposite of what plotting functions and `fit_delay` expect as input (they want True = good). `apply_rfi_mask` follows the True-flagged convention. `fringe_stop()` inverts this when populating `fs["freq_mask"]` so that `fs["freq_mask"]` is True = good, matching the downstream caller convention.
 
 When in doubt, check which convention a specific parameter expects. For `fringe_stop(rfi_mask=...)`, pass either an `RFIMask` object or a bool array where True = good (or None to skip). For `apply_rfi_mask`, the stored result has True = bad.

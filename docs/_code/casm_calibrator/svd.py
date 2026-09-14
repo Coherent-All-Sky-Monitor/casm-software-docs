@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 import numpy as np
+from .validation import solver_matrix
 
 
 class SVDMode(Enum):
@@ -181,6 +182,7 @@ class SVDCalibrator:
         -------
         SVDResult
         """
+        vis_avg = solver_matrix(vis_avg, self.config.ref_ant_idx)
         if self.config.block_size > 1:
             result = self._per_block_svd(vis_avg)
         else:

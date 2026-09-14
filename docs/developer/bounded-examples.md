@@ -72,9 +72,14 @@ calculation needs missing runtime/input provenance; neither was rerun.
 
 ## Execution source evidence
 
-Observed isolated revisions: casm_io `73279e93fb4142a873ce293c99f2a531eabd4798`,
-casm-bf-imaging `6203e0d30aa481629988d1e751fab02929a2872f`.
-These identify the tutorial check, not the final cross-repository release pin.
+The retained figures were first rendered with casm_io `73279e93` and
+casm-bf-imaging `6203e0d3`. Pixel-identical redraws were verified on
+2026-09-14 UTC against clean isolated revisions casm_io
+`c6e463f91b1f14e4c0def47c006af6bc019025fe` and casm-bf-imaging
+`04c1610ebba4a98b1df480915466a84a902703e5`. The execution files below
+were unchanged. These checks do not execute a calibration solve or test its
+handling of visibility validity, subset identities or masked NaNs; those
+require the calibrator's separate correctness tests before science deployment.
 Execution file SHA256 identities:
 
 ```text

@@ -79,7 +79,7 @@ def _resolve_workers(workers: int | None, n_files: int) -> int:
                     f"Ignoring invalid CASM_IO_WORKERS={env!r}", stacklevel=3
                 )
     if workers is None:
-        workers = min(_DEFAULT_MAX_WORKERS, n_files)
+        workers = max(1, min(_DEFAULT_MAX_WORKERS, n_files))
     workers = int(workers)
     if workers < 1:
         raise ValueError(f"workers must be >= 1, got {workers}")
@@ -105,7 +105,7 @@ def _read_file_chunk(task):
     ----------
     task : tuple
         (fpath, nchan, nbaseline, ch_start, ch_end, s0, s1, bl_idx, bl_conj,
-         use_memmap, freq_order)
+         use_memmap, reverse_frequency)
 
     Returns
     -------
@@ -121,18 +121,19 @@ def _read_file_chunk(task):
     the stored `V[i, j]`.
     """
     (fpath, nchan, nbaseline, ch_start, ch_end, s0, s1,
-     bl_idx, bl_conj, use_memmap, freq_order) = task
+     bl_idx, bl_conj, use_memmap, reverse_frequency) = task
 
     offset, file_header = get_header_offset(fpath)
     denom = nchan * nbaseline * 2  # int32 count per integration
+    data_bytes = os.path.getsize(fpath) - offset
+    if data_bytes < denom * 4 or data_bytes % (denom * 4):
+        raise ValueError(f"File {fpath} has invalid payload size {data_bytes} bytes; "
+                         f"expected positive whole integrations of {denom * 4} bytes")
 
     if use_memmap:
         # Memory-mapped read: materialize only the requested channels and
         # baselines, never the whole file.
-        data_bytes = os.path.getsize(fpath) - offset
         ntime = data_bytes // (denom * 4)
-        if ntime == 0:
-            raise ValueError(f"File {fpath} too small for even one integration")
 
         mm = np.memmap(
             fpath, dtype=np.int32, mode='r', offset=offset,
@@ -173,7 +174,7 @@ def _read_file_chunk(task):
         v[:, :, bl_conj] = np.conj(v[:, :, bl_conj])
 
     # Apply frequency ordering
-    if freq_order == "ascending":
+    if reverse_frequency:
         v = v[:, ::-1, :]
 
     return v.astype(np.complex64), ntime, s1_capped, file_header
@@ -202,6 +203,44 @@ def _resolve_channels(
     if freq_range_mhz is not None:
         return fmt.freq_range_to_channels(freq_range_mhz[0], freq_range_mhz[1])
     return None
+
+
+def _plan_file_reads(indices, ntime_per_file, k_start, k_stop):
+    """Intersect an integration window with nominal file boundaries."""
+    plan = []
+    for index in indices:
+        origin = index * ntime_per_file
+        start = max(k_start, origin) - origin
+        stop = min(k_stop, origin + ntime_per_file) - origin
+        if stop > start:
+            plan.append((index, start, stop))
+    return plan
+
+
+def _stitch_metadata(parts):
+    """Preserve resolved selection and lossless observation-scoped provenance.
+
+    Legacy integer header keys keep the first occurrence; observation_metadata
+    is authoritative when file indices repeat across observations.
+    """
+    metadata = {}
+    for key in ("inputs", "nsig_subset", "baseline_convention", "ref", "targets",
+                "channels", "freq_range_mhz"):
+        if key in parts[0]:
+            metadata[key] = parts[0][key]
+        if any(part.get(key) != parts[0].get(key) for part in parts[1:]):
+            raise ValueError(f"Cannot stitch inconsistent {key} metadata")
+    headers = {}
+    for part in parts:
+        for index, header in part.get("file_headers", {}).items():
+            headers.setdefault(index, header)
+    metadata.update(
+        observation_metadata=parts,
+        file_headers=headers,
+        missing_files=sorted({i for p in parts for i in p.get("missing_files", [])}),
+        valid_integrations=[v for p in parts for v in p["valid_integrations"]],
+    )
+    return metadata
 
 
 def extract_file_index(path: str) -> int:
@@ -361,9 +400,9 @@ def read_visibilities(
         Keep every baseline among these correlator inputs (see
         VisibilityReader.read). Mutually exclusive with ref/targets.
     freq_order : str
-        'descending' (default, native) or 'ascending'.
+        'descending' (default) or 'ascending', independent of native order.
     channels : tuple of (int, int), optional
-        (ch_start, ch_end) channel range in native descending order.
+        (ch_start, ch_end) channel range in native storage order.
         Exclusive end. Mutually exclusive with freq_range_mhz.
     freq_range_mhz : tuple of (float, float), optional
         (freq_lo, freq_hi) frequency range in MHz.
@@ -380,6 +419,9 @@ def read_visibilities(
     VisibilityResult
         Concatenated result. metadata['observations'] lists base_strs used.
         metadata['gaps'] lists any data gaps within the requested range.
+        metadata['observation_metadata'] preserves complete per-observation
+        metadata; the legacy top-level file_headers keeps the first header
+        at each integer index. valid_integrations records row availability.
     """
     _LOCAL_TZ = "America/Los_Angeles"
     tz_obj = ZoneInfo(time_tz) if time_tz != "UTC" else timezone.utc
@@ -468,6 +510,8 @@ def read_visibilities(
     ref_fmt = matching[0]["fmt"]
     for obs in matching[1:]:
         ofmt = obs["fmt"]
+        if ofmt.nsig != ref_fmt.nsig or ofmt.dt_raw_s != ref_fmt.dt_raw_s:
+            raise ValueError("Cannot stitch observations with different input counts or integration times")
         if (abs(ofmt.freq_top_mhz - ref_fmt.freq_top_mhz) > 0.001 or
                 abs(ofmt.chan_bw_mhz - ref_fmt.chan_bw_mhz) > 0.001 or
                 ofmt.nchan != ref_fmt.nchan):
@@ -529,7 +573,8 @@ def read_visibilities(
     vis_chunks = []
     time_chunks = []
     all_metadata_files = []
-    all_file_headers = {}
+    observation_metadata = []
+    freq_mhz = None
 
     for obs in matching:
         # Clip time range to this observation's bounds
@@ -558,15 +603,21 @@ def read_visibilities(
             verbose=verbose,
         )
 
+        if freq_mhz is not None and not np.array_equal(freq_mhz, result.freq_mhz):
+            raise ValueError("Cannot stitch observations with different returned frequency axes")
+        freq_mhz = result.freq_mhz
         vis_chunks.append(result.vis)
         time_chunks.append(result.time_unix)
         all_metadata_files.extend(result.metadata.get("files", []))
-        all_file_headers.update(result.metadata.get("file_headers", {}))
+        part = dict(result.metadata)
+        part.setdefault("base_str", obs["base_str"])
+        part.setdefault("data_dir", obs["data_dir"])
+        part.setdefault("valid_integrations", [None] * len(result.time_unix))
+        observation_metadata.append(part)
 
     # Concatenate
     vis = np.concatenate(vis_chunks, axis=0)
     time_unix = np.concatenate(time_chunks)
-    freq_mhz = result.freq_mhz  # same across all observations (verified above)
     del vis_chunks, time_chunks
     gc.collect()
 
@@ -584,20 +635,11 @@ def read_visibilities(
         nchan=ref_fmt.nchan,
         freq_order=freq_order,
         observations=[o["base_str"] for o in matching],
-        data_dirs=list(set(o["data_dir"] for o in matching)),
+        data_dirs=list(dict.fromkeys(o["data_dir"] for o in matching)),
         files=all_metadata_files,
-        file_headers=all_file_headers,
         gaps=gaps,
-        missing_files=[],
     )
-    if channels is not None:
-        metadata["channels"] = channels
-    if freq_range_mhz is not None:
-        metadata["freq_range_mhz"] = freq_range_mhz
-    if ref is not None:
-        metadata["ref"] = ref
-        metadata["targets"] = targets
-        metadata["baseline_convention"] = "V(ref,target) with conjugation when ref>target"
+    metadata.update(_stitch_metadata(observation_metadata))
 
     return VisibilityResult(
         vis=vis,
@@ -651,6 +693,8 @@ class VisibilityReader:
             # Override freq_top_mhz from file header when it differs from
             # the JSON config value (e.g., after the March 27 2026 band shift).
             header_freq_top = float(header["FREQ_START"])
+            if fmt.native_order == "ascending":
+                header_freq_top += (fmt.nchan - 1) * fmt.chan_bw_mhz
             if abs(header_freq_top - fmt.freq_top_mhz) > 0.001:
                 warnings.warn(
                     f"File header FREQ_START={header_freq_top:.4f} MHz differs "
@@ -769,9 +813,9 @@ class VisibilityReader:
             indexed with `triu_flat_index(len(inputs), rank_i, rank_j)` where
             rank is the position of an input in the sorted selection.
         freq_order : str
-            'descending' (default, native) or 'ascending'.
+            'descending' (default) or 'ascending', independent of native order.
         channels : tuple of (int, int), optional
-            (ch_start, ch_end) channel range in native descending order.
+            (ch_start, ch_end) channel range in native storage order.
             Exclusive end. Mutually exclusive with freq_range_mhz.
         freq_range_mhz : tuple of (float, float), optional
             (freq_lo, freq_hi) frequency range in MHz.
@@ -794,14 +838,20 @@ class VisibilityReader:
             time_unix : np.ndarray
                 Unix timestamps per integration.
             metadata : dict
-                Format info, files used, missing_files list, etc.
+                Format info, files used, missing_files, valid_integrations
+                (row availability), and short_files (omitted local intervals).
         """
         fmt = self._fmt
+
+        if freq_order not in ("ascending", "descending"):
+            raise ValueError("freq_order must be 'ascending' or 'descending'")
 
         if nfiles is not None and time_end is not None:
             raise ValueError("nfiles and time_end are mutually exclusive")
         if skip_nfiles and nfiles is None:
             raise ValueError("skip_nfiles requires nfiles (use time_start/time_end for time-based slicing)")
+        if nfiles is not None and nfiles < 1:
+            raise ValueError("nfiles must be >= 1")
 
         # Resolve channel slicing
         ch_slice = _resolve_channels(fmt, channels, freq_range_mhz)
@@ -834,7 +884,7 @@ class VisibilityReader:
             print(f"Files available: {self.n_files} (indices 0-{self._max_idx})")
 
             if ch_slice is not None:
-                freq_full = fmt.get_frequency_axis(order="descending")
+                freq_full = fmt.get_frequency_axis(order=fmt.native_order)
                 print(f"Channel slicing: [{ch_start}:{ch_end}] "
                       f"({freq_full[ch_start]:.3f} -> {freq_full[ch_end - 1]:.3f} MHz, "
                       f"{nchan_read} channels)")
@@ -929,9 +979,9 @@ class VisibilityReader:
                       f"{needed_file_idxs[0]}-{needed_file_idxs[-1]}")
 
         # Build frequency axis (with channel slicing)
-        freq_mhz_full = fmt.get_frequency_axis(order="descending")
+        freq_mhz_full = fmt.get_frequency_axis(order=fmt.native_order)
         freq_mhz_sliced = freq_mhz_full[ch_start:ch_end]
-        if freq_order == "ascending":
+        if freq_order != fmt.native_order:
             freq_mhz = freq_mhz_sliced[::-1].copy()
         else:
             freq_mhz = freq_mhz_sliced
@@ -941,7 +991,7 @@ class VisibilityReader:
         bl_idx = None
         bl_conj = None
         sel_inputs = None
-        if inputs is not None and ref is not None:
+        if inputs is not None and (ref is not None or targets is not None):
             raise ValueError("inputs and ref/targets are mutually exclusive")
         extract_specific = ref is not None or inputs is not None
 
@@ -974,15 +1024,7 @@ class VisibilityReader:
             k_stop = (needed_file_idxs[-1] + 1) * fmt.ntime_per_file
 
         # Plan the reads: one entry per file that contributes integrations.
-        plan = []
-        for file_idx in needed_file_idxs:
-            k0 = file_idx * fmt.ntime_per_file
-            k1 = (file_idx + 1) * fmt.ntime_per_file
-            s0 = max(k_start, k0) - k0
-            s1 = min(k_stop, k1) - k0
-            if s1 <= s0:
-                continue
-            plan.append((file_idx, s0, s1))
+        plan = _plan_file_reads(needed_file_idxs, fmt.ntime_per_file, k_start, k_stop)
 
         present = [e for e in plan if e[0] in self._idx_to_path]
         n_workers = _resolve_workers(workers, len(present))
@@ -991,7 +1033,7 @@ class VisibilityReader:
             (
                 self._idx_to_path[file_idx], fmt.nchan, nbaseline,
                 ch_start, ch_end, s0, s1, bl_idx, bl_conj,
-                use_memmap, freq_order,
+                use_memmap, freq_order != fmt.native_order,
             )
             for file_idx, s0, s1 in present
         ]
@@ -1012,6 +1054,8 @@ class VisibilityReader:
         time_chunks = []
         kept_files = []
         file_headers = {}
+        valid_integrations = []
+        short_files = []
         res_iter = iter(results)
 
         for file_num, (file_idx, s0, s1) in enumerate(plan):
@@ -1032,10 +1076,16 @@ class VisibilityReader:
                 vis_chunks.append(v)
                 time_chunks.append(t_sel)
                 kept_files.append(f"MISSING.{file_idx}")
+                valid_integrations.extend([False] * ntime_fill)
                 continue
 
             fpath = self._idx_to_path[file_idx]
             v, ntime, s1_capped, file_header = next(res_iter)
+            valid_integrations.extend([True] * len(v))
+            if s1_capped < s1:
+                short_files.append(dict(file_index=file_idx,
+                                        start_integration=max(s0, s1_capped),
+                                        stop_integration=s1))
 
             if file_header is not None:
                 file_headers[file_idx] = file_header
@@ -1072,7 +1122,7 @@ class VisibilityReader:
         del results, tasks
         gc.collect()
 
-        if not vis_chunks:
+        if not vis_chunks or not any(len(v) for v in vis_chunks):
             raise RuntimeError("No data collected after slicing")
 
         vis = np.concatenate(vis_chunks, axis=0)
@@ -1096,6 +1146,8 @@ class VisibilityReader:
             freq_order=freq_order,
             missing_files=missing,
             file_headers=file_headers,
+            valid_integrations=valid_integrations,
+            short_files=short_files,
         )
 
         if ch_slice is not None:
