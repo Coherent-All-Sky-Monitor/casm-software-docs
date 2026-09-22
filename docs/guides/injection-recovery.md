@@ -93,6 +93,13 @@ pulse's FWHM. This shot's injected FWHM was 23.3 ms; the matching hella kernel
 has a FWHM of about 22.0 ms. Use `casm_t2.hella_kernel.kernel_fwhm_ms` when
 comparing recovered widths.
 
+Since 2026-09-22, `t3-replay-injection` always dedisperses and quotes the
+title at the ledger DM (386.43 here, rounded to 386.00), not a matched
+cluster's recovered DM. The injected FWHM, amplitude and S/N, and hella's
+recovered S/N and DM, are written as one line to the card JSON's
+`injection.summary` field for the Slack thread; they never appear in the
+figure title.
+
 The ledger's `inject_utc`, 22:27:24.976 UTC, records when the injection was
 sent. The event time in the plot describes the searched samples, which were
 already buffered. Do not equate the two timestamps.
