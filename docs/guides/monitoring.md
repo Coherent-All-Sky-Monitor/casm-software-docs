@@ -54,6 +54,13 @@ controls change. Native reads and calibration comparisons still require
 **Render selection**. Narrow the bounds to examine a
 feature. Every product provides PNG, numerical NPZ and JSON provenance downloads.
 
+Raw retains every available integration, including the first integration in each
+recording file; the eight-channel averaging option remains available. Sun
+fringe-stopped views retain the same samples. Actual missing timestamps or values
+still appear as gaps. Before 2026-09-24, a blanket file-boundary exclusion created
+regular white stripes in continuous data. Re-render those views to obtain the
+corrected products; saved historical artifacts remain unchanged.
+
 The selection and plot clock defaults to OVRO local time, using PDT/PST for
 the actual date. A UTC toggle changes the displayed clock, not the selected
 instants. Date buttons use local midnight in the selected zone. API timestamps
