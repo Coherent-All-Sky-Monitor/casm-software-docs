@@ -51,24 +51,40 @@ This removes unused plot space without removing time gaps from the data.
 
 Choose autos or baselines to a reference, then **Real(V)**, **Imag(V)**,
 **|V|**, or **Phase**. Switch between frequency spectra, **Dynamic spectrum**
-(time versus frequency), and a latest-integration all-pairs matrix. Quantity,
-view and antenna toggles use already loaded values. Click a tile to enlarge it
-or a matrix cell to open its baseline. Cross tiles use `V(target, reference)`;
+(time versus frequency), and **All pairs**. Cross-correlations opens in Dynamic
+spectrum; autos opens in Spectrum. All pairs is an upper triangle of miniature
+dynamic spectra, with autos on the diagonal and no repeated lower triangle.
+It loads progressively in bounded batches, ordered by station position.
+Cross tiles use `V(target, reference)`; matrix cells use `V(row, column)`;
 the reference tile is an auto. The detailed inspector labels the stored
 ascending packet pair, which can have the conjugate phase/imaginary sign.
 
-The default is Raw, a 24-hour rolling cache window, and spectra from the latest
-integration. The page refreshes each minute while visible, showing the actual
-sample date/time and age even when the cache is stale. Window averaging and
+The default is Raw and a 24-hour rolling cache window. Spectra select the latest
+integration unless Window mean is chosen. The page refreshes each minute while
+visible, showing the actual sample date/time and age even when the cache is
+stale. Window averaging and
 Sun fringe stopping are explicit options. Spectrum plots retain cached
 channels; dynamic previews reduce frequency to at most 128 bins and retain
-every recorded integration. Per-panel scales are labelled. Phase has a cyclic
+every recorded integration. Spectrum axes are Frequency (MHz) and the selected
+quantity: counts for Real(V), Imag(V) and magnitude, radians for phase. Counts
+are correlator units, not Jy. Dynamic-spectrum axes are time (with time zone)
+and Frequency (MHz); the colourbar labels the quantity and units. Phase has a cyclic
 −π to π scale, signed values a symmetric scale, magnitude a logarithmic scale.
-These colour limits do not normalize the data. Zero-amplitude phase is blank.
+These per-baseline colour limits do not normalize the data; compare the labelled
+ranges, not brightness alone. Zero-amplitude phase is blank.
 Autos and crosses share the same rolling-window control. Enlarged plots and
 detailed Matplotlib figures use white backgrounds too. Opening a detailed
 plot from the array keeps the rolling window and minute refresh; choosing a
 historical date or explicit range pauses it. Phones stack the larger panels.
+
+Click any plot surface, matrix thumbnail or detailed PNG to enlarge it. The
+viewer offers +/−, Fit, double-click zoom and drag/scroll panning; Escape closes
+it. This changes display size only, not averaging or samples. A matrix
+enlargement pins its selected snapshot and shows full axes and a colourbar.
+Use **Open stored-pair plot** for the detailed cached-channel view and downloads.
+Matrix thumbnail size can be increased; sticky station labels stay visible
+while scrolling. The lower triangle is intentionally blank. Loading cells are
+labelled separately from missing/undefined data pixels.
 
 ## Select a detailed baseline and render
 
