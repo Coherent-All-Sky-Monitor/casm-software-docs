@@ -219,8 +219,21 @@ disputed attempts and withdrawn claims. Missing images do not remove dates.
 Older successes without the literal word “detection” use reviewed exact-row
 overrides, not a guessed S/N threshold. Same-day rows share a card while
 retaining their individual notes. Opening history does not fold or dump data.
-Sun/Cyg A visibility-transit history is still pending the choice of a selected
-baseline or a source-directed visibility beam; it is separate from PDMP folds.
+Searching **Sun** or **cyg-a** shows dated source-tracking beam dynamic spectra
+from native visibilities, ±1 hour around transit, with white axes, local times,
+a transit marker and click-to-zoom. The latest deployment-ledger calibration
+is the default for every date; its filename is visible and it is not claimed
+to be the calibration deployed on each historical date. All of that calibration's
+antennas must be present in the dated wiring. This set can differ from the
+Visibilities inspection preset.
+
+These plots show signed, calibrated cross-power with autos excluded, not total
+tied-array power or Jy. No background subtraction or channel normalization is
+applied. Calibration and tracking happen at native frequency resolution before
+display averaging; actual gaps remain blank. Available history is limited to
+the native cache, normally three days. Older averaged data are not silently
+substituted. This is a read-only display, separate from PDMP folds and the
+stationary-beam calibration test; it neither records data nor builds weights.
 
 ## Manually staged calibration
 
