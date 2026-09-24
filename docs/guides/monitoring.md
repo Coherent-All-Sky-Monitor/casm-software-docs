@@ -27,7 +27,8 @@ Open **Search (T1)** to see the past 24 hours immediately, then change the inter
 if needed. Inspect emitted candidates per stream, beam/time, DM/time and width
 distributions. The stream title includes the approximate 8.59-second gulp.
 Stream and DM heatmaps show counts per time bin (3 minutes in the default
-24-hour view), with logarithmic muted blue–teal–pale yellow colour scales.
+24-hour view), with logarithmic pale-lavender-to-deep-purple colour scales:
+higher counts are darker.
 All three panels share the palette and range, from 1 to their largest displayed
 count (2 when all counts are zero or one). Colourbars label decades and the exact
 maximum, omitting nearby decade labels to keep the maximum readable. The DM
@@ -51,7 +52,7 @@ Both DM displays span 10–3000 pc cm^-3. All recorded bins/counts remain in
 the evidence; no search limit or collector setting is changed by this display.
 
 The white-background Matplotlib figures match Visibilities, with dark labels,
-clear time-zone/unit labels, subtle gridlines and teal histograms. Click the
+clear time-zone/unit labels, subtle gridlines and muted-blue histograms. Click the
 figure for the same zoom, Fit and pan controls; zoom keeps the selected PNG
 and interval fixed and does not reread or rebin data. Downloads and the link
 to inspect those times in visibilities remain available. The page still
