@@ -36,9 +36,34 @@ hypotheses until supported by evidence.
 The DM plot is limited to 0–1000 pc cm^-3. All recorded bins/counts remain in
 the evidence; no search limit or collector setting is changed by this display.
 
-## Select a baseline and render
+## Read the array snapshot
 
-Open **Visibilities**. Defaults select a few long N-S baselines from matched
+**Visibilities** opens a north-up, east-right grid matching station rows and
+columns, with an interactive layout map beside the controls. All 17 antennas
+in the saved inspection preset start selected; click map entries to toggle
+them off or select other wired inputs. This is an inspection choice, not a
+claim about current deployment or antenna health. Row spacing is compressed.
+
+Choose autos or baselines to a reference, then **Real(V)**, **Imag(V)**,
+**|V|**, or **Phase**. Switch between frequency spectra, **Dynamic spectrum**
+(time versus frequency), and a latest-integration all-pairs matrix. Quantity,
+view and antenna toggles use already loaded values. Click a tile to enlarge it
+or a matrix cell to open its baseline. Cross tiles use `V(target, reference)`;
+the reference tile is an auto. The detailed inspector labels the stored
+ascending packet pair, which can have the conjugate phase/imaginary sign.
+
+The default is Raw, a two-hour rolling cache window, and spectra from the latest
+integration. The page refreshes each minute while visible, showing the actual
+sample date/time and age even when the cache is stale. Window averaging and
+Sun fringe stopping are explicit options. Spectrum plots retain cached
+channels; dynamic previews reduce frequency to at most 128 bins and retain
+every recorded integration. Per-panel scales are labelled. Phase has a cyclic
+−π to π scale, signed values a symmetric scale, magnitude a logarithmic scale.
+These colour limits do not normalize the data. Zero-amplitude phase is blank.
+
+## Select a detailed baseline and render
+
+Open **Detailed baseline inspector** from Visibilities. Defaults select a few long N-S baselines from matched
 recorded payload membership when available; the interface discloses an
 intended-layout fallback. Choose by physical length, orientation or station.
 The nearby-row filter is a geometric separation filter, not a verified plank
@@ -46,8 +71,9 @@ adjacency graph. Hardware identities remain in the selection/provenance panel.
 At most six pairs are rendered together.
 
 Choose today, another date or explicit bounds, then a frequency range.
-Select phase waterfall, amplitude waterfall, phase/frequency, amplitude
-spectrum or autocorrelations. Raw is the default; Sun fringe stopping remains
+Select a phase/amplitude/real/imaginary dynamic spectrum, frequency spectrum
+or autocorrelations. Spectrum views default to the latest integration, with
+an explicit window-mean option. Raw is the default; Sun fringe stopping remains
 an explicit choice. Both processing modes reuse the
 existing scientific modules. Cached views load automatically and update when
 controls change. Native reads and calibration comparisons still require
@@ -82,9 +108,12 @@ The resolution choice is explicit:
 
 Historical windows use the matching dated layout. Cross-epoch comparisons are
 rejected rather than silently comparing different physical baselines.
-The amplitude waterfall uses the shared [solar rendering](solar-waterfall.md)
-style: channel-normalized waterfall, raw spectrum and light curves. Correlated
-amplitude is not calibrated solar flux or a coherent-beam recording. Gaps,
+Amplitude dynamic spectra show magnitude without per-channel normalization;
+the legacy channel-normalized [solar rendering](solar-waterfall.md) remains an
+explicit API option. Magnitude means average `|V|`; phase uses the angle of
+the complex mean, never a mean of wrapped angles. Real and imaginary values
+retain their signs. Autos are not squared again. Correlated amplitude is not
+calibrated solar flux or a coherent-beam recording. Gaps, estimator,
 normalization scope and actual timestamps remain in the product. Solar
 variability and low-signal phase structure alone do not establish a fault.
 
