@@ -23,18 +23,39 @@ unavailable, not zero failures. The seven-day trend uses UTC dates; the headline
 is a rolling interval. Read [injection recovery](injection-recovery.md) before
 interpreting a saved replay as live search evidence.
 
-Open **T1 / RFI** to see the past 24 hours immediately, then change the interval
-if needed. Inspect emitted candidates per gulp,
-beam/time, DM/time and width distributions. Hella's 10,000 raw-peak cap applies
+Open **Search (T1)** to see the past 24 hours immediately, then change the interval
+if needed. Inspect emitted candidates per stream, beam/time, DM/time and width
+distributions. The stream title includes the approximate 8.59-second gulp.
+Stream and DM heatmaps show counts per time bin (3 minutes in the default
+24-hour view), with logarithmic muted blue–teal–pale yellow colour scales.
+All three panels share the palette and range, from 1 to their largest displayed
+count (2 when all counts are zero or one). Colourbars label decades and the exact
+maximum, omitting nearby decade labels to keep the maximum readable. The DM
+panel counts candidates per DM bucket across all streams, without normalising
+each time column. Across all three time panels, off-white means zero recorded
+candidates with gulp evidence; grey means no recorded gulp or candidates.
+Beam cells use their parent stream's gulp evidence; DM cells use any stream's.
+This does not establish whether an individual beam was processed, especially
+during capped gulps. Hella's 10,000 raw-peak cap applies
 per gulp. Stored candidates are post-clustering: their count cannot establish
-whether the raw-peak cap was reached. The separate log table shows explicit cap
-warnings and processed/instance beam counts when recorded. Logs are a bounded
-tail, not guaranteed full-day coverage. No warning in that tail does not prove
+whether the raw-peak cap was reached. Red strips on the stream panel show
+explicit cap warnings from the gulp log ledger without hiding the count colours.
+The top y-axis is stream ID (0–7), each combining 64 beams. A red strip at
+the upper edge flags the whole stream/time bin, not a beam position. Candidate
+counts are not corrected for skipped beams. Colourbar labels wrap onto two lines.
+Log coverage is bounded, not guaranteed full-day coverage. No warning does not prove
 a cap-free day. Follow the interval link into visibilities to inspect frequency
 structure. RFI, satellites, bad channels and storage problems are investigation
 hypotheses until supported by evidence.
-The DM plot is limited to 0–1000 pc cm^-3. All recorded bins/counts remain in
+Both DM displays span 10–3000 pc cm^-3. All recorded bins/counts remain in
 the evidence; no search limit or collector setting is changed by this display.
+
+The white-background Matplotlib figures match Visibilities, with dark labels,
+clear time-zone/unit labels, subtle gridlines and teal histograms. Click the
+figure for the same zoom, Fit and pan controls; zoom keeps the selected PNG
+and interval fixed and does not reread or rebin data. Downloads and the link
+to inspect those times in visibilities remain available. The page still
+refreshes the rolling window every five minutes; stream cards wrap on phones.
 
 ## Read the array snapshot
 
