@@ -49,6 +49,12 @@ Each row's small six-position key shows selected antennas, hidden antennas
 the aligned physical columns. The full map always retains the station layout.
 This removes unused plot space without removing time gaps from the data.
 
+Each antenna panel shows its layout-recorded SNAP, slot and ADC below the
+antenna number. **SNAP order** keeps the compact panel sizes but groups by
+SNAP/slot and sorts by ADC. Switching arrangements preserves antenna selection
+and the loaded snapshot. Matrix wiring is available on hover and in the
+enlarged plot; the triangle remains station-ordered.
+
 Choose autos or baselines to a reference, then **Real(V)**, **Imag(V)**,
 **|V|**, or **Phase**. Switch between frequency spectra, **Dynamic spectrum**
 (time versus frequency), and **All pairs**. Cross-correlations opens in Dynamic
@@ -206,11 +212,15 @@ is not yet guaranteed. No duplicate reader or preview scheduler is added.
 **Selected input history** retains the roughly last-hour transmitted-band
 cache view, bounded to 256 MiB, refusing averaging that could hide gaps.
 
-**Source history** searches the canonical B0329 ledger and existing saved
-plots across its full history. Dated attempts include non-detections,
-retractions and qualified S/N/width statements. A single scalar S/N would
-misrepresent rows containing multiple folds, so the recorded outcome is
-preserved. Opening history does not fold data or dump beams.
+**Source history** opens B0329 detection dates with large saved PDMP plots
+from filterbank dumps. Click a plot to zoom; **Notes & saved plots** holds the
+full observing notes and other folds. **All observations** includes nulls,
+disputed attempts and withdrawn claims. Missing images do not remove dates.
+Older successes without the literal word “detection” use reviewed exact-row
+overrides, not a guessed S/N threshold. Same-day rows share a card while
+retaining their individual notes. Opening history does not fold or dump data.
+Sun/Cyg A visibility-transit history is still pending the choice of a selected
+baseline or a source-directed visibility beam; it is separate from PDMP folds.
 
 ## Manually staged calibration
 
