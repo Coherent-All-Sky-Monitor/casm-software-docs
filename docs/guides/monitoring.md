@@ -72,6 +72,9 @@ and Frequency (MHz); the colourbar labels the quantity and units. Phase has a cy
 −π to π scale, signed values a symmetric scale, magnitude a logarithmic scale.
 These per-baseline colour limits do not normalize the data; compare the labelled
 ranges, not brightness alone. Zero-amplitude phase is blank.
+Intermediate axis ticks use rounded frequencies and clock times, with denser
+frequency labels when enlarged. Tick spacing follows available plot space to
+avoid overlap; dates sit beneath the time axis rather than on every tick.
 Autos and crosses share the same rolling-window control. Enlarged plots and
 detailed Matplotlib figures use white backgrounds too. Opening a detailed
 plot from the array keeps the rolling window and minute refresh; choosing a
