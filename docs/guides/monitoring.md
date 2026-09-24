@@ -56,7 +56,10 @@ clear time-zone/unit labels, subtle gridlines and muted-blue histograms. Click t
 figure for the same zoom, Fit and pan controls; zoom keeps the selected PNG
 and interval fixed and does not reread or rebin data. Downloads and the link
 to inspect those times in visibilities remain available. The page still
-refreshes the rolling window every five minutes; stream cards wrap on phones.
+refreshes the rolling window every five minutes. The off-white stream cards use
+dark text and small labelled status badges: green OK, amber late, red silent,
+grey unknown. Gulp age, observed/expected gulps per hour and empty-gulp fraction
+remain visible; missing evidence is not displayed as zero. Cards wrap on phones.
 
 ## Read the array snapshot
 
