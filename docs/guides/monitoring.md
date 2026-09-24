@@ -38,11 +38,16 @@ the evidence; no search limit or collector setting is changed by this display.
 
 ## Read the array snapshot
 
-**Visibilities** opens a north-up, east-right grid matching station rows and
-columns, with an interactive layout map beside the controls. All 17 antennas
+**Visibilities** opens larger white figures grouped by station row, with an
+interactive north-up, east-right layout map beside the controls. All 17 antennas
 in the saved inspection preset start selected; click map entries to toggle
 them off or select other wired inputs. This is an inspection choice, not a
-claim about current deployment or antenna health. Row spacing is compressed.
+claim about current deployment or antenna health. **Compact panels** packs
+occupied positions into up to three columns, with sparse rows sharing space.
+Each row's small six-position key shows selected antennas, hidden antennas
+(`off`), and positions without a wired antenna (`×`). **Station grid** restores
+the aligned physical columns. The full map always retains the station layout.
+This removes unused plot space without removing time gaps from the data.
 
 Choose autos or baselines to a reference, then **Real(V)**, **Imag(V)**,
 **|V|**, or **Phase**. Switch between frequency spectra, **Dynamic spectrum**
@@ -52,7 +57,7 @@ or a matrix cell to open its baseline. Cross tiles use `V(target, reference)`;
 the reference tile is an auto. The detailed inspector labels the stored
 ascending packet pair, which can have the conjugate phase/imaginary sign.
 
-The default is Raw, a two-hour rolling cache window, and spectra from the latest
+The default is Raw, a 24-hour rolling cache window, and spectra from the latest
 integration. The page refreshes each minute while visible, showing the actual
 sample date/time and age even when the cache is stale. Window averaging and
 Sun fringe stopping are explicit options. Spectrum plots retain cached
@@ -60,6 +65,10 @@ channels; dynamic previews reduce frequency to at most 128 bins and retain
 every recorded integration. Per-panel scales are labelled. Phase has a cyclic
 −π to π scale, signed values a symmetric scale, magnitude a logarithmic scale.
 These colour limits do not normalize the data. Zero-amplitude phase is blank.
+Autos and crosses share the same rolling-window control. Enlarged plots and
+detailed Matplotlib figures use white backgrounds too. Opening a detailed
+plot from the array keeps the rolling window and minute refresh; choosing a
+historical date or explicit range pauses it. Phones stack the larger panels.
 
 ## Select a detailed baseline and render
 
