@@ -17,6 +17,10 @@ The live recovery card is yellow, labelled **Needs attention**, for 18 or more r
 (including 24/24), orange for 12–17 and red below 12. Missing or empty evidence
 stays unknown; stale/incomplete counts are labelled separately. These display
 bands do not apply to shorter historical intervals or individual trial markers.
+The top-right CASM photograph opens in the same click-to-zoom viewer as the plots.
+It is a supplied still image, not a live camera; the complete frame is retained.
+The title names the telescope **Coherent All Sky Monitor (CASM)**, with
+Owens Valley Radio Observatory, Bishop, California on a separate location line.
 
 Below, injection recovery and current array/calibration context sit side by
 side. A white timeline shows each trial's recorded outcome; click a marker for
