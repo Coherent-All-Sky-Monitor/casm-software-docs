@@ -324,6 +324,12 @@ without matching cached inspection stays Unknown.
 
 Spectra default to `10 log10(native power / 10⁻¹⁰)`, not dBm: the same fixed
 reference across antennas and dates. The original dB re 1 scale remains available.
+The September 25 saved-data audit checked the native descending-frequency
+mapping against visibility autos 21–26 seconds away; it did not reverse the
+axis. The read-only PPS recheck verified SNAPs 0/2 only. SNAPs 1/3 remain Unknown
+because their management reads fail; streaming does not establish alignment.
+The monitor manual and wiki's `snap-control-frequency-followup.md` record the
+frequency comparison and the unresolved TFTP timeout/connection investigation.
 All panels share 374.9–500.1 MHz and pinned power limits. Bandpass detail fits
 robust limits; orange markers identify clipped peaks. Full spectrum or custom
 shared limits expose the complete range. All native channels are retained;
