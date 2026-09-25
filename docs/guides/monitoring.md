@@ -126,11 +126,24 @@ remain visible; missing evidence is not displayed as zero. Cards wrap on phones.
 
 ## Read the array snapshot
 
+The main navigation is a single row: Overview, Search (T1), Visibilities, SNAPs,
+Source history, Candidates and Calibration. There is no top-right tab group or
+Readiness tab. The larger title/location and aligned local/UTC clocks frame the
+Overview. All three array maps use larger keys on white cards: green for
+recorded beamforming members, blue for other wired inputs, × for no antenna.
+Map clicks only show/hide plots. Configuration details remain expandable.
+
+![September 25 preview tab bar with line icons and a clear selected source-history tab](../_static/monitor/2026-09-25/navigation-latest.png)
+
 **Visibilities** opens larger white figures grouped by station row, with an
-interactive north-up, east-right layout map beside the controls. All 17 antennas
-in the saved inspection preset start selected; click map entries to toggle
-them off or select other wired inputs. This is an inspection choice, not a
-claim about current deployment or antenna health. **Compact panels** packs
+interactive north-up, east-right layout map beside the controls. Its default
+selection follows the inspected nonzero slots in the current recorded coherent
+beam weights, matching Overview and SNAPs. Green marks those inputs; blue marks
+other wired antennas and dashed borders mark hidden panels. Click entries to
+toggle them. Manual selections survive refresh; the Beamforming preset follows
+membership updates. Missing or mismatched inspection evidence gives an unknown
+membership notice, not a substitute selection. This is recorded deployment
+membership, not live hardware readback or an antenna-health verdict. **Compact panels** packs
 occupied positions into up to three columns, with sparse rows sharing space.
 Each row's small six-position key shows selected antennas, hidden antennas
 (`off`), and positions without a wired antenna (`×`). **Station grid** restores
@@ -326,10 +339,11 @@ Spectra default to `10 log10(native power / 10⁻¹⁰)`, not dBm: the same fixe
 reference across antennas and dates. The original dB re 1 scale remains available.
 The September 25 saved-data audit checked the native descending-frequency
 mapping against visibility autos 21–26 seconds away; it did not reverse the
-axis. The read-only PPS recheck verified SNAPs 0/2 only. SNAPs 1/3 remain Unknown
-because their management reads fail; streaming does not establish alignment.
-The monitor manual and wiki's `snap-control-frequency-followup.md` record the
-frequency comparison and the unresolved TFTP timeout/connection investigation.
+axis. A separately approved stale-TFTP-session release restored management
+reads without reflash/re-sync. The subsequent PPS check measured zero delta on
+SNAPs 0/2 and a stable −1 TT tick on 1/3, of unknown onset. Streaming alone
+does not establish alignment. The monitor manual and wiki's
+`snap-control-frequency-followup.md` record the frequency and timing checks.
 All panels share 374.9–500.1 MHz and pinned power limits. Bandpass detail fits
 robust limits; orange markers identify clipped peaks. Full spectrum or custom
 shared limits expose the complete range. All native channels are retained;
@@ -342,6 +356,9 @@ band yields a missing point. Focused trend axes reveal drift in absolute dB.
 Gaps and EQ/FFT-epoch changes break lines. Zero-power channels have no finite
 dB value and are counted separately. Historical labels use current wiring;
 comparisons track board IP and ADC.
+The preview starts fresh history at September 25 05:12:31 UTC. Earlier spectra
+are retained, not deleted; `archive=true` exposes them in the API. The default
+timeline, trend and reference overlay share the configured display epoch.
 
 ```{figure} ../_static/monitor/2026-09-25/snaps.png
 :alt: Six stored SNAP 0 spectra with white axes, a fixed positive-reference dB scale and shared frequency limits
@@ -352,7 +369,7 @@ saved data. Orange markers identify peaks beyond the selected detail limits.
 
 SNAPs has no extra Visibilities/transmitted-band submenu. Its History control
 uses these white plots, including the enlarged full-band power trend.
-Separate Streaming and PPS alignment boxes also appear on the main Overview.
+Separate Streaming and PPS / source check boxes also appear on the main Overview.
 Streaming OK means nonzero cached data from all wired inputs within 15 minutes,
 not an instantaneous packet-counter test. A nominal PPS period cannot establish
 cross-board alignment. The explicit `scripts/check_snap_timing.py` operator
@@ -363,6 +380,13 @@ page refresh never contacts hardware. **Do not use `--sync-only` as a check**:
 the configuration CLI flag changes synchronization. Control-read failure also leaves firmware state unknown,
 even if the old reader reported `programmed=False`. The reader correction is
 staged with the pending monitor-worker rollout, not deployed to production.
+Strict PPS results remain unchanged in the API. A separate green **Source
+coherence seen** assessment retains the measured −1 tick and named source,
+requires fresh reviewed complex cross-SNAP evidence, the same offset/reference,
+good fresh PPS and unchanged deployment/calibration/layout identities. The
+September 25 Cas A/Cyg A result is board-group evidence, not exact alignment or
+an all-input pass. Source and timing evidence expire after 90 minutes; there
+is no automatic source classifier or background native read in the page.
 
 The existing `snap_read` Zarr stream and SQLite manifest on NVMe3 supply this
 history, without expiry or new preview disk products. Four boards acquired
@@ -377,13 +401,14 @@ The reader selects the diagnostic autocorrelator mux and arms readout; this
 is not literally zero register writes. It does not program, change EQ,
 synchronize PPS or change observing configuration. Navigation only reads saved
 products; job state and overdue evidence remain separate from page refresh.
-The new source profile requests hourly reads. The running two-hour monitoring
-collector still has a shared-liveness-timer starvation bug. The tested
-independent-timer fix and hourly profile await approval to update/restart
-**only that monitoring collector**. Hourly acquisition is not yet active;
-no production pipeline or running production service was changed for this
-page. No duplicate reader or preview scheduler is added.
-The old `/antennas` view remains under **Transmitted-band history**.
+Hourly acquisition was activated at September 25 05:30 UTC by applying the
+independent scheduling slot and 3600-second interval to the running locked
+monitor checkout. Only `casm-monitor-collect.service` restarted. Completed
+manual reads postpone the next automatic pass by one hour; the scheduling tick
+can add up to one minute plus queue delay. Five scheduler fixture tests passed
+against that checkout. Acquisition timestamps, not the configured label, verify
+ongoing cadence. No observing-pipeline change, duplicate reader or preview
+scheduler was introduced. The old `/antennas` URL remains for bookmarks.
 **Selected input history** retains the roughly last-hour transmitted-band
 cache view, bounded to 256 MiB, refusing averaging that could hide gaps.
 
@@ -401,8 +426,16 @@ transit altitude/azimuth, with a ±2-hour window for the crossing and shoulders,
 white axes, local times, a transit marker and click-to-zoom. The latest deployment-ledger calibration
 is the default for every date; its filename is visible and it is not claimed
 to be the calibration deployed on each historical date. All of that calibration's
-antennas must be present in the dated wiring. This set can differ from the
-Visibilities inspection preset.
+antennas must be present in the dated wiring. This set can differ from
+a manually selected Visibilities view. Newly generated trial calibrations do
+not change the default: it follows uploaded weights recorded in the deployment
+ledger. The latest three completed four-hour windows per source are retained
+in browser Cache Storage, with a tab-memory fallback. Switching sources keeps
+loaded figures and in-flight reads. Only a new completed date replaces the
+oldest figure; changed deployed calibration/layout identities invalidate reuse.
+Only the small catalogue polls, every five minutes while selected. Browser
+storage is not a permanent server archive; clearing it requires native cache
+coverage to rebuild a figure.
 
 These plots show signed, calibrated cross-power with autos excluded, not total
 tied-array power or Jy. No background subtraction or channel normalization is
@@ -417,6 +450,12 @@ calibration comparison workflow; it neither records data nor builds weights.
 A transit curve tests the applied calibration and phasing, not the quantized
 weights uploaded to hardware. Other sources/RFI and incomplete coverage can
 affect its peak; it is not an automatic calibration verdict.
+The current one-maximum-per-UTC-date helper has a known rollover limitation:
+Cyg A has two real transits on November 19, 2026 and one is omitted. Present
+September views are unaffected. Event-based catalogue handling remains to be
+implemented. The source page does not call the assumed Sun-flux model or
+convert counts to Jy; a Sun-scaled absolute overlay needs an independently
+checked flux/element-response calibration.
 
 ![Sun fixed-transit waterfalls and matching band-averaged power curves](../_static/monitor/2026-09-24/sources-sun.png)
 
