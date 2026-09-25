@@ -111,7 +111,8 @@ a cap-free day. Follow the interval link into visibilities to inspect frequency
 structure. RFI, satellites, bad channels and storage problems are investigation
 hypotheses until supported by evidence.
 Both DM displays use logarithmic spacing over 10–1000 pc cm^-3 by operator
-choice. The bottom histogram keeps linear counts per existing log-spaced bin.
+choice. The bottom histogram keeps linear counts per existing log-spaced bin,
+with the y-axis labelled "Candidates".
 The width histogram shows indices 0–6 with integer ticks and linear counts;
 spare width bins 7–8 remain in stored/API evidence, outside the display and its
 scaling. The September 25
