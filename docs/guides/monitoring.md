@@ -110,8 +110,11 @@ Log coverage is bounded, not guaranteed full-day coverage. No warning does not p
 a cap-free day. Follow the interval link into visibilities to inspect frequency
 structure. RFI, satellites, bad channels and storage problems are investigation
 hypotheses until supported by evidence.
-Both DM displays span 10–1000 pc cm^-3 by operator choice: the bottom histogram
-uses linear spacing and DM versus time is logarithmic. The September 25
+Both DM displays use logarithmic spacing over 10–1000 pc cm^-3 by operator
+choice. The bottom histogram keeps linear counts per existing log-spaced bin.
+The width histogram shows indices 0–6 with integer ticks and linear counts;
+spare width bins 7–8 remain in stored/API evidence, outside the display and its
+scaling. The September 25
 read-only configuration check confirmed that all eight streams search 0–1000;
 the 0–10 bucket is omitted only from the DM figures and their scaling, remaining
 in stored/API evidence and the stream/beam totals. Stored edges
