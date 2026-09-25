@@ -38,6 +38,39 @@ All history panels share the selected interval and time zone, default rolling
 history, not the live cards. **Live · rolling 24 h** restores rolling.
 Automatic views use bounded cache reads only; no injection or telescope job starts.
 
+## Current page and resource use
+
+Real preview screenshots below were captured on September 24, 2026 in OVRO
+local time, from the working monitor checkout, including its existing
+Calibration navigation. They are saved examples, not live status images.
+
+![Overview with injection timeline, array context and rolling plots](../_static/monitor/2026-09-24/overview.png)
+
+The warm-cache sample measured about 0.6 GiB of preview-process resident memory
+and 0.2% of one CPU core over a quiet 20-second interval. Plot rendering causes
+short CPU bursts; first native source-date loads took about 15 seconds. These
+are shared-host measurements, not a cold-load capacity test. The preview's
+4 GiB service limit includes filesystem cache. Collector and offline workers
+are separate services; their cgroup totals can contain much more file cache
+than their main processes' resident memory.
+
+Preview products live under `/home/casm/scratch/casm-observation-preview` on
+the root disk: `science/` for PNG/NPZ/metadata, `t1_products/` for Search PNGs,
+`snap_views/` for saved SNAP renders, and `calibration/` for the separate worker.
+This tree measured about 1.5 GiB. Production input caches remain under
+`/mnt/nvme3/casm_monitor`; the T2 ledger and registry on NVMe5 are read-only
+inputs to these pages, not where the preview writes new plot products.
+
+Native/avg8 shard TTLs are three/60 days. **They do not expire preview render
+files**: those currently accumulate without an automatic reaper. Source-beam
+and array-overview responses are bounded memory caches. Source history loads
+on selection/search, separate from the rolling overview refresh.
+
+Exact counters, capture timestamps/hashes and limits are recorded in
+`casm_monitor/docs/screenshots/2026-09-24/measurements.json`; the owning guide is
+`casm_monitor/docs/resources-and-storage.md`. Regenerate the evidence with
+`casm_monitor/scripts/capture_monitor_docs.py`, not with mocked browser results.
+
 ## Start with recovery and search pressure
 
 Overview retains injection outcomes, trial details, product freshness and array
@@ -269,9 +302,11 @@ disputed attempts and withdrawn claims. Missing images do not remove dates.
 Older successes without the literal word “detection” use reviewed exact-row
 overrides, not a guessed S/N threshold. Same-day rows share a card while
 retaining their individual notes. Opening history does not fold or dump data.
-Searching **Sun** or **cyg-a** shows dated source-tracking beam dynamic spectra
-from native visibilities, ±1 hour around transit, with white axes, local times,
-a transit marker and click-to-zoom. The latest deployment-ledger calibration
+The source bar offers **B0329** (default), **Sun**, **Cyg A**, **Cas A** and
+**Tau A**. The latter four show native-visibility dynamic spectra with a
+band-averaged power curve below each image. The beam stays fixed at the source's
+transit altitude/azimuth, with a ±2-hour window for the crossing and shoulders,
+white axes, local times, a transit marker and click-to-zoom. The latest deployment-ledger calibration
 is the default for every date; its filename is visible and it is not claimed
 to be the calibration deployed on each historical date. All of that calibration's
 antennas must be present in the dated wiring. This set can differ from the
@@ -279,11 +314,24 @@ Visibilities inspection preset.
 
 These plots show signed, calibrated cross-power with autos excluded, not total
 tied-array power or Jy. No background subtraction or channel normalization is
-applied. Calibration and tracking happen at native frequency resolution before
-display averaging; actual gaps remain blank. Available history is limited to
+applied. Calibration and fixed geometric phasing happen at native frequency
+resolution before display averaging. The curve averages the same fixed set of
+usable native channels, without time smoothing or taking an absolute value;
+missing channels/integrations leave gaps in the curve. Reads are sequential
+groups of at most 26 integrations, at most 110 per four-hour window. Available history is limited to
 the native cache, normally three days. Older averaged data are not silently
 substituted. This is a read-only display, separate from PDMP folds and the
-stationary-beam calibration test; it neither records data nor builds weights.
+calibration comparison workflow; it neither records data nor builds weights.
+A transit curve tests the applied calibration and phasing, not the quantized
+weights uploaded to hardware. Other sources/RFI and incomplete coverage can
+affect its peak; it is not an automatic calibration verdict.
+
+![Sun fixed-transit waterfalls and matching band-averaged power curves](../_static/monitor/2026-09-24/sources-sun.png)
+
+September 24 preview: Sun transits from the native cache, using
+`cal_sep17_core16_exact512.h5` for all shown dates. The signed cross-power is in
+weighted correlator counts, not Jy; the plotted transit marker is the expected
+position crossing, not a fitted peak or a detection claim.
 
 ## Manually staged calibration
 
