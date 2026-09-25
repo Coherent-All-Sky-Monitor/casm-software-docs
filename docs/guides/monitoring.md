@@ -110,10 +110,11 @@ Log coverage is bounded, not guaranteed full-day coverage. No warning does not p
 a cap-free day. Follow the interval link into visibilities to inspect frequency
 structure. RFI, satellites, bad channels and storage problems are investigation
 hypotheses until supported by evidence.
-Both DM displays span 0–1000 pc cm^-3, matching the September 25 read-only
-configuration check on all eight streams. The bottom histogram uses linear
-spacing; DM versus time is logarithmic above 1 with a linear 0–1 section.
-Both retain the saved 0–10 bucket without inventing finer bins. Stored edges
+Both DM displays span 10–1000 pc cm^-3 by operator choice: the bottom histogram
+uses linear spacing and DM versus time is logarithmic. The September 25
+read-only configuration check confirmed that all eight streams search 0–1000;
+the 0–10 bucket is omitted only from the DM figures and their scaling, remaining
+in stored/API evidence and the stream/beam totals. Stored edges
 and counts are unchanged; the approximately 922–1122 bin keeps its full count
 but ends visually at the 1000 display limit. No within-bin split is inferred.
 All bins, including those outside the displayed range, remain in evidence JSON.
