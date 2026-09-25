@@ -112,6 +112,10 @@ structure. RFI, satellites, bad channels and storage problems are investigation
 hypotheses until supported by evidence.
 Both DM displays span 10–3000 pc cm^-3. All recorded bins/counts remain in
 the evidence; no search limit or collector setting is changed by this display.
+This is a known display mismatch: September 25's read-only config check found
+DM 0–1000 on all eight streams. The page hides the saved 0–10 bucket, and the
+last occupied coarse bin spans approximately 922–1122, extending visually past
+the search ceiling. Neither plot limit establishes the actual search range.
 
 The white-background Matplotlib figures match Visibilities, with dark labels,
 clear time-zone/unit labels, subtle gridlines and muted-blue histograms. Click the
@@ -128,12 +132,19 @@ remain visible; missing evidence is not displayed as zero. Cards wrap on phones.
 
 The main navigation is a single row: Overview, Search (T1), Visibilities, SNAPs,
 Source history, Candidates and Calibration. There is no top-right tab group or
-Readiness tab. The larger title/location and aligned local/UTC clocks frame the
+Readiness tab. Labels are text-only, with a high-contrast selected underline.
+The larger title/Big Pine location and separate local, UTC and local-sidereal clocks frame the
 Overview. All three array maps use larger keys on white cards: green for
 recorded beamforming members, blue for other wired inputs, × for no antenna.
 Map clicks only show/hide plots. Configuration details remain expandable.
+Visibilities and SNAPs have a shallower header and wide compressed maps so the
+first plots appear sooner. Touch targets remain larger on coarse-pointer devices.
+The Overview trial-history/seven-day table disclosure is removed. Click its
+injection timeline for zoom, then a trial for details. Data figures throughout
+the current routes use the shared Fit/zoom/pan viewer, including candidate
+statistics, Calibration galleries and saved review images; maps retain selection.
 
-![September 25 preview tab bar with line icons and a clear selected source-history tab](../_static/monitor/2026-09-25/navigation-latest.png)
+![Earlier September 25 preview tab bar; icons shown in this historical capture have since been removed](../_static/monitor/2026-09-25/navigation-latest.png)
 
 **Visibilities** opens larger white figures grouped by station row, with an
 interactive north-up, east-right layout map beside the controls. Its default
@@ -336,7 +347,8 @@ remain unchanged. GETs never inspect the large weights payload. A new deployment
 without matching cached inspection stays Unknown.
 
 Spectra default to `10 log10(native power / 10⁻¹⁰)`, not dBm: the same fixed
-reference across antennas and dates. The original dB re 1 scale remains available.
+reference across antennas and dates. Power-reference/scale/refit controls have
+been removed; stored native values are unchanged.
 The September 25 saved-data audit checked the native descending-frequency
 mapping against visibility autos 21–26 seconds away; it did not reverse the
 axis. A separately approved stale-TFTP-session release restored management
@@ -344,13 +356,13 @@ reads without reflash/re-sync. The subsequent PPS check measured zero delta on
 SNAPs 0/2 and a stable −1 TT tick on 1/3, of unknown onset. Streaming alone
 does not establish alignment. The monitor manual and wiki's
 `snap-control-frequency-followup.md` record the frequency and timing checks.
-All panels share 374.9–500.1 MHz and pinned power limits. Bandpass detail fits
-robust limits; orange markers identify clipped peaks. Full spectrum or custom
-shared limits expose the complete range. All native channels are retained;
+All panels share 374.9–500.1 MHz and power limits covering every finite displayed
+channel with padding. There is no percentile clipping; limits update with saved
+reads and selection changes. Expanded spectra share those limits. All native channels are retained;
 channel centres descend from 500 to 375.030518 MHz at 125/4096 MHz spacing.
-**History** selects saved
-snapshots over 1–365 days and optionally overlays the first read in that window.
-Click a panel for its enlarged spectrum and full-band power trend. The trend
+History/overlay selectors are removed; the page shows the latest saved spectra.
+The all-12-ADC control is a prominent labelled switch. Click a panel for its
+enlarged spectrum and saved 30-day full-band power trend. The trend
 averages all 4096 linear-power channels before converting to dB; an incomplete
 band yields a missing point. Focused trend axes reveal drift in absolute dB.
 Gaps and EQ/FFT-epoch changes break lines. Zero-power channels have no finite
@@ -358,35 +370,42 @@ dB value and are counted separately. Historical labels use current wiring;
 comparisons track board IP and ADC.
 The preview starts fresh history at September 25 05:12:31 UTC. Earlier spectra
 are retained, not deleted; `archive=true` exposes them in the API. The default
-timeline, trend and reference overlay share the configured display epoch.
+trend and catalogue queries share the configured display epoch.
 
 ```{figure} ../_static/monitor/2026-09-25/snaps.png
 :alt: Six stored SNAP 0 spectra with white axes, a fixed positive-reference dB scale and shared frequency limits
 
 September 25 UTC preview: saved full-band SNAP 0 spectra. The capture only read
-saved data. Orange markers identify peaks beyond the selected detail limits.
+saved data. Orange clipping markers in this earlier capture are superseded by
+the full-data shared limits now used on the page.
 ```
 
-SNAPs has no extra Visibilities/transmitted-band submenu. Its History control
-uses these white plots, including the enlarged full-band power trend.
-Separate Streaming and PPS / source check boxes also appear on the main Overview.
+SNAPs has no extra Visibilities/transmitted-band submenu. Its white plots
+include the enlarged full-band power trend.
+Separate Streaming and PPS timing boxes also appear on the main Overview.
+SNAP status chips have white backgrounds, larger labels and UTC timestamps.
 Streaming OK means nonzero cached data from all wired inputs within 15 minutes,
 not an instantaneous packet-counter test. A nominal PPS period cannot establish
-cross-board alignment. The explicit `scripts/check_snap_timing.py` operator
-check uses existing getters only, requires two advancing common-edge TT frames
-and publishes local preview evidence, valid for 90 minutes. Verified boards turn
-green; unreadable/stale boards remain Unknown. The PPS-only check is manual;
-page refresh never contacts hardware. **Do not use `--sync-only` as a check**:
+cross-board alignment. Each all-antenna spectrum job now runs the same bounded
+getter-only comparison as `scripts/check_snap_timing.py`, sequentially after
+spectra under the same persisted lease. It requires two advancing common-edge
+TT frames and publishes the newest attempt to the monitoring database, including
+failures. The API chooses the newer database/local-JSON attempt, valid for
+90 minutes; page refresh never contacts hardware. The hourly hook was installed
+in the running monitor checkout at September 25 06:38 UTC; no observing service
+or worker restart was needed. **Do not use `--sync-only` as a check**:
 the configuration CLI flag changes synchronization. Control-read failure also leaves firmware state unknown,
 even if the old reader reported `programmed=False`. The reader correction is
 staged with the pending monitor-worker rollout, not deployed to production.
-Strict PPS results remain unchanged in the API. A separate green **Source
-coherence seen** assessment retains the measured −1 tick and named source,
-requires fresh reviewed complex cross-SNAP evidence, the same offset/reference,
-good fresh PPS and unchanged deployment/calibration/layout identities. The
-September 25 Cas A/Cyg A result is board-group evidence, not exact alignment or
-an all-input pass. Source and timing evidence expire after 90 minutes; there
-is no automatic source classifier or background native read in the page.
+Strict exact-match PPS results remain unchanged in the API. Displayed **PPS
+timing** compares with explicitly accepted offsets: September 25's accepted
+SNAP 0/1/2/3 reference is 0/−1/0/−1 ticks versus SNAP 0. Fresh advancing PPS with
+unchanged offsets is green; changed offsets/reference or stopped PPS is red
+Needs attention. Missing/failed/stale checks remain Unknown. The monitoring
+database baseline never updates automatically; `--accept-saved-baseline`
+requires fresh complete saved evidence and explicit operator approval.
+Source-check records no longer gate this status, and no source re-check runs
+hourly. A green accepted offset does not claim exact sample alignment.
 
 The existing `snap_read` Zarr stream and SQLite manifest on NVMe3 supply this
 history, without expiry or new preview disk products. Four boards acquired
