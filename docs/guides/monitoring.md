@@ -1,7 +1,7 @@
 # Investigate an observation
 
 The dark monitoring workspace runs separately at **http://localhost:8061/**.
-Observation, Readiness and Antennas are the primary tabs. The monitor on 8060,
+Observation, Calibration, Readiness and SNAPs are the primary tabs. The monitor on 8060,
 T2/T3 on 8050, scratchpad on 8501 and Medusa remain unchanged. Forward port
 8061 to use the preview remotely. The page background is black and no Plotly
 code is loaded. Imaging is removed from this preview's navigation and frontend
@@ -276,26 +276,57 @@ There is no executor, Slack integration or autonomous cleanup/masking action.
 Missing or stale evidence must remain explicit in any later recommendation.
 Readiness can also save its infrastructure evidence without a plot.
 
-## Antennas and source history
+## SNAPs and source history
 
 Readiness opens with **What needs attention?**, using existing monitor flags
 and evidence ages. Disk capacity and short observation/data-flow checks follow;
 the full measurement table is expandable. A stale check is not proof of failed
 hardware, and a high disk percentage is not authority to delete data.
 
-**Antennas** starts with saved 4096-channel board spectra, using the existing
-scientific renderer on black surfaces, with frequency/power axes and PNG
-downloads. Each board's acquisition time is shown in OVRO local time.
-**Get latest spectra** explicitly submits the existing bounded diagnostic job
+**SNAPs** opens saved 4096-channel, 375–500 MHz board spectra on white panels,
+with compact SNAP order by default. Compact station order, a six-position
+station grid and an all-12-ADC switch are also available. The default is every
+currently wired station (24 on September 24), distinct from visibility and
+calibration selection sets. Station/antenna and SNAP/slot/ADC labels appear
+together; a nearby layout key toggles stations and marks empty positions.
+
+Spectra show `10 log10(native power)`, not dBm, on a shared fixed scale with
+editable limits. All native channels are retained. **History** selects saved
+snapshots over 1–365 days and optionally overlays the first read in that window.
+Click a panel for its enlarged spectrum and full-band power trend. The trend
+averages all 4096 linear-power channels before converting to dB; an incomplete
+band yields a missing point. Focused trend axes reveal drift in absolute dB.
+Gaps and EQ/FFT-epoch changes break lines. Zero-power channels have no finite
+dB value and are counted separately. Historical labels use current wiring;
+comparisons track board IP and ADC.
+
+```{figure} ../_static/monitor/2026-09-24/snaps.png
+:alt: Six stored SNAP 0 spectra with white axes, shared dB limits and stale acquisition timestamps
+
+September 24 preview: saved full-band SNAP 0 spectra. The September 23 read
+timestamps are marked stale; this screenshot did not trigger a hardware read.
+```
+
+The existing `snap_read` Zarr stream and SQLite manifest on NVMe3 supply this
+history, without expiry or new preview disk products. Four boards acquired
+hourly would add about 18 MiB/day of uncompressed array data. Trend reads have
+a 512 MiB budget and an eight-selection memory cache; long selections can
+require a shorter interval. Timestamps are per-board UTC, and stale successful
+reads remain distinct from later read failures.
+
+**Ping now · get spectra** explicitly submits the existing bounded diagnostic job
 through the production monitor queue, preserving its lease and cooldown.
 The reader selects the diagnostic autocorrelator mux and arms readout; this
 is not literally zero register writes. It does not program, change EQ,
 synchronize PPS or change observing configuration. Navigation only reads saved
 products; job state and overdue evidence remain separate from page refresh.
-The configured two-hour scheduler has a shared-liveness-timer starvation bug.
-The tested independent-timer fix is in the preview source, awaiting approval
-to update and restart the production monitor collector. Two-hour acquisition
-is not yet guaranteed. No duplicate reader or preview scheduler is added.
+The new source profile requests hourly reads. The running two-hour monitoring
+collector still has a shared-liveness-timer starvation bug. The tested
+independent-timer fix and hourly profile await approval to update/restart
+**only that monitoring collector**. Hourly acquisition is not yet active;
+no production pipeline or running production service was changed for this
+page. No duplicate reader or preview scheduler is added.
+The old `/antennas` view remains under **Transmitted-band history**.
 **Selected input history** retains the roughly last-hour transmitted-band
 cache view, bounded to 256 MiB, refusing averaging that could hide gaps.
 
