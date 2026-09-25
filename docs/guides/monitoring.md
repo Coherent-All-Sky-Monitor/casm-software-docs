@@ -8,6 +8,10 @@ code is loaded. Imaging is removed from this preview's navigation and frontend
 routes because the operator rejected its current plots. Other viewers and
 the existing scientific/backend imaging implementation remain unchanged.
 
+Navigation labels are larger and semibold, with pale text on dark-blue tab
+surfaces. The selected tab uses a brighter fill, border and underline; keyboard
+focus has its own outline. Tabs wrap on narrow screens without hiding names.
+
 The opening **Overview** replaces Injection recovery. Four live status cards
 show observation state, search streams, rolling-24-hour injection recovery and
 cached-visibility age. An attention strip links to checks that need review.
