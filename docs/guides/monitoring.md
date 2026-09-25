@@ -1,9 +1,10 @@
 # Investigate an observation
 
-The dark monitoring workspace runs separately at **http://localhost:8061/**.
+The dark monitoring workspace runs at **http://localhost:8061/**.
 The tabs are Overview, Search (T1), Visibilities, SNAPs, Source history,
-Candidates and Calibration. The monitor on 8060,
-T2/T3 on 8050, scratchpad on 8501 and Medusa remain unchanged. Forward port
+Candidates and Calibration. The legacy web services on 8060 and 8050 were
+stopped and disabled September 25, 2026. Collectors, workers, T2/T3 processing,
+scratchpad on 8501 and Medusa remain unchanged. Forward port
 8061 to use the preview remotely. The page background is black and no Plotly
 code is loaded. Imaging is removed from this preview's navigation and frontend
 routes because the operator rejected its current plots. Other viewers and
@@ -495,35 +496,73 @@ September 24 preview: Sun transits from the native cache, using
 weighted correlator counts, not Jy; the plotted transit marker is the expected
 position crossing, not a fitted peak or a detection claim.
 
-## Manually staged calibration
+## Calibration workspace
 
-**Calibration** presents the existing Sun recipe, solve/static windows and
-reviewed antenna selection. Staging writes a private recipe and layout snapshot.
-It does not edit current wiring, CASMAN or intended beamforming membership.
-A second confirmation, typing the staged build ID, starts only
-`python -m bf_weights_generator.make_cal_and_weights` in an isolated directory.
-The build generates diagnostics for review, with admission and process limits.
+As of September 25, 2026, **Calibration** has Prepare, Solve & inspect,
+Validate on sky, Generate beams, and Upload dry run views. Larger controls,
+green antenna selections, white phase/transit figures, plot grids and click-to-zoom
+match the rest of the workspace. Saved plots precede collapsed settings.
+The old typed-UUID
+Commissioning page is superseded. A reviewed solar solve freezes a private
+layout and runs the canonical driver without generating a grid. Solve and static
+windows and phase views each accept up to four hours; job execution resource
+caps still apply. Saved recipes,
+diagnostics, notebook, job log and cancellation survive page changes and web
+restarts through a separate durable worker. Production monitor data stay read-only.
 
-This preview builds CB products only. It does not build the paired IB product
-or preserve a custom factorial deployment grid. Its output is therefore not
-a complete deployment package. Deployment, registry writes and restart-default
-changes are disabled. Build validation uses fixtures; no expensive real solve
-was run to demonstrate the interface. Read the
-[canonical build walkthrough](generate-weights.md) and deployment safeguards
-before proposing operational work. Higher rank-1 is not proof of better beam
-sensitivity.
+The phase explorer shows both 1D wrapped sawtooth curves and frequency/time
+phase waterfalls for raw, fringe-stopped and fixed-delay-subtracted stages,
+with Sun/Cyg A/Cas A diagnostic directions. Canonical recent-day comparisons
+use matched solar windows with the solve's duration, up to four hours per day.
+The sky check uses five-hour stationary-beam
+visibilities, complex off-source subtraction, common antenna/channel masks,
+signed power, normalized shape, and per-channel timing relative to an exact
+ideal array-factor model. Low-S/N or edge-peaking channels do not get a timing
+measurement. Rank-1 and peak/off-RMS are not absolute sensitivity measurements.
+
+Grid generation separately reuses the saved calibration for exactly 512 exact
+pointings and a matching IB product. Custom/factorial cells are not preserved.
+The default sky illustration restores schematic ellipse footprints and dated
+Sun/Cyg A/Cas A/Tau A tracks beside altitude versus UTC. Saved pointing coordinates
+and source tracks remain exact; ellipses never supply transit times or coverage
+scores. Full exact-response product checks remain available in a disclosure.
+Scientific review precedes the hash/layout/scale-protected local dry run.
+**Live upload is blocked by this workspace**, including when parent settings
+are armed. Dry-run generation supplies `--no-registry` and omits both upload
+and save-defaults flags. No trial becomes the deployed reference automatically.
+Stage checks require 512 CB payload beams and matching metadata/pointing rows.
+Transfer, registry, restart defaults and runtime activation are distinct;
+the current reference box reports the deployment ledger, not fresh GPU identity.
+
+September 25 acceptance reused an existing offline calibration for phase and
+five-hour Cyg A renders, and generated 12 local CB/IB DADA files. Hashes of the
+recorded deployed HDF5s, ledger and registry were unchanged. This is interface
+acceptance, not scientific approval of that candidate. The source report is
+`casm_monitor/docs/reviews/2026-09-25-calibration-and-web-retirement.md`.
+
+Read `casm_monitor/docs/calibration-workspace.md` for APIs, service setup,
+acceptance scripts and first-version limitations, and the
+[canonical build walkthrough](generate-weights.md) for the scientific recipe.
+Actual source/static coverage and hardware-epoch compatibility require review;
+the proposed date/window is not an automatic certification.
 
 ## Implementation and documentation review
 
-Source revision `07c39a8`, branch `observation-preview`. Source checkout:
-`/home/casm/software/dev/casm_monitor/.claude/worktrees/observation-preview`.
+The active 8061 checkout is `/home/casm/software/dev/casm_monitor`, branch `main`.
+September 25 source revisions: monitor `ed40e44`, scientific review/plotting
+helpers `casm_vis_analysis` `8563fcf`, and T3 retirement documentation `c38c44d`.
+The paired operational wiki update is `fca42ef`. No changes were pushed.
+The earlier isolated preview was `07c39a8` on `observation-preview`.
 The owning manuals are `docs/api-science.md`, `docs/api-review.md`,
 `docs/api-commissioning.md` and `frontend/README.md`.
 Artifacts and the review database are isolated under
 `/home/casm/scratch/casm-observation-preview`. Production monitor Store handles
 are read-only. Workspace-local rendering, queue persistence and explicitly
 confirmed builds are authorized exceptions. The separately authorized SNAP
-diagnostic button bridges only its fixed production queue endpoint; general
+diagnostic button opens a short-lived handle for the existing atomic `snap_read`
+submission after origin, CSRF and confirmation checks. It no longer depends
+on a second web service. The existing lease/cooldown and hourly worker remain;
+general
 operational jobs remain disabled.
 
 This guide supersedes the fixed-baseline preview at `369c34e`, which the
@@ -533,10 +572,14 @@ evidence persistence and build admission; source-local manuals and this guide
 are updated together under [documentation maintenance](../maintaining-docs.md).
 The preview also corrects a singleton-baseline Sun-delay broadcasting bug in
 the monitor adapter. Old singleton Sun-reference views require re-rendering;
-the locked production checkout has not received that fix. Unmocked canonical
+the retired legacy web checkout did not receive that fix. Unmocked canonical
 transform/render tests cover the corrected time/baseline axes.
-The three-package API snapshot has no new scientific source changes in this
-task. Historical tutorial figures are preserved without rerunning their jobs.
+The September 22 Calibration workspace adds maintained scientific review
+helpers and an optional dynamic-spectrum return in `casm_vis_analysis`.
+The central API source snapshot remains historical: its refresh is blocked by
+a configured `casm_calibrator/calibration.py` path that no longer exists.
+The maintained guide is updated; the Sphinx, local-link and export checks pass.
+Historical tutorial figures are preserved without rerunning their jobs.
 Cross-repository CI/publishing, Grafana, Slack, fast-beam workflows, automatic
 RFI attribution and layout exclusion-policy implementation remain deferred.
 
