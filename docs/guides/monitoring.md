@@ -13,7 +13,7 @@ show observation state, search streams, rolling-24-hour injection recovery and
 cached-visibility age. An attention strip links to checks that need review.
 The cards refresh every 30 seconds while visible and remain labelled **Now**.
 Stale or unavailable evidence cannot remain green.
-The live recovery card is yellow for 18 or more recovered trials in 24 hours
+The live recovery card is yellow, labelled **Needs attention**, for 18 or more recovered trials in 24 hours
 (including 24/24), orange for 12–17 and red below 12. Missing or empty evidence
 stays unknown; stale/incomplete counts are labelled separately. These display
 bands do not apply to shorter historical intervals or individual trial markers.
