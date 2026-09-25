@@ -110,12 +110,14 @@ Log coverage is bounded, not guaranteed full-day coverage. No warning does not p
 a cap-free day. Follow the interval link into visibilities to inspect frequency
 structure. RFI, satellites, bad channels and storage problems are investigation
 hypotheses until supported by evidence.
-Both DM displays span 10–3000 pc cm^-3. All recorded bins/counts remain in
-the evidence; no search limit or collector setting is changed by this display.
-This is a known display mismatch: September 25's read-only config check found
-DM 0–1000 on all eight streams. The page hides the saved 0–10 bucket, and the
-last occupied coarse bin spans approximately 922–1122, extending visually past
-the search ceiling. Neither plot limit establishes the actual search range.
+Both DM displays span 0–1000 pc cm^-3, matching the September 25 read-only
+configuration check on all eight streams. The bottom histogram uses linear
+spacing; DM versus time is logarithmic above 1 with a linear 0–1 section.
+Both retain the saved 0–10 bucket without inventing finer bins. Stored edges
+and counts are unchanged; the approximately 922–1122 bin keeps its full count
+but ends visually at the 1000 display limit. No within-bin split is inferred.
+All bins, including those outside the displayed range, remain in evidence JSON.
+No production search limit or collector setting changed.
 
 The white-background Matplotlib figures match Visibilities, with dark labels,
 clear time-zone/unit labels, subtle gridlines and muted-blue histograms. Click the
@@ -397,6 +399,8 @@ or worker restart was needed. **Do not use `--sync-only` as a check**:
 the configuration CLI flag changes synchronization. Control-read failure also leaves firmware state unknown,
 even if the old reader reported `programmed=False`. The reader correction is
 staged with the pending monitor-worker rollout, not deployed to production.
+Job 863 subsequently completed an automatic spectra-plus-PPS cycle at
+September 25 07:14:51 UTC, retaining all four accepted offsets.
 Strict exact-match PPS results remain unchanged in the API. Displayed **PPS
 timing** compares with explicitly accepted offsets: September 25's accepted
 SNAP 0/1/2/3 reference is 0/−1/0/−1 ticks versus SNAP 0. Fresh advancing PPS with
