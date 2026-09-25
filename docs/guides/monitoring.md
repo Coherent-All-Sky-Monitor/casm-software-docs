@@ -8,16 +8,36 @@ code is loaded. Imaging is removed from this preview's navigation and frontend
 routes because the operator rejected its current plots. Other viewers and
 the existing scientific/backend imaging implementation remain unchanged.
 
-The opening page automatically shows rolling-24-hour T1 distributions, a
-long N-S baseline raw phase waterfall and an amplitude dynamic spectrum, alongside
-injection recovery. No Render click is required. Visible live pages refresh
-every two minutes. Choosing a historical day/range pauses rolling; **Live ·
-rolling 24 h** restores it. Automatic views use bounded cache reads only.
+The opening **Overview** replaces Injection recovery. Four live status cards
+show observation state, search streams, rolling-24-hour injection recovery and
+cached-visibility age. An attention strip links to checks that need review.
+The cards refresh every 30 seconds while visible and remain labelled **Now**.
+Stale or unavailable evidence cannot remain green.
+The live recovery card is yellow for 18 or more recovered trials in 24 hours
+(including 24/24), orange for 12–17 and red below 12. Missing or empty evidence
+stays unknown; stale/incomplete counts are labelled separately. These display
+bands do not apply to shorter historical intervals or individual trial markers.
+
+Below, injection recovery and current array/calibration context sit side by
+side. A white timeline shows each trial's recorded outcome; click a marker for
+details, or expand the trial table and seven-day UTC totals. The station map
+uses the Visibilities inspection set, with wired and intended beam membership
+reported separately. Its colours describe configuration, not antenna health.
+Recorded weights membership and the ledger calibration do not prove runtime activation.
+
+The bottom row shows one purple stream-count heatmap and one raw reference-baseline
+dynamic spectrum, with amplitude/phase selection. Click plots to enlarge;
+follow their links to Search or the detailed visibility inspector with the same
+interval. A single reference baseline is not a whole-array health test.
+All history panels share the selected interval and time zone, default rolling
+24 hours with two-minute refresh while visible. A historical selection pauses
+history, not the live cards. **Live · rolling 24 h** restores rolling.
+Automatic views use bounded cache reads only; no injection or telescope job starts.
 
 ## Start with recovery and search pressure
 
-Observation shows rolling 24-hour injection outcomes, recent misses, existing
-replay plots, product freshness and array geometry. Completed fired trials,
+Overview retains injection outcomes, trial details, product freshness and array
+context. Completed fired trials,
 pending trials and firing failures are separate. A missing ledger is
 unavailable, not zero failures. The seven-day trend uses UTC dates; the headline
 is a rolling interval. Read [injection recovery](injection-recovery.md) before
