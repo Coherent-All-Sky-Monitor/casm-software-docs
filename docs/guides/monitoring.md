@@ -29,8 +29,9 @@ Owens Valley Radio Observatory, Bishop, California on a separate location line.
 Below, injection recovery and current array/calibration context sit side by
 side. A white timeline shows each trial's recorded outcome; click a marker for
 details, or expand the trial table and seven-day UTC totals. The station map
-uses the Visibilities inspection set, with wired and intended beam membership
-reported separately. Its colours describe configuration, not antenna health.
+shows all wired inputs: green/BF marks the inspected nonzero coherent-beam weights
+in the latest recorded deployment; blue marks other wired inputs. Unknown
+membership is explicit. Colours describe membership, not antenna health.
 Recorded weights membership and the ledger calibration do not prove runtime activation.
 
 The bottom row shows one purple stream-count heatmap and one raw reference-baseline
@@ -276,6 +277,24 @@ There is no executor, Slack integration or autonomous cleanup/masking action.
 Missing or stale evidence must remain explicit in any later recommendation.
 Readiness can also save its infrastructure evidence without a plot.
 
+## Candidate plot gallery
+
+Candidates opens the latest 12 events with saved plots as a white-panel grid.
+Choose 6, 12, 24 or 48 panels. The compact right sidebar lists up to 500 filtered
+events, supports name/date/beam/label search, and outlines rows marked Shown.
+Click an event to bring its image into the grid; click again to hide it.
+Missing plots show the recorded outcome. Manual selections stay fixed while
+the list refreshes every 15 seconds; Latest N restores the rolling selection.
+Every image uses the shared zoom/pan viewer, including on event-detail pages.
+Original PNGs are served unchanged; gallery browsing neither labels candidates
+nor requests dumps or pipeline actions. On mobile the selector sits above the grid.
+
+```{figure} ../_static/monitor/2026-09-25/candidates-grid.png
+:alt: Saved candidate plots on white panels beside a compact selectable list
+
+September 25 UTC: real saved candidate images; outlined sidebar rows are displayed.
+```
+
 ## SNAPs and source history
 
 Readiness opens with **What needs attention?**, using existing monitor flags
@@ -286,9 +305,22 @@ hardware, and a high disk percentage is not authority to delete data.
 **SNAPs** opens saved 4096-channel, 375–500 MHz board spectra on white panels,
 with compact SNAP order by default. Compact station order, a six-position
 station grid and an all-12-ADC switch are also available. The default is every
-currently wired station (24 on September 24), distinct from visibility and
-calibration selection sets. Station/antenna and SNAP/slot/ADC labels appear
-together; a nearby layout key toggles stations and marks empty positions.
+input in the latest recorded deployed coherent-beam weights (16 of 24 wired
+inputs on September 25). Membership comes from a bounded offline inspection
+of every stored channel/polarization/beam, matched to the six streams' latest
+registry association and current board/ADC wiring. It does not use the layout's
+intent flags or assume runtime readback. Unknown/mismatched evidence never
+becomes an active input. All wired and all-12-ADC views remain available, with
+green borders and Beamforming badges on deployed members. Station/antenna and
+SNAP/slot/ADC labels appear together; status and expandable read-detail boxes
+show IPs. The layout key shows all wired inputs, green/BF versus blue, and
+marks empty positions. History retains explicitly current membership.
+
+The preview membership cache can be refreshed with the offline
+`scripts/check_beam_membership.py --output-root /home/casm/scratch/casm-observation-preview`
+command. Only the small preview JSON is written; weights, wiring and hardware
+remain unchanged. GETs never inspect the large weights payload. A new deployment
+without matching cached inspection stays Unknown.
 
 Spectra default to `10 log10(native power / 10⁻¹⁰)`, not dBm: the same fixed
 reference across antennas and dates. The original dB re 1 scale remains available.
