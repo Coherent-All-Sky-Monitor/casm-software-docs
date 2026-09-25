@@ -1,7 +1,8 @@
 # Investigate an observation
 
 The dark monitoring workspace runs separately at **http://localhost:8061/**.
-Observation, Calibration, Readiness and SNAPs are the primary tabs. The monitor on 8060,
+The tabs are Overview, Search (T1), Visibilities, SNAPs, Source history,
+Candidates and Calibration. The monitor on 8060,
 T2/T3 on 8050, scratchpad on 8501 and Medusa remain unchanged. Forward port
 8061 to use the preview remotely. The page background is black and no Plotly
 code is loaded. Imaging is removed from this preview's navigation and frontend
@@ -24,11 +25,11 @@ bands do not apply to shorter historical intervals or individual trial markers.
 The top-right CASM photograph opens in the same click-to-zoom viewer as the plots.
 It is a supplied still image, not a live camera; the complete frame is retained.
 The title names the telescope **Coherent All Sky Monitor (CASM)**, with
-Owens Valley Radio Observatory, Bishop, California on a separate location line.
+Owens Valley Radio Observatory, Big Pine, California on a separate location line.
 
 Below, injection recovery and current array/calibration context sit side by
 side. A white timeline shows each trial's recorded outcome; click a marker for
-details, or expand the trial table and seven-day UTC totals. The station map
+details, or enlarge the timeline and zoom. The station map
 shows all wired inputs: green/BF marks the inspected nonzero coherent-beam weights
 in the latest recorded deployment; blue marks other wired inputs. Unknown
 membership is explicit. Colours describe membership, not antenna health.
@@ -45,13 +46,15 @@ Automatic views use bounded cache reads only; no injection or telescope job star
 
 ## Current page and resource use
 
-Real preview screenshots below were captured on September 24, 2026 in OVRO
-local time, from the working monitor checkout, including its existing
-Calibration navigation. They are saved examples, not live status images.
+The Overview below was captured on September 25, 2026 in OVRO local time from
+the working preview. It is a saved example, not a live status image. The monitor
+README includes current Search, Visibilities, SNAPs, Candidates and source-history
+screenshots; its `docs/screenshots/2026-09-25-latest/manifest.json` records capture
+times and image hashes. No Calibration actions or hardware reads were requested.
 
-![Overview with injection timeline, array context and rolling plots](../_static/monitor/2026-09-24/overview.png)
+![Overview with injection timeline, array context and rolling plots](../_static/monitor/2026-09-25-latest/overview.png)
 
-The warm-cache sample measured about 0.6 GiB of preview-process resident memory
+The September 24 warm-cache sample measured about 0.6 GiB of preview-process resident memory
 and 0.2% of one CPU core over a quiet 20-second interval. Plot rendering causes
 short CPU bursts; first native source-date loads took about 15 seconds. These
 are shared-host measurements, not a cold-load capacity test. The preview's
