@@ -290,8 +290,13 @@ currently wired station (24 on September 24), distinct from visibility and
 calibration selection sets. Station/antenna and SNAP/slot/ADC labels appear
 together; a nearby layout key toggles stations and marks empty positions.
 
-Spectra show `10 log10(native power)`, not dBm, on a shared fixed scale with
-editable limits. All native channels are retained. **History** selects saved
+Spectra default to `10 log10(native power / 10⁻¹⁰)`, not dBm: the same fixed
+reference across antennas and dates. The original dB re 1 scale remains available.
+All panels share 374.9–500.1 MHz and pinned power limits. Bandpass detail fits
+robust limits; orange markers identify clipped peaks. Full spectrum or custom
+shared limits expose the complete range. All native channels are retained;
+channel centres descend from 500 to 375.030518 MHz at 125/4096 MHz spacing.
+**History** selects saved
 snapshots over 1–365 days and optionally overlays the first read in that window.
 Click a panel for its enlarged spectrum and full-band power trend. The trend
 averages all 4096 linear-power channels before converting to dB; an incomplete
@@ -300,12 +305,26 @@ Gaps and EQ/FFT-epoch changes break lines. Zero-power channels have no finite
 dB value and are counted separately. Historical labels use current wiring;
 comparisons track board IP and ADC.
 
-```{figure} ../_static/monitor/2026-09-24/snaps.png
-:alt: Six stored SNAP 0 spectra with white axes, shared dB limits and stale acquisition timestamps
+```{figure} ../_static/monitor/2026-09-25/snaps.png
+:alt: Six stored SNAP 0 spectra with white axes, a fixed positive-reference dB scale and shared frequency limits
 
-September 24 preview: saved full-band SNAP 0 spectra. The September 23 read
-timestamps are marked stale; this screenshot did not trigger a hardware read.
+September 25 UTC preview: saved full-band SNAP 0 spectra. The capture only read
+saved data. Orange markers identify peaks beyond the selected detail limits.
 ```
+
+SNAPs has no extra Visibilities/transmitted-band submenu. Its History control
+uses these white plots, including the enlarged full-band power trend.
+Separate Streaming and PPS alignment boxes also appear on the main Overview.
+Streaming OK means nonzero cached data from all wired inputs within 15 minutes,
+not an instantaneous packet-counter test. A nominal PPS period cannot establish
+cross-board alignment. The explicit `scripts/check_snap_timing.py` operator
+check uses existing getters only, requires two advancing common-edge TT frames
+and publishes local preview evidence, valid for 90 minutes. Verified boards turn
+green; unreadable/stale boards remain Unknown. The PPS-only check is manual;
+page refresh never contacts hardware. **Do not use `--sync-only` as a check**:
+the configuration CLI flag changes synchronization. Control-read failure also leaves firmware state unknown,
+even if the old reader reported `programmed=False`. The reader correction is
+staged with the pending monitor-worker rollout, not deployed to production.
 
 The existing `snap_read` Zarr stream and SQLite manifest on NVMe3 supply this
 history, without expiry or new preview disk products. Four boards acquired
