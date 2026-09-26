@@ -210,9 +210,13 @@ plot from the array keeps the rolling window and minute refresh; choosing a
 historical date or explicit range pauses it. Phones stack the larger panels.
 
 Click any plot surface, matrix thumbnail or detailed PNG to enlarge it. The
-viewer offers +/−, Fit, double-click zoom and drag/scroll panning; Escape closes
+viewer offers +/−, Fit, Download, double-click zoom and drag/scroll panning; Escape closes
 it. This changes display size only, not averaging or samples. A matrix
 enlargement pins its selected snapshot and shows full axes and a colourbar.
+Download is shared across tabs: saved images retain their original bytes;
+browser-rendered plots export a complete PNG with axes, colourbars and companion
+panels, including SNAP trends and source light curves. The export is local to
+the browser and does not launch analysis or contact a SNAP.
 Use **Open stored-pair plot** for the detailed cached-channel view and downloads.
 Matrix thumbnail size can be increased; sticky station labels stay visible
 while scrolling. The lower triangle is intentionally blank. Loading cells are
@@ -369,7 +373,9 @@ does not establish alignment. The monitor manual and wiki's
 `snap-control-frequency-followup.md` record the frequency and timing checks.
 All panels share 374.9–500.1 MHz and power limits covering every finite displayed
 channel with padding. There is no percentile clipping; limits update with saved
-reads and selection changes. Expanded spectra share those limits. All native channels are retained;
+reads and selection changes. The preferred ceiling is 65 dB, expanding for higher
+peaks with 1 dB headroom rounded up to a 2.5 dB step. Expanded spectra share those
+limits. All native channels are retained;
 channel centres descend from 500 to 375.030518 MHz at 125/4096 MHz spacing.
 History/overlay selectors are removed; the page shows the latest saved spectra.
 The all-12-ADC control is a prominent labelled switch. Click a panel for its
