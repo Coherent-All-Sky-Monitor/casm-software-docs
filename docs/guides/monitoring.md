@@ -379,7 +379,9 @@ limits. All native channels are retained;
 channel centres descend from 500 to 375.030518 MHz at 125/4096 MHz spacing.
 History/overlay selectors are removed; the page shows the latest saved spectra.
 The all-12-ADC control is a prominent labelled switch. Click a panel for its
-enlarged spectrum and saved 30-day full-band power trend. The trend
+enlarged spectrum and saved 30-day full-band power trend. The spectrum shares
+the visibility autos' 324:192 frame proportions in compact and expanded views;
+the trend keeps its compact strip. The trend
 averages all 4096 linear-power channels before converting to dB; an incomplete
 band yields a missing point. Focused trend axes reveal drift in absolute dB.
 Gaps and EQ/FFT-epoch changes break lines. Zero-power channels have no finite
