@@ -396,6 +396,24 @@ The preview starts fresh history at September 25 05:12:31 UTC. Earlier spectra
 are retained, not deleted; the date picker and explicit read IDs expose them.
 The default live trend and undated catalogue share the configured display epoch.
 
+Live stays the default. In History, **Play day** opens the selected inputs in a
+full-window playback grid. Day is the default interval; **Last 48 hours** and
+**Last week** end now for today's date, or at a selected past UTC day's end.
+UTC/local timestamp, play/pause, seek, 0.5/1/2/4× speed and optional Loop are
+available. Each frame is a saved sequential board pass, not a simultaneous
+sample. Missing boards stay blank and gaps remain labelled, with no interpolation.
+Shared axes cover every finite channel across the chosen interval and stay fixed.
+**Open this read** returns to ordinary History; expanding a plot pauses playback
+and retains zoom/download. Hidden tabs pause automatically.
+
+The player pins its sequence and buffers two batches of up to 12 frames, fetching
+only displayed inputs. Packed float32 transport preserves all 4096 channels;
+it is not spectral averaging. At 4× the target is one saved read every 250 ms,
+without a network request on each step. Initial buffering and slow connections
+can still delay it; frames are never skipped. No movie files, hardware reads or
+new retention policy are involved. Visibilities/Search playback is not implemented;
+their cold rendering costs need separate measurement before extending this UI.
+
 The separate **Latest spectrum check** compares current wired inputs against preceding
 24-hour same-EQ/FFT history. It needs six reads spanning four hours. Minimum
 thresholds are 6 dB full-band power, 3 dB shape changes on 10% of channels,
@@ -411,7 +429,7 @@ all contributing read IDs pinned. It does not change the history selection.
 Manual date comparisons still overlay an actual saved read. These are relative changes, not hardware diagnoses;
 stable faults and changes absorbed into the rolling baseline can go unflagged.
 Green beamforming borders and live PPS/Streaming checks remain separate.
-The browser caches eight response objects; change reads are bounded to 28 hours
+The ordinary history browser caches eight response objects; change reads are bounded to 28 hours
 and 128 samples per board with a small two-minute summary cache. No new
 acquisition, spectrum database, retention rule or notification service is added.
 The owning manual is `casm_monitor/docs/snap-history.md`.
