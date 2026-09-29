@@ -377,7 +377,11 @@ reads and selection changes. The preferred ceiling is 65 dB, expanding for highe
 peaks with 1 dB headroom rounded up to a 2.5 dB step. Expanded spectra share those
 limits. All native channels are retained;
 channel centres descend from 500 to 375.030518 MHz at 125/4096 MHz spacing.
-History/overlay selectors are removed; the page shows the latest saved spectra.
+Live shows the latest saved spectra. History selects any retained UTC date and
+exact saved read, with Previous/Next navigation. Compare spectra overlays an
+orange dashed saved reference; shared limits include both traces. Missing boards
+stay blank, not filled from another read. Trend points open their saved spectra.
+Historical trends end at the selected UTC day's end and include the archive.
 The all-12-ADC control is a prominent labelled switch. Click a panel for its
 enlarged spectrum and saved 30-day full-band power trend. The spectrum shares
 the visibility autos' 324:192 frame proportions in compact and expanded views;
@@ -388,8 +392,23 @@ Gaps and EQ/FFT-epoch changes break lines. Zero-power channels have no finite
 dB value and are counted separately. Historical labels use current wiring;
 comparisons track board IP and ADC.
 The preview starts fresh history at September 25 05:12:31 UTC. Earlier spectra
-are retained, not deleted; `archive=true` exposes them in the API. The default
-trend and catalogue queries share the configured display epoch.
+are retained, not deleted; the date picker and explicit read IDs expose them.
+The default live trend and undated catalogue share the configured display epoch.
+
+The separate **Changes** strip checks current wired inputs against preceding
+24-hour same-EQ/FFT history. It needs six reads spanning four hours. Minimum
+thresholds are 6 dB full-band power, 3 dB shape changes on 10% of channels, 12 dB
+new peaks, or 1% new zero-power channels; historical scatter raises the dB
+thresholds. Amber means Watch, red means the same change in two reads 30–90
+minutes apart at hourly cadence. Unknown covers missing/failed/insufficient
+evidence; configuration changes have their own label. Click a badge for actual
+saved before/after traces. These are relative changes, not hardware diagnoses;
+stable faults and changes absorbed into the rolling baseline can go unflagged.
+Green beamforming borders and live PPS/Streaming checks remain separate.
+The browser caches eight response objects; change reads are bounded to 28 hours
+and 128 samples per board with a small two-minute summary cache. No new
+acquisition, spectrum database, retention rule or notification service is added.
+The owning manual is `casm_monitor/docs/snap-history.md`.
 
 ```{figure} ../_static/monitor/2026-09-25/snaps.png
 :alt: Six stored SNAP 0 spectra with white axes, a fixed positive-reference dB scale and shared frequency limits
