@@ -378,8 +378,9 @@ peaks with 1 dB headroom rounded up to a 2.5 dB step. Expanded spectra share tho
 limits. All native channels are retained;
 channel centres descend from 500 to 375.030518 MHz at 125/4096 MHz spacing.
 Live shows the latest saved spectra. History selects any retained UTC date and
-exact saved read, with Previous/Next navigation. Compare spectra overlays an
-orange dashed saved reference; shared limits include both traces. Missing boards
+exact saved read through a calendar and time slider, with day/read arrows.
+Compare with opens an optional second navigator, defaulting to the preceding
+read, and overlays an orange dashed saved reference. Shared limits include both traces. Missing boards
 stay blank, not filled from another read. Trend points open their saved spectra.
 Historical trends end at the selected UTC day's end and include the archive.
 The all-12-ADC control is a prominent labelled switch. Click a panel for its
@@ -395,14 +396,19 @@ The preview starts fresh history at September 25 05:12:31 UTC. Earlier spectra
 are retained, not deleted; the date picker and explicit read IDs expose them.
 The default live trend and undated catalogue share the configured display epoch.
 
-The separate **Changes** strip checks current wired inputs against preceding
+The separate **Latest spectrum check** compares current wired inputs against preceding
 24-hour same-EQ/FFT history. It needs six reads spanning four hours. Minimum
-thresholds are 6 dB full-band power, 3 dB shape changes on 10% of channels, 12 dB
-new peaks, or 1% new zero-power channels; historical scatter raises the dB
-thresholds. Amber means Watch, red means the same change in two reads 30–90
-minutes apart at hourly cadence. Unknown covers missing/failed/insufficient
-evidence; configuration changes have their own label. Click a badge for actual
-saved before/after traces. These are relative changes, not hardware diagnoses;
+thresholds are 6 dB full-band power, 3 dB shape changes on 10% of channels,
+or 1% new zero-power channels; historical scatter raises the dB thresholds.
+Amber means one such change, red means repetition in two reads 30–90 minutes
+apart at hourly cadence. Fine-channel excursions (12 dB or historical scatter)
+are collapsed neutral information, never red solely because a narrow peak repeats.
+Version 1's "New strong spectral peak" and red single-channel messages overstated
+the evidence and were withdrawn September 29. Unknown covers missing/failed/
+insufficient evidence; configuration changes have their own label. Clicking an
+entry shows the exact per-channel median reference and a difference plot, with
+all contributing read IDs pinned. It does not change the history selection.
+Manual date comparisons still overlay an actual saved read. These are relative changes, not hardware diagnoses;
 stable faults and changes absorbed into the rolling baseline can go unflagged.
 Green beamforming borders and live PPS/Streaming checks remain separate.
 The browser caches eight response objects; change reads are bounded to 28 hours
@@ -441,7 +447,11 @@ Strict exact-match PPS results remain unchanged in the API. Displayed **PPS
 timing** compares with explicitly accepted offsets: September 25's accepted
 SNAP 0/1/2/3 reference is 0/−1/0/−1 ticks versus SNAP 0. Fresh advancing PPS with
 unchanged offsets is green; changed offsets/reference or stopped PPS is red
-Needs attention. Missing/failed/stale checks remain Unknown. The monitoring
+Needs attention. By explicit September 29 operator acceptance, the measured
+−2 → −1 case stays green when the latest offset is the accepted −1. Details
+retain both frames; this does not assert identical frames or exact alignment.
+Other transitions, including a latest −2, still need attention.
+Missing/failed/stale checks remain Unknown. The monitoring
 database baseline never updates automatically; `--accept-saved-baseline`
 requires fresh complete saved evidence and explicit operator approval.
 Source-check records no longer gate this status, and no source re-check runs
