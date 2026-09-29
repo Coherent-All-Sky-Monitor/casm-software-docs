@@ -396,11 +396,18 @@ The preview starts fresh history at September 25 05:12:31 UTC. Earlier spectra
 are retained, not deleted; the date picker and explicit read IDs expose them.
 The default live trend and undated catalogue share the configured display epoch.
 
-Live stays the default. In History, **Play day** opens the selected inputs in a
+Live stays the default. In History, **Video playback** opens the selected inputs in a
 full-window playback grid. Day is the default interval; **Last 48 hours** and
 **Last week** end now for today's date, or at a selected past UTC day's end.
-UTC/local timestamp, play/pause, seek, 0.5/1/2/4× speed and optional Loop are
-available. Each frame is a saved sequential board pass, not a simultaneous
+The top-right line displays UTC, OVRO local date/time (PDT/PST) and mean OVRO LST
+together. Opened historical frames and enlarged spectra show the same three
+clocks, using saved acquisition times, not the current time. Frame headers use
+the pass's latest board time; individual zooms use their board's time. LST reuses
+Overview's offline calculation and is cached with saved timestamps; no clock
+request is needed per playback step. Missing LST remains Unavailable. The Plot
+timestamps selector changes captions and timeline labels. Play/pause, seek,
+0.5/1/2/4× speed and optional Loop are available.
+Each frame is a saved sequential board pass, not a simultaneous
 sample. Missing boards stay blank and gaps remain labelled, with no interpolation.
 Shared axes cover every finite channel across the chosen interval and stay fixed.
 **Open this read** returns to ordinary History; expanding a plot pauses playback
