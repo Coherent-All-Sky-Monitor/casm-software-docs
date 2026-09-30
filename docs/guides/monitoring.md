@@ -151,9 +151,15 @@ selected time, pauses, and buffers V(target, reference); it does not normalize
 other baselines. Spectra advance integrations or show the selected rolling
 average. Dynamic spectra and the upper-triangle matrix slide a fixed panel
 window, separate from the playback period. Scales stay fixed during playback;
-real gaps stay blank. Saved UTC/local/LST, stepping, speed, Loop and clickable
+real gaps stay blank. Visibility speeds run from 0.5× to 32× and show estimated
+full-movie/remaining times from saved frame counts, excluding buffering or slow
+rendering. Every saved integration is retained; SNAP speeds are unchanged.
+Saved UTC/local/LST, stepping, speed, Loop and clickable
 zoom/download are included. The player reads numeric cache chunks, with no
-per-frame plot-image request or hardware operation. API, budgets and estimator
+per-frame plot-image request or hardware operation. Click a panel to pause and
+enlarge it, then Play inside the zoom viewer to watch only that baseline.
+Closing returns to the array at the same time, paused; Download pauses before
+saving the current frame. API, budgets and estimator
 details: `casm_monitor/docs/visibility-playback.md`.
 
 The main navigation is a single row: Overview, Search (T1), Visibilities, SNAPs,
