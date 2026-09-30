@@ -143,8 +143,9 @@ remain visible; missing evidence is not displayed as zero. Cards wrap on phones.
 
 ## Read the array snapshot
 
-**Visibilities → History → Video playback** opens saved array playback while
-Live remains the default. Start with 24 hours, or select 48 hours, Last week
+**Visibilities → History** opens the saved array viewer directly, paused; scrub,
+step or press Play. There is no intermediate page or Video playback entry button.
+Closing returns to Live, the default. Start with 24 hours, or select 48 hours, Last week
 and a UTC end date. All four visibility quantities and compact/SNAP/station
 arrangements are available. Changing the reference antenna keeps the exact
 selected time, pauses, and buffers V(target, reference); it does not normalize
@@ -417,8 +418,10 @@ The preview starts fresh history at September 25 05:12:31 UTC. Earlier spectra
 are retained, not deleted; the date picker and explicit read IDs expose them.
 The default live trend and undated catalogue share the configured display epoch.
 
-Live stays the default. In History, **Video playback** opens the selected inputs in a
-full-window playback grid. Day is the default interval; **Last 48 hours** and
+Live stays the default. **History** opens the selected inputs directly in a
+paused full-window viewer; scrub, step or press Play without a second entry button.
+Day is the default interval, using the latest saved day from Live or the selected
+day from an inspected read. **Last 48 hours** and
 **Last week** end now for today's date, or at a selected past UTC day's end.
 The top-right line displays UTC, OVRO local date/time (PDT/PST) and mean OVRO LST
 together. Opened historical frames and enlarged spectra show the same three
@@ -431,7 +434,8 @@ timestamps selector changes captions and timeline labels. Play/pause, seek,
 Each frame is a saved sequential board pass, not a simultaneous
 sample. Missing boards stay blank and gaps remain labelled, with no interpolation.
 Shared axes cover every finite channel across the chosen interval and stay fixed.
-**Open this read** returns to ordinary History; expanding a plot pauses playback
+**Open this read** opens that frame's comparison/trend inspector; closing alone
+leaves the previous Live/saved-read selection unchanged. Expanding a plot pauses playback
 and retains zoom/download. Hidden tabs pause automatically.
 
 The player pins its sequence and buffers two batches of up to 12 frames, fetching
