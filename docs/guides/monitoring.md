@@ -19,9 +19,11 @@ show observation state, search streams, rolling-24-hour injection recovery and
 cached-visibility age. An attention strip links to checks that need review.
 The cards refresh every 30 seconds while visible and remain labelled **Now**.
 Stale or unavailable evidence cannot remain green.
-The live recovery card is yellow, labelled **Needs attention**, for 18 or more recovered trials in 24 hours
-(including 24/24), orange for 12–17 and red below 12. Missing or empty evidence
-stays unknown; stale/incomplete counts are labelled separately. These display
+The live recovery card is green, labelled **All recovered**, at 100% of a
+nonempty completed-fired set, with no firing failures, pending trials or unknown
+outcomes. For partial recovery, it is yellow (**Needs attention**) for 18 or more
+recovered trials in 24 hours, orange for 12–17 and red below 12. Missing or empty
+evidence stays unknown; stale/incomplete counts cannot turn green. These display
 bands do not apply to shorter historical intervals or individual trial markers.
 The top-right CASM photograph opens in the same click-to-zoom viewer as the plots.
 It is a supplied still image, not a live camera; the complete frame is retained.
