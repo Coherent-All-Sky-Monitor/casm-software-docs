@@ -143,6 +143,19 @@ remain visible; missing evidence is not displayed as zero. Cards wrap on phones.
 
 ## Read the array snapshot
 
+**Visibilities → History → Video playback** opens saved array playback while
+Live remains the default. Start with 24 hours, or select 48 hours, Last week
+and a UTC end date. All four visibility quantities and compact/SNAP/station
+arrangements are available. Changing the reference antenna keeps the exact
+selected time, pauses, and buffers V(target, reference); it does not normalize
+other baselines. Spectra advance integrations or show the selected rolling
+average. Dynamic spectra and the upper-triangle matrix slide a fixed panel
+window, separate from the playback period. Scales stay fixed during playback;
+real gaps stay blank. Saved UTC/local/LST, stepping, speed, Loop and clickable
+zoom/download are included. The player reads numeric cache chunks, with no
+per-frame plot-image request or hardware operation. API, budgets and estimator
+details: `casm_monitor/docs/visibility-playback.md`.
+
 The main navigation is a single row: Overview, Search (T1), Visibilities, SNAPs,
 Source history, Candidates and Calibration. There is no top-right tab group or
 Readiness tab. Labels are text-only, with a high-contrast selected underline.
