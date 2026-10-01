@@ -589,6 +589,14 @@ As of September 25, 2026, **Calibration** has Prepare, Solve & inspect,
 Validate on sky, Generate beams, and Upload dry run views. Larger controls,
 green antenna selections, white phase/transit figures, plot grids and click-to-zoom
 match the rest of the workspace. Saved plots precede collapsed settings.
+As of October 1, solve and static window entry default to OVRO local time
+(`America/Los_Angeles`, with daylight saving). The UTC toggle preserves the
+chosen instants; recipes still contain UTC. The Sun altitude maximum shows both
+dated local and UTC times beside its altitude. The solar date is the same civil
+day for the Sun maximum in UTC and at OVRO; static defaults may be on the prior
+local evening. Invalid or repeated local-hour edits block submission; use UTC
+to choose an ambiguous fall-back hour explicitly. Default antennas come from
+recorded deployed CB weights, not merely current layout inclusion flags.
 The old typed-UUID
 Commissioning page is superseded. A reviewed solar solve freezes a private
 layout and runs the canonical driver without generating a grid. Solve and static
