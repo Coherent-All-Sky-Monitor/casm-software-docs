@@ -597,15 +597,28 @@ day for the Sun maximum in UTC and at OVRO; static defaults may be on the prior
 local evening. Invalid or repeated local-hour edits block submission; use UTC
 to choose an ambiguous fall-back hour explicitly. Default antennas come from
 recorded deployed CB weights, not merely current layout inclusion flags.
+Initial date and exact solve/static windows come from the last uploaded
+calibration's bound canonical report through the deployment ledger. New
+calibration restores those values, not the newest generated candidate. A
+different selected date gets computed windows. Missing or unbound uploaded
+metadata is a labelled fallback, never inferred from a filename or report mtime.
 The night-template guide plots Sun, Cyg A, Cas A and Tau A for the selected
 local date only, 00:00–23:59 PT (23/25 elapsed hours on DST transition days).
 The altitude axis is 0–90° with a line at 20° and gray shading below it;
 negative altitudes remain in the window calculation, not the visible plot.
-Solve/static overlays, local/UTC axes and zoom share those same date bounds.
-It reuses the canonical off-source altitude cuts (Sun/Tau A below 0°, Cyg A
-below 20°, Cas A below 15°). Cas A does not fully set at OVRO. Qualifying
-intervals have an explicit button to fill a bounded static window; days with
-none say so. These are one-minute sampled sky-position checks, not evidence of
+Yellow marks the selected solar solve window, not a separate transit marker.
+A low-opacity dashed green band suggests a 30-minute static window: Sun below
+0° throughout, then minimise each source's maximum above-horizon altitude in
+strict Cyg A, Cas A, Tau A order. Already-set sources tie at zero; exact ties
+choose the earliest interval. No further Sun-depth preference applies after
+sunset. This is the operator's ranking, not a flux/contamination model. The
+card shows source altitude maxima and warns if usual caps are exceeded. The
+suggestion never replaces uploaded defaults without a click; blue marks the
+selected static window. Local/UTC axes and zoom keep the selected date bounds.
+The separate fixed-cut list retains canonical limits (Sun/Tau A below 0°, Cyg A
+below 20°, Cas A below 15°). Cas A does not fully set at OVRO. Days with no
+fixed-cut interval say so even if a ranked compromise exists.
+These are one-minute sampled geometric sky-position checks, not evidence of
 clean data, coverage or unchanged hardware. Selection clears human review and
 does not submit a job. `/cal` starts with no saved candidate selected, ignoring
 the old browser-storage selection; saved progress requires an explicit choice
