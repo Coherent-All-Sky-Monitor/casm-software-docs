@@ -597,14 +597,20 @@ day for the Sun maximum in UTC and at OVRO; static defaults may be on the prior
 local evening. Invalid or repeated local-hour edits block submission; use UTC
 to choose an ambiguous fall-back hour explicitly. Default antennas come from
 recorded deployed CB weights, not merely current layout inclusion flags.
-The night-template guide plots Sun, Cyg A, Cas A and Tau A over the preceding
-night and selected day, with solve/static overlays, local/UTC axes and zoom.
+The night-template guide plots Sun, Cyg A, Cas A and Tau A for the selected
+local date only, 00:00–23:59 PT (23/25 elapsed hours on DST transition days).
+The altitude axis is 0–90° with a line at 20° and gray shading below it;
+negative altitudes remain in the window calculation, not the visible plot.
+Solve/static overlays, local/UTC axes and zoom share those same date bounds.
 It reuses the canonical off-source altitude cuts (Sun/Tau A below 0°, Cyg A
 below 20°, Cas A below 15°). Cas A does not fully set at OVRO. Qualifying
 intervals have an explicit button to fill a bounded static window; days with
 none say so. These are one-minute sampled sky-position checks, not evidence of
 clean data, coverage or unchanged hardware. Selection clears human review and
-does not submit a job. Gray steps are untouched, amber active/running, green
+does not submit a job. `/cal` starts with no saved candidate selected, ignoring
+the old browser-storage selection; saved progress requires an explicit choice
+or `/cal/{tag}` link. New calibration clears review. Gray steps are untouched
+(including the selected step), amber running, green
 reviewed or saved, and red failed. Green sky-validation means results saved for
 review; green upload means local dry-run checks passed, never live activation.
 The old typed-UUID
