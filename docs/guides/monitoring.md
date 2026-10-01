@@ -634,10 +634,42 @@ caps still apply. Saved recipes,
 diagnostics, notebook, job log and cancellation survive page changes and web
 restarts through a separate durable worker. Production monitor data stay read-only.
 
-The phase explorer shows both 1D wrapped sawtooth curves and frequency/time
-phase waterfalls for raw, fringe-stopped and fixed-delay-subtracted stages,
-with Sun/Cyg A/Cas A diagnostic directions. Canonical recent-day comparisons
-use matched solar windows with the solve's duration, up to four hours per day.
+The October 1 array inspector uses Compact antenna order, SNAP order or Station
+grid for autos, reference baselines and antenna weights. Select any solved
+antenna as display reference without rerunning SVD. Raw, static-subtracted,
+geometric model, fringe-stopped and SVD-corrected stages have native-channel
+spectra and bounded frequency/time previews. The geometric view is phase only.
+Zoom can compare stages; every panel can be downloaded. The old straight-line
+delay fit is no longer a processing choice in this inspector.
+
+Amplitude experiments offer Uniform `1`, Inv-var `1/N`, Inv-std `1/sqrt(N)` and
+Matched `s/N`, with formula explanations in the page. `N` is time-median raw
+night auto-power (voltage variance); `s` is fitted coherent source voltage
+response from static-subtracted fringe-stopped cross amplitudes. Per-channel
+max normalization keeps amplitudes at most one. Missing inputs disable a scheme.
+The saved phase solution is unchanged. Plots include amplitudes, applied phase,
+differences from the recorded reference, residual phase RMS and int8 previews.
+These amplitude choices are diagnostic experiments; beam generation remains
+Uniform in this version. The int8 preview excludes steering and downstream
+detector truncation. Matched is a single-source/noise model to validate, not a
+guaranteed sensitivity improvement.
+
+Antenna edits create a separate trial with the parent's frozen layout and
+windows, leaving the parent unchanged. Cross-day comparisons use all common
+reference baselines with a fixed candidate, one readable figure per baseline,
+and matched solar windows up to four hours per day. No static template is
+silently reused across days. A prepared array inspection also enables four-
+scheme stationary-transit comparisons on identical data and common channels,
+with signed dynamic spectra, absolute curves and excess / off-window RMS.
+
+Implementation revisions: `casm_monitor` `05c829a` and `casm_vis_analysis`
+`90e4881`. The October 1 central API-snapshot refresh is deferred: the existing
+`sources.json` still requests untracked/nonexistent
+`casm_calibrator/src/casm_calibrator/calibration.py`. The previous API snapshot
+is retained; this guide and the owning repositories' manuals describe the new
+inspector. Repairing that unrelated module mapping and reviewing accumulated
+source drift remain separate documentation work.
+
 The sky check uses five-hour stationary-beam
 visibilities, complex off-source subtraction, common antenna/channel masks,
 signed power, normalized shape, and per-channel timing relative to an exact
