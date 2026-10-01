@@ -597,6 +597,16 @@ day for the Sun maximum in UTC and at OVRO; static defaults may be on the prior
 local evening. Invalid or repeated local-hour edits block submission; use UTC
 to choose an ambiguous fall-back hour explicitly. Default antennas come from
 recorded deployed CB weights, not merely current layout inclusion flags.
+The night-template guide plots Sun, Cyg A, Cas A and Tau A over the preceding
+night and selected day, with solve/static overlays, local/UTC axes and zoom.
+It reuses the canonical off-source altitude cuts (Sun/Tau A below 0°, Cyg A
+below 20°, Cas A below 15°). Cas A does not fully set at OVRO. Qualifying
+intervals have an explicit button to fill a bounded static window; days with
+none say so. These are one-minute sampled sky-position checks, not evidence of
+clean data, coverage or unchanged hardware. Selection clears human review and
+does not submit a job. Gray steps are untouched, amber active/running, green
+reviewed or saved, and red failed. Green sky-validation means results saved for
+review; green upload means local dry-run checks passed, never live activation.
 The old typed-UUID
 Commissioning page is superseded. A reviewed solar solve freezes a private
 layout and runs the canonical driver without generating a grid. Solve and static
