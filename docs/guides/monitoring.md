@@ -642,6 +642,20 @@ spectra and bounded frequency/time previews. The geometric view is phase only.
 Zoom can compare stages; every panel can be downloaded. The old straight-line
 delay fit is no longer a processing choice in this inspector.
 
+October 2 adds visible selection buttons, matching Visibilities, for layouts,
+processing, quantities, plot types and weight diagnostics. Autos independently
+select **Raw**, **Static template** and **Static-subtracted**, including in zoom.
+By default Raw and Static-subtracted have separate, independently fitted y-axes;
+**Overlay** puts selected curves on one axis per antenna. Select just the
+subtracted spectrum to inspect its structure without the raw curve. Missing
+templates disable the corresponding choices. Reference and clock remain dropdowns.
+The displayed static template is the actual saved night-window mean subtracted
+from the source-window auto average, not the noise-weighting median below.
+Linear counts remain the default. Optional **Signed log** compresses peaks using
+`sign(v) log10(1 + abs(v)/(1 count))`, preserving zero, negative values and all
+finite channels; the ticks still show counts. Separate panel heights are not
+an absolute power comparison. Display changes do not alter or regenerate weights.
+
 Amplitude experiments offer Uniform `1`, Inv-var `1/N`, Inv-std `1/sqrt(N)` and
 Matched `s/N`, with formula explanations in the page. `N` is time-median raw
 night auto-power (voltage variance); `s` is fitted coherent source voltage
