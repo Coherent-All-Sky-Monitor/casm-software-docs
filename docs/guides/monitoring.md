@@ -687,8 +687,9 @@ spectra and overlays cross spectra, solved phases, amplitudes and residuals.
 **Use this solution** selects its revision for subsequent validation, beam
 generation and dry-run review; the selected revision is retained in the URL.
 Each branch keeps its own products and review. The saved night window still
-supplies noise estimates in the branch without subtraction. Once both solutions
-are ready, cross-day and transit checks can include both on common data/masks.
+supplies noise estimates in the branch without subtraction. Transit checks can
+include both solutions on common data/masks. Cross-day uses only the selected
+solution and current deployed weights, applied unchanged across the chosen days.
 The October 5 Prepare-route fix admits this offline action through the full
 workspace security checks. It still requires same-origin loopback requests and
 the workspace header; operational writes and live uploads remain blocked.
@@ -718,7 +719,13 @@ guaranteed sensitivity improvement.
 Antenna edits create a separate trial with the parent's frozen layout and
 windows, leaving the parent unchanged. Cross-day comparisons use all common
 reference baselines with a fixed candidate, one readable figure per baseline,
-and matched solar windows up to four hours per day. No static template is
+and matched solar windows up to four hours per day. A date-only legend with
+large markers accompanies separate selected-solution/deployed residual panels.
+Saved NPZ arrays supply the restyled historical view without another raw-data
+read. Original artifacts and masks are preserved. New history/transit jobs use
+the current deployment and record its calibration hash; old comparisons and
+frozen antenna-weight references are labelled **Previously deployed weights**
+if their hash differs from the current deployment. No static template is
 silently reused across days. A prepared array inspection also enables four-
 scheme stationary-transit comparisons on identical data and common channels,
 with signed dynamic spectra, absolute curves and excess / off-window RMS.
