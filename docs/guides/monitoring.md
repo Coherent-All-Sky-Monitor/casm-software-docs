@@ -679,8 +679,28 @@ counts. The axes simply say Power (dB), without the reference wording.
 Separate panel heights are not an absolute power comparison. Display changes
 do not alter or regenerate weights.
 
+The October 5 **Without subtraction / With subtraction / Compare** control
+groups independently saved calibration solutions. Preparing the missing choice
+runs one offline canonical solve with the same source window, antenna set,
+reference and frozen layout. Browsing uses saved results. Compare pairs dynamic
+spectra and overlays cross spectra, solved phases, amplitudes and residuals.
+**Use this solution** selects its revision for subsequent validation, beam
+generation and dry-run review; the selected revision is retained in the URL.
+Each branch keeps its own products and review. The saved night window still
+supplies noise estimates in the branch without subtraction. Once both solutions
+are ready, cross-day and transit checks can include both on common data/masks.
+
+Rank-1 quality now shows one full-band σ₁/σ₂-versus-frequency plot for Regular,
+Static-subtracted and Current deployed. Legends give full-band medians, original
+solve dates and antenna counts. The current deployed curve comes from the upload
+ledger's calibration HDF5, independently of a trial's frozen reference. It is
+the original solve diagnostic; applying phase weights to today's data would
+not reproduce that historical diagnostic. Missing solutions are explicitly
+unavailable until prepared. The two singular-value/dominance panels are removed
+from the workspace; archived notebook figures remain available as historical files.
+
 Amplitude experiments offer Uniform `1`, Inv-var `1/N`, Inv-std `1/sqrt(N)` and
-Matched `s/N`, with formula explanations in the page. `N` is time-median raw
+Matched `s/N`, with short calculation sentences and formulas. `N` is time-median raw
 night auto-power (voltage variance); `s` is fitted coherent source voltage
 response from static-subtracted fringe-stopped cross amplitudes. Per-channel
 max normalization keeps amplitudes at most one. Missing inputs disable a scheme.
