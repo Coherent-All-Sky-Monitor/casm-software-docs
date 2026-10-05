@@ -610,6 +610,9 @@ As of September 25, 2026, **Calibration** has Prepare, Solve & inspect,
 Validate on sky, Generate beams, and Upload dry run views. Larger controls,
 green antenna selections, white phase/transit figures, plot grids and click-to-zoom
 match the rest of the workspace. Saved plots precede collapsed settings.
+From Solve & inspect onward, a persistent **Proceed to… / Back to…** bar links
+the steps while retaining the selected solution and transit inputs. Navigation
+does not run analysis, generate beams, approve a calibration or upload weights.
 As of October 1, solve and static window entry default to OVRO local time
 (`America/Los_Angeles`, with daylight saving). The UTC toggle preserves the
 chosen instants; recipes still contain UTC. The Sun altitude maximum shows both
@@ -747,7 +750,10 @@ measurement. Rank-1 and peak/off-RMS are not absolute sensitivity measurements.
 Grid generation separately reuses the saved calibration for exactly 512 exact
 pointings and a matching IB product. Custom/factorial cells are not preserved.
 The default sky illustration restores schematic ellipse footprints and dated
-Sun/Cyg A/Cas A/Tau A tracks beside altitude versus UTC. Saved pointing coordinates
+Sun/Cyg A/Cas A/Tau A tracks beside altitude versus OVRO local time. The track
+date covers local midnight to midnight in `America/Los_Angeles`, with PDT/PST
+labels and 23/25-hour DST days. Its default is the solve's local date; changing
+the date redraws only the cached illustration. Saved pointing coordinates
 and source tracks remain exact; ellipses never supply transit times or coverage
 scores. Full exact-response product checks remain available in a disclosure.
 Scientific review precedes the hash/layout/scale-protected local dry run.
