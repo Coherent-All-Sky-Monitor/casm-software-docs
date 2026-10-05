@@ -438,6 +438,7 @@ timestamps selector changes captions and timeline labels. Play/pause, seek,
 Each frame is a saved sequential board pass, not a simultaneous
 sample. Missing boards stay blank and gaps remain labelled, with no interpolation.
 Shared axes cover every finite channel across the chosen interval and stay fixed.
+Each panel header identifies the SNAP, slot and ADC without opening zoom.
 **Open this read** opens that frame's comparison/trend inspector; closing alone
 leaves the previous Live/saved-read selection unchanged. Click an antenna to
 pause and enlarge it, then press Play inside zoom to watch that antenna alone.
