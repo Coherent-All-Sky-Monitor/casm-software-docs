@@ -162,6 +162,10 @@ enlarge it, then Play inside the zoom viewer to watch only that baseline.
 Closing returns to the array at the same time, paused; Download pauses before
 saving the current frame. API, budgets and estimator
 details: `casm_monitor/docs/visibility-playback.md`.
+Compact visibility movies now use at most four panels per row, with taller
+figures and scrolling when needed. Small screens use fewer columns. The live
+compact layout is unchanged; SNAP order and the physical station grid retain
+their own layouts.
 
 The main navigation is a single row: Overview, Search (T1), Visibilities, SNAPs,
 Source history, Candidates and Calibration. There is no top-right tab group or
@@ -435,16 +439,20 @@ Each frame is a saved sequential board pass, not a simultaneous
 sample. Missing boards stay blank and gaps remain labelled, with no interpolation.
 Shared axes cover every finite channel across the chosen interval and stay fixed.
 **Open this read** opens that frame's comparison/trend inspector; closing alone
-leaves the previous Live/saved-read selection unchanged. Expanding a plot pauses playback
-and retains zoom/download. Hidden tabs pause automatically.
+leaves the previous Live/saved-read selection unchanged. Click an antenna to
+pause and enlarge it, then press Play inside zoom to watch that antenna alone.
+Speed, Loop, steps and a timeline remain available. Closing returns to the same
+saved grid frame, paused. Magnification survives buffering, which hides the
+unready spectrum and disables download. Download pauses the ready frame first.
+The same buffers and shared axes are reused. Hidden tabs pause automatically.
 
 The player pins its sequence and buffers two batches of up to 12 frames, fetching
-only displayed inputs. Packed float32 transport preserves all 4096 channels;
+the initial input selection. Packed float32 transport preserves all 4096 channels;
 it is not spectral averaging. At 4× the target is one saved read every 250 ms,
 without a network request on each step. Initial buffering and slow connections
 can still delay it; frames are never skipped. No movie files, hardware reads or
-new retention policy are involved. Visibilities/Search playback is not implemented;
-their cold rendering costs need separate measurement before extending this UI.
+new retention policy are involved. Visibility playback is described above;
+Search playback remains unimplemented.
 
 The separate **Latest spectrum check** compares current wired inputs against preceding
 24-hour same-EQ/FFT history. It needs six reads spanning four hours. Minimum
