@@ -225,6 +225,13 @@ quantity: counts for Real(V), Imag(V) and magnitude, radians for phase. Counts
 are correlator units, not Jy. Dynamic-spectrum axes are time (with time zone)
 and Frequency (MHz); the colourbar labels the quantity and units. Phase has a cyclic
 −π to π scale, signed values a symmetric scale, magnitude a logarithmic scale.
+Autocorrelation **Power** instead defaults to **Power (dB)**, with **Linear**
+buttons in the array and zoom, also in History. This is real auto power:
+`10 log10(P / 1 count)` after averaging; non-positive power is blank in dB.
+Axes say Power (dB); hover values use dB in live, history and zoom. The
+reference is documented here, not repeated on plots. These are not dBm.
+Linear preserves signed counts. Cross-correlations and the detailed stored-pair
+inspector retain their existing scales.
 These per-baseline colour limits do not normalize the data; compare the labelled
 ranges, not brightness alone. Zero-amplitude phase is blank.
 Intermediate axis ticks use rounded frequencies and clock times, with denser
@@ -439,6 +446,11 @@ Each frame is a saved sequential board pass, not a simultaneous
 sample. Missing boards stay blank and gaps remain labelled, with no interpolation.
 Shared axes cover every finite channel across the chosen interval and stay fixed.
 Each panel header identifies the SNAP, slot and ADC without opening zoom.
+**Power (dB)** is the default; **Linear** is available in live/history grids,
+zoom and full-band trends. SNAP dB retains its fixed 10⁻¹⁰ native reference;
+Linear reverses stored dB without that display offset. Neither is dBm or Jy.
+Unavailable channels remain gaps. Unit changes pause playback at the same read
+and use the already-loaded extrema for fixed limits, without new acquisition.
 **Open this read** opens that frame's comparison/trend inspector; closing alone
 leaves the previous Live/saved-read selection unchanged. Click an antenna to
 pause and enlarge it, then press Play inside zoom to watch that antenna alone.
@@ -660,10 +672,12 @@ subtracted spectrum to inspect its structure without the raw curve. Missing
 templates disable the corresponding choices. Reference and clock remain dropdowns.
 The displayed static template is the actual saved night-window mean subtracted
 from the source-window auto average, not the noise-weighting median below.
-Linear counts remain the default. Optional **Signed log** compresses peaks using
-`sign(v) log10(1 + abs(v)/(1 count))`, preserving zero, negative values and all
-finite channels; the ticks still show counts. Separate panel heights are not
-an absolute power comparison. Display changes do not alter or regenerate weights.
+**Power (dB)** is the default, with **Linear** alongside it, replacing Signed
+log on October 5. dB means `10 log10(P / 1 count)` after averaging/subtraction.
+Zero/negative residuals are blank and counted in dB; Linear retains signed
+counts. The axes simply say Power (dB), without the reference wording.
+Separate panel heights are not an absolute power comparison. Display changes
+do not alter or regenerate weights.
 
 Amplitude experiments offer Uniform `1`, Inv-var `1/N`, Inv-std `1/sqrt(N)` and
 Matched `s/N`, with formula explanations in the page. `N` is time-median raw
