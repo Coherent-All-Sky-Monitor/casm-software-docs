@@ -689,6 +689,10 @@ generation and dry-run review; the selected revision is retained in the URL.
 Each branch keeps its own products and review. The saved night window still
 supplies noise estimates in the branch without subtraction. Once both solutions
 are ready, cross-day and transit checks can include both on common data/masks.
+The October 5 Prepare-route fix admits this offline action through the full
+workspace security checks. It still requires same-origin loopback requests and
+the workspace header; operational writes and live uploads remain blocked.
+Full-app tests cover queueing both subtraction choices in temporary stores.
 
 Rank-1 quality now shows one full-band σ₁/σ₂-versus-frequency plot for Regular,
 Static-subtracted and Current deployed. Legends give full-band medians, original
