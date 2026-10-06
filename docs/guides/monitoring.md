@@ -835,12 +835,28 @@ an explicitly labelled ledger reference. IB receipts remain separate. Trials,
 exports, failed uploads and dry runs cannot change the reference. The ledger is
 never rewritten by the monitor; GPU activation still needs independent checking.
 
-The uploader now registers geometry-derived widths before live events, using
+Calibration cards use readable dates and source names; hashes and export IDs
+remain in downloadable/API metadata. The export card can copy its exact folder
+path. A registry conflict is labelled explicitly, rather than claiming no upload.
+The workspace checks its membership cache on startup and every 30 seconds. A
+new consistent deployment triggers a bounded saved-HDF5 inspection in a background
+thread; unchanged payloads are not reread. Only the isolated cache is written.
+GET handlers remain lightweight and no hardware acquisition is performed.
+
+The uploader now registers geometry-derived widths before FIFO transfers, using
 the same nonzero-slot union helper as the watcher. The registry reloads changed
 product files and T2 refreshes changed cached clustering widths. Product identity
 uses all six subband hashes even when only selected streams are sent. Event-time
 pointings reach new T2/T3 candidate figures; existing Slack posts remain historical.
 These are lambda/D union ellipses, not exact or per-factorial-beam responses.
+Each completed CB write records its stream immediately. The watcher defers
+defaults inference for up to 60 seconds and uses read-only clock probes to
+normalize remote log time. Raw times and uncertainty remain in its evidence.
+T2 automatically rereads changed associations; a new weights upload does not
+require a T2 restart. The October 6 upload exposed an earlier watcher race:
+false defaults events from the faster corr2 clock overrode valid upload events.
+An audited six-event correction restored new candidate coordinates without
+re-uploading or restarting T2. See the wiki's October 6 upload-registry evidence.
 Future UTC_START is explicitly warned: registry transfer time is not an activation
 acknowledgement. T2 and the watcher were reloaded with separate operator approval
 at 19:22 UTC on October 6; no live weights were changed for this verification.
@@ -849,6 +865,16 @@ browser DOM/control checks pass with real release POSTs blocked and protected
 file hashes unchanged. Screenshot capture was unavailable in local Chromium.
 The API snapshot remains unchanged: preflight still finds three missing
 configured calibrator modules, alongside existing cross-repository drift.
+
+The later October 6 upload/watch race fix is recorded in monitor `4689268`
+and `1548126`, T3 `5b6fc6a`, and weights generator `52008c4`. Verification:
+47 monitor/security/membership tests, 81 T3 tests and 30 uploader tests pass;
+browser DOM/control checks pass with all release writes blocked. Screenshot
+capture timed out. The generic status feed's legacy IB-scale timestamp remains
+stale because the collector expects immutable product metadata; the Calibration
+page uses the successful receipt and shows the independently verified scale 32.
+See `casm-wiki/evidence/2026-10-06/upload-registry-race.md` for the repair backup,
+consumer/default-file checks and the distinction from GPU-memory readback.
 
 September 25 acceptance reused an existing offline calibration for phase and
 five-hour Cyg A renders, and generated 12 local CB/IB DADA files. Hashes of the

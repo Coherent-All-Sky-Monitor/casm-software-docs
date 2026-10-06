@@ -43,11 +43,10 @@ CB-IB subtraction.
 
 ## 2. Preview without recording a deployment
 
-`--dry-run` never touches the registry: the run returns at the plan printout
-before the registry is imported (`deploy_bf_weights.py:546-558`). A staging run
+`--dry-run` records no product or live event. A staging run
 without `--dry-run` and without `--upload` does reach the registry: it records a
-product entry with an empty live-event list (L560, 644-650), and it exits 2 if
-`casm_t2.weights_registry` is not importable (L561-564). Add `--no-registry` to
+product entry with an empty live-event list, and it exits 2 if
+`casm_t2.weights_registry` is not importable. Add `--no-registry` to
 staging commands so a rehearsal neither records a product nor fails on a missing
 `casm_t2`:
 
@@ -59,8 +58,8 @@ python -m bf_weights_generator.deploy_bf_weights \
   --dry-run --no-registry
 ```
 
-`--dry-run` returns the deployment plan before any output directory, payload,
-FIFO, defaults, or registry write; `--upload --dry-run` also performs no
+`--dry-run` prints the plan without payload, FIFO, defaults, or registry writes;
+it may create the requested output directory. `--upload --dry-run` also performs no
 upload or registry recording. Check which checkout your environment resolves:
 
 ```
@@ -84,7 +83,7 @@ python -m bf_weights_generator.deploy_bf_weights \
   /path/to/verified-cb.h5 \
   --ib-weights /path/to/verified-ib.h5 \
   --output-dir /path/to/new-staging-directory \
-  --scale 8064 --ib-scale 32 --save-defaults \
+  --scale 8064 --ib-scale 32 \
   --no-registry
 ```
 
@@ -119,8 +118,11 @@ No automatic scientific success or rollback is implied by the command.
 
 CB product IDs use hashes of all six subbands, even for selected-stream uploads;
 only transferred streams receive live events. Registration now includes the
-geometry-based lambda/D E-W/N-S widths before those events, using the nonzero CB
+geometry-based lambda/D E-W/N-S widths before the first FIFO write, using the nonzero CB
 slot union across channels, polarizations and beams at the saved mean frequency.
+Every completed CB FIFO write records that stream immediately using the uploader
+clock. The watcher waits briefly for these events and corrects remote log-clock
+skew using read-only clock probes. It never adjusts host clocks.
 The watcher shares that helper. T2 reloads changed registry records and refreshes
 cached widths; mixed or missing six-stream evidence has no single all-band pointing.
 The ellipse is not an exact array-response model.
@@ -145,8 +147,9 @@ on their owning nodes. File ages for another node's streams can be misleading.
 
 Check live registry events, per-node serving payload hashes, and the actual
 pointings/membership against the approved product. If defaults were requested,
-verify their copies too. The registry call happens after FIFO operations:
-registry failure can leave weights live but unregistered. Preserve the log and
+verify their copies too. Product registration happens before FIFO operations;
+per-stream event recording follows each completed write. A later failure can
+still leave a partial deployment. Preserve the log and
 resolve the partial outcome rather than treating an error exit as “nothing changed.”
 
 Six checks exist, described in wiki `weights-verification.md`:
@@ -156,7 +159,8 @@ Six checks exist, described in wiki `weights-verification.md`:
   (`bf_weights_generator.recipe_verify`). Near-horizon fits are degenerate.
 - **(b) Subband decode of the as-deployed payloads.** Decode the
   `direct.dada.N` / `incoh.dada.N` files on each node and compare against the
-  dry-run. **This is the only check that proves what is serving.** corr1 serves
+  dry-run. This checks the saved defaults, not GPU memory. Consumer receive/apply
+  logs provide separate evidence that weights were accepted. corr1 serves
   streams 0-2 and corr2 serves 3-5; read each node's own three streams, never
   a cross-copied set.
 - **(c) Byte validation.** `bf_weights_generator/tests/validate_recipe.py`
