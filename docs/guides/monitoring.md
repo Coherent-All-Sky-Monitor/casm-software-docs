@@ -607,7 +607,7 @@ position crossing, not a fitted peak or a detection claim.
 ## Calibration workspace
 
 As of September 25, 2026, **Calibration** has Prepare, Solve & inspect,
-Validate on sky, Generate beams, and Upload dry run views. Larger controls,
+Validate on sky, Generate beams, and Export & deploy views. Larger controls,
 green antenna selections, white phase/transit figures, plot grids and click-to-zoom
 match the rest of the workspace. Saved plots precede collapsed settings.
 From Solve & inspect onward, a persistent **Proceed to… / Back to…** bar links
@@ -626,6 +626,9 @@ calibration's bound canonical report through the deployment ledger. New
 calibration restores those values, not the newest generated candidate. A
 different selected date gets computed windows. Missing or unbound uploaded
 metadata is a labelled fallback, never inferred from a filename or report mtime.
+Prepare also displays large current-calibration cards: calibrator, observation
+date, solve window and last upload date/time. OVRO local is the default with a
+UTC toggle. The recorded product stays fixed when the new trial's date changes.
 The night-template guide plots Sun, Cyg A, Cas A and Tau A for the selected
 local date only, 00:00–23:59 PT (23/25 elapsed hours on DST transition days).
 The altitude axis is 0–90° with a line at 20° and gray shading below it;
@@ -785,13 +788,28 @@ labels and 23/25-hour DST days. Its default is the solve's local date; changing
 the date redraws only the cached illustration. Saved pointing coordinates
 and source tracks remain exact; ellipses never supply transit times or coverage
 scores. Full exact-response product checks remain available in a disclosure.
-Scientific review precedes the hash/layout/scale-protected local dry run.
-**Live upload is blocked by this workspace**, including when parent settings
-are armed. Dry-run generation supplies `--no-registry` and omits both upload
-and save-defaults flags. No trial becomes the deployed reference automatically.
+October 5 adds **Write CB & IB to disk → Upload dry run → Your review → Upload**.
+The export parent can be selected under configured roots; the default is
+`/home/casm/software/vishnu/beamforming_weights`, with an NVMe alternative.
+Each observation-date/build-ID/export-time/UUID directory holds both HDF5 files,
+the calibration, notebook, recipe, layouts and a SHA-256 manifest. Existing
+exports are preserved; failed copies retain a labelled incomplete directory.
+Dry-run payloads remain separately in the build's `stage/` directory.
+Dry-run generation supplies `--no-registry` and omits both upload and
+save-defaults flags. Human approval binds the exact export and dry-run digest.
+**Live upload remains server-locked.** After separately authorized arming of
+both the general and workspace-specific gates, the UI requires a bound review,
+typed build ID, confirmation, same-origin/CSRF checks and single-use authorization.
+Restart-default replacement is an explicit unchecked option. No gates were armed
+for this interface change and no trial becomes the deployed reference automatically.
 Stage checks require 512 CB payload beams and matching metadata/pointing rows.
 Transfer, registry, restart defaults and runtime activation are distinct;
 the current reference box reports the deployment ledger, not fresh GPU identity.
+Export/display source revision: `casm_monitor` `6e6578f`. Fixture tests and
+browser DOM/control checks pass with real release POSTs blocked and protected
+file hashes unchanged. Screenshot capture was unavailable in local Chromium.
+The API snapshot remains unchanged: preflight still finds three missing
+configured calibrator modules, alongside existing cross-repository drift.
 
 September 25 acceptance reused an existing offline calibration for phase and
 five-hour Cyg A renders, and generated 12 local CB/IB DADA files. Hashes of the
