@@ -634,11 +634,12 @@ local date only, 00:00–23:59 PT (23/25 elapsed hours on DST transition days).
 The altitude axis is 0–90° with a line at 20° and gray shading below it;
 negative altitudes remain in the window calculation, not the visible plot.
 Yellow marks the selected solar solve window, not a separate transit marker.
-A low-opacity dashed green band suggests a 30-minute static window: Sun below
-0° throughout, then minimise each source's maximum above-horizon altitude in
+A low-opacity dashed green band suggests a 30-minute static window: prefer Sun
+≤ −10° throughout, then minimise each source's maximum above-horizon altitude in
 strict Cyg A, Cas A, Tau A order. Already-set sources tie at zero; exact ties
-choose the earliest interval. No further Sun-depth preference applies after
-sunset. This is the operator's ranking, not a flux/contamination model. The
+choose the earliest interval. If none is dark, choose the lowest solar altitude
+and warn about bright solar contamination while allowing the operator to proceed.
+This is an altitude ranking, not a flux/contamination model. The
 card shows source altitude maxima and warns if usual caps are exceeded. The
 suggestion never replaces uploaded defaults without a click; blue marks the
 selected static window. Local/UTC axes and zoom keep the selected date bounds.
@@ -755,9 +756,11 @@ relative weighting. Both remove the selected background's time mean. The lower
 comparison is `(power - background mean) / std(background, ddof=1)`, including
 sky and interference. Neither curve height nor this ratio proves sensitivity.
 
-Non-solar backgrounds require Sun below 0° at each integration timestamp,
-beyond ±90 min by default, with at least two samples on each side. Missing
-coverage blocks the derived comparison. Actual intervals, altitude range and
+From October 6, non-solar backgrounds prefer Sun ≤ −10° at each timestamp,
+beyond ±90 min by default, with four samples total. One-sided backgrounds are
+labelled. If too few dark samples exist, use Sun-down or outer-window samples
+with a bright-solar-contamination warning, retaining the beamformed plots.
+No new channel mask or antenna-delay alarm is introduced. Actual intervals, altitude range and
 excluded Sun-up samples appear beside a local/UTC toggle. Solar self-checks
 use the outer windows with a warning. This is separate from the solve's night
 template and does not certify absence of other sources or RFI.
@@ -792,15 +795,30 @@ October 5 adds **Write CB & IB to disk → Upload dry run → Your review → Up
 The export parent can be selected under configured roots; the default is
 `/home/casm/software/vishnu/beamforming_weights`, with an NVMe alternative.
 Each observation-date/build-ID/export-time/UUID directory holds both HDF5 files,
-the calibration, notebook, recipe, layouts and a SHA-256 manifest. Existing
+the calibration, notebook, recipe, layouts and a SHA-256 manifest. October 6
+adds all completed solve/inspection/transit/grid figures, notebooks, static NPZ,
+CSVs and diagnostic arrays, plus a frozen reference calibration and IB generator.
+`recipe/calibration_record.ipynb` embeds the recorded figures and includes ordered
+replay cells for the canonical solve/diagnostics, all-baseline inspection, CB grid
+and IB generation. Replay needs archived raw data and the offline environment;
+duplicate the notebook first and retain the immutable original. It writes a fresh
+directory and never uploads. B0329 remains in the separate filterbank/folding workflow.
+Existing
 exports are preserved; failed copies retain a labelled incomplete directory.
-Dry-run payloads remain separately in the build's `stage/` directory.
+Choose CB, IB or both, editable scales defaulted from the current ledger,
+streams and an optional UTC_START. Each dry run gets a fresh `stage/<UUID>/`
+directory and a permanent JSON receipt beside the export. Inputs use the
+exported HDF5 paths. Partial selections leave the other kind/streams unchanged.
+IB-only leaves the CB coordinate registry unchanged and keeps its own audit.
 Dry-run generation supplies `--no-registry` and omits both upload and
 save-defaults flags. Human approval binds the exact export and dry-run digest.
 **Live upload remains server-locked.** After separately authorized arming of
 both the general and workspace-specific gates, the UI requires a bound review,
 typed build ID, confirmation, same-origin/CSRF checks and single-use authorization.
-Restart-default replacement is an explicit unchecked option. No gates were armed
+**Save as defaults** is checked initially and can be disabled; it only changes
+the selected kinds and streams. Changed payload options require a new dry run
+and review. Both YAML and environment permissions are required for each gate.
+No gates were armed
 for this interface change and no trial becomes the deployed reference automatically.
 Stage checks require 512 CB payload beams and matching metadata/pointing rows.
 Transfer, registry, restart defaults and runtime activation are distinct;
@@ -824,6 +842,17 @@ Actual source/static coverage and hardware-epoch compatibility require review;
 the proposed date/window is not an automatic certification.
 
 ## Implementation and documentation review
+
+October 6 upload/record changes: `casm_monitor` `c2905a3`,
+`bf_weights_generator` `9e6423f`, `casm_vis_analysis` `e93c681`; operational wiki
+`cdc6e70`. Verification: 169 affected monitor checks, six workspace-security
+checks, six science-background checks and 25 uploader checks. Browser DOM/control
+checks intercepted all release POSTs; real local CB/IB selection tests left
+deployed files, the ledger and registry unchanged. Evidence:
+`/home/casm/scratch/casm-observation-preview/calibration/dry-run-acceptance-gd062iec/acceptance.json`.
+The API snapshot refresh was attempted again and hit the existing missing
+calibrator-module mapping described below. Partial generated copies were restored
+to the recorded snapshot; the maintained guides describe the new behaviour.
 
 The active 8061 checkout is `/home/casm/software/dev/casm_monitor`, branch `main`.
 September 25 source revisions: monitor `ed40e44`, scientific review/plotting
