@@ -65,6 +65,14 @@ are shared-host measurements, not a cold-load capacity test. The preview's
 are separate services; their cgroup totals can contain much more file cache
 than their main processes' resident memory.
 
+The October 6 status-query fix replaces whole-history scalar scans with indexed
+latest-value lookups. Local warm Overview requests fell from about two seconds
+to about 60 ms; the first request after restart still takes longer. No data,
+freshness thresholds or acquisition cadence changed. Fingerprinted frontend
+assets now have explicit immutable browser caching; HTML requires revalidation
+and API responses are unchanged. Timings and reproduction are in the monitor's
+`docs/resources-and-storage.md`, with private before/after measurement files.
+
 Preview products live under `/home/casm/scratch/casm-observation-preview` on
 the root disk: `science/` for PNG/NPZ/metadata, `t1_products/` for Search PNGs,
 `snap_views/` for saved SNAP renders, and `calibration/` for the separate worker.
