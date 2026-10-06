@@ -70,8 +70,24 @@ latest-value lookups. Local warm Overview requests fell from about two seconds
 to about 60 ms; the first request after restart still takes longer. No data,
 freshness thresholds or acquisition cadence changed. Fingerprinted frontend
 assets now have explicit immutable browser caching; HTML requires revalidation
-and API responses are unchanged. Timings and reproduction are in the monitor's
+and APIs do not inherit the static-asset cache policy. Timings and reproduction are in the monitor's
 `docs/resources-and-storage.md`, with private before/after measurement files.
+
+The subsequent October 6 SSH-focused update restores recent Overview, Search,
+Visibilities and SNAPs plots and controls when returning to a tab. A bounded
+browser memory cache is cleared on full reload. Live status expires on its
+normal cadence; failed refreshes remain visible and cannot keep a cached green
+verdict. Plot timestamps and displayed intervals stay attached to their data.
+Search's stream boxes load independently of its larger figure. Inactive pages
+stop polling; hidden tabs pause periodic reads, and playback stays user-driven.
+
+Visibility spectra request no dynamic images until that view is selected;
+each quantity and auto-power scale loads on demand with the same scientific
+data and axes. All quantities, channels, wired inputs, reference selection,
+zoom, downloads and saved playback remain available. SNAP entry avoids the
+duplicate initial spectra request. Text responses are compressed, concurrent
+identical reads are shared, and completed scientific plot URLs are immutable.
+These changes affect the web service only, not acquisition or deployed weights.
 
 Preview products live under `/home/casm/scratch/casm-observation-preview` on
 the root disk: `science/` for PNG/NPZ/metadata, `t1_products/` for Search PNGs,
