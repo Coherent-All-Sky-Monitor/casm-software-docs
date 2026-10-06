@@ -117,9 +117,19 @@ correct beam coordinates to candidates. The tool writes each stream to its
 assigned node's FIFO; completion across all selected streams must be checked.
 No automatic scientific success or rollback is implied by the command.
 
+CB product IDs use hashes of all six subbands, even for selected-stream uploads;
+only transferred streams receive live events. Registration now includes the
+geometry-based lambda/D E-W/N-S widths before those events, using the nonzero CB
+slot union across channels, polarizations and beams at the saved mean frequency.
+The watcher shares that helper. T2 reloads changed registry records and refreshes
+cached widths; mixed or missing six-stream evidence has no single all-band pointing.
+The ellipse is not an exact array-response model.
+
 `--utc-start` optionally specifies `YYYY-MM-DD-HH:MM:SS` UTC for activation.
 Coordinate it with the observation and any beam-tracking process; an elapsed
 timestamp or overlapping scheduler changes the operational meaning.
+The registry currently timestamps transfer, not future activation. Do not treat
+the intervening antenna/beam displays as confirmation of the active configuration.
 
 ## 5. Decide separately about restart defaults
 

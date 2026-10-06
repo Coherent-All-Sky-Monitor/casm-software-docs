@@ -824,16 +824,26 @@ The earlier interface acceptance ran unarmed; enabling the controls was a separa
 operator action. No trial becomes the deployed reference automatically.
 Stage checks require 512 CB payload beams and matching metadata/pointing rows.
 Transfer, registry, restart defaults and runtime activation are distinct;
-the current reference box reports the deployment ledger, not fresh GPU identity.
+the current reference box reports recorded deployment evidence, not fresh GPU identity.
 The antenna widgets derive membership from nonzero CB slots and are not fixed at
-16 antennas, but currently require the manually maintained deployment ledger to
-agree with the new registry product. Event-time pointings reach new T2/T3 candidate
-figures automatically; existing Slack posts remain historical. Beam-width refresh
-is not guaranteed: T2 can cache fallback widths before the weights watcher fills
-them, and its product/cluster caches do not then refresh. A temporary-registry
-check reproduced stale reads. The next propagation change should publish widths
-before live events or refresh both caches, and provide a verified ledger handoff.
-No T2/T3 services or production weights were changed in this enablement task.
+16 antennas. The October 6 propagation fix requires six consistent stream
+associations and matching inspected file identity, but no longer makes a stale
+wiki ledger veto membership. Successful monitor uploads freeze selected kinds,
+streams, scales and calibration path/hash in their audit receipts. These supply
+calibration defaults when bound to current CB events; legacy deployments retain
+an explicitly labelled ledger reference. IB receipts remain separate. Trials,
+exports, failed uploads and dry runs cannot change the reference. The ledger is
+never rewritten by the monitor; GPU activation still needs independent checking.
+
+The uploader now registers geometry-derived widths before live events, using
+the same nonzero-slot union helper as the watcher. The registry reloads changed
+product files and T2 refreshes changed cached clustering widths. Product identity
+uses all six subband hashes even when only selected streams are sent. Event-time
+pointings reach new T2/T3 candidate figures; existing Slack posts remain historical.
+These are lambda/D union ellipses, not exact or per-factorial-beam responses.
+Future UTC_START is explicitly warned: registry transfer time is not an activation
+acknowledgement. T2 and the watcher were reloaded with separate operator approval
+at 19:22 UTC on October 6; no live weights were changed for this verification.
 Export/display source revision: `casm_monitor` `6e6578f`. Fixture tests and
 browser DOM/control checks pass with real release POSTs blocked and protected
 file hashes unchanged. Screenshot capture was unavailable in local Chromium.
@@ -853,6 +863,14 @@ Actual source/static coverage and hardware-epoch compatibility require review;
 the proposed date/window is not an automatic certification.
 
 ## Implementation and documentation review
+
+October 6 propagation fix: monitor `0132f2e`, weights generator `bbe874c`,
+T2 `7e974de`, T3 `2f6f3d1`. Personal-account Fable 5.1 accepted the reviewed
+changes after saved-default reload and legacy registry compatibility fixes.
+Verification: 157 monitor/calibration, 445 T2, 72 T3 and 27 uploader tests;
+TypeScript/production build and central documentation checks pass. No live
+weight upload was used for verification. The API snapshot remains historical
+and its existing missing-source/drift block is unchanged.
 
 October 6 upload/record changes: `casm_monitor` `c2905a3`,
 `bf_weights_generator` `9e6423f`, `casm_vis_analysis` `e93c681`; operational wiki
