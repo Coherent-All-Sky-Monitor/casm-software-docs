@@ -621,6 +621,9 @@ day for the Sun maximum in UTC and at OVRO; static defaults may be on the prior
 local evening. Invalid or repeated local-hour edits block submission; use UTC
 to choose an ambiguous fall-back hour explicitly. Default antennas come from
 recorded deployed CB weights, not merely current layout inclusion flags.
+The form hides the historical layout/deployed mismatch banner; both antenna
+sets and the mismatch note remain in API metadata. Membership checks and the
+layout file are unchanged.
 Initial date and exact solve/static windows come from the last uploaded
 calibration's bound canonical report through the deployment ledger. New
 calibration restores those values, not the newest generated candidate. A
