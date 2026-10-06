@@ -699,7 +699,7 @@ include both solutions on common data/masks. Cross-day uses only the selected
 solution and current deployed weights, applied unchanged across the chosen days.
 The October 5 Prepare-route fix admits this offline action through the full
 workspace security checks. It still requires same-origin loopback requests and
-the workspace header; operational writes and live uploads remain blocked.
+the workspace header; it grants no upload permission. Live upload has separate gates.
 Full-app tests cover queueing both subtraction choices in temporary stores.
 
 Rank-1 quality now shows one full-band σ₁/σ₂-versus-frequency plot for Regular,
@@ -812,17 +812,28 @@ exported HDF5 paths. Partial selections leave the other kind/streams unchanged.
 IB-only leaves the CB coordinate registry unchanged and keeps its own audit.
 Dry-run generation supplies `--no-registry` and omits both upload and
 save-defaults flags. Human approval binds the exact export and dry-run digest.
-**Live upload remains server-locked.** After separately authorized arming of
-both the general and workspace-specific gates, the UI requires a bound review,
+**Live upload is locked by default.** October 6 operator approval enabled both
+gates only for the 8061 web and isolated calibration worker, using the local
+`~/.config/casm-monitor/upload-enabled.yaml` profile and service drop-ins.
+No upload was submitted. The UI requires a bound review,
 typed build ID, confirmation, same-origin/CSRF checks and single-use authorization.
 **Save as defaults** is checked initially and can be disabled; it only changes
 the selected kinds and streams. Changed payload options require a new dry run
 and review. Both YAML and environment permissions are required for each gate.
-No gates were armed
-for this interface change and no trial becomes the deployed reference automatically.
+The earlier interface acceptance ran unarmed; enabling the controls was a separate
+operator action. No trial becomes the deployed reference automatically.
 Stage checks require 512 CB payload beams and matching metadata/pointing rows.
 Transfer, registry, restart defaults and runtime activation are distinct;
 the current reference box reports the deployment ledger, not fresh GPU identity.
+The antenna widgets derive membership from nonzero CB slots and are not fixed at
+16 antennas, but currently require the manually maintained deployment ledger to
+agree with the new registry product. Event-time pointings reach new T2/T3 candidate
+figures automatically; existing Slack posts remain historical. Beam-width refresh
+is not guaranteed: T2 can cache fallback widths before the weights watcher fills
+them, and its product/cluster caches do not then refresh. A temporary-registry
+check reproduced stale reads. The next propagation change should publish widths
+before live events or refresh both caches, and provide a verified ledger handoff.
+No T2/T3 services or production weights were changed in this enablement task.
 Export/display source revision: `casm_monitor` `6e6578f`. Fixture tests and
 browser DOM/control checks pass with real release POSTs blocked and protected
 file hashes unchanged. Screenshot capture was unavailable in local Chromium.
