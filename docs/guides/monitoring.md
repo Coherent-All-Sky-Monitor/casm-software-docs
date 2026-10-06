@@ -731,7 +731,8 @@ frozen antenna-weight references are labelled **Previously deployed weights**
 if their hash differs from the current deployment. No static template is
 silently reused across days. A prepared array inspection also enables four-
 scheme stationary-transit comparisons on identical data and common channels,
-with signed dynamic spectra, absolute curves and excess / off-window RMS.
+with signed dynamic spectra, weighted-mean/raw-sum curves and excess divided
+by background standard deviation. See the background rules below.
 
 Implementation revisions: `casm_monitor` `05c829a` and `casm_vis_analysis`
 `90e4881`. The October 1 central API-snapshot refresh is deferred: the existing
@@ -739,13 +740,41 @@ Implementation revisions: `casm_monitor` `05c829a` and `casm_vis_analysis`
 `casm_calibrator/src/casm_calibrator/calibration.py`. The previous API snapshot
 is retained; this guide and the owning repositories' manuals describe the new
 inspector. Repairing that unrelated module mapping and reviewing accumulated
-source drift remain separate documentation work.
+source drift remain separate documentation work. The October 5 preflight also
+finds `results.py` and `products.py` missing from tracked calibrator sources;
+the snapshot remains unchanged. Site, local-link and Markdown-export checks pass.
 
-The sky check uses five-hour stationary-beam
-visibilities, complex off-source subtraction, common antenna/channel masks,
-signed power, normalized shape, and per-channel timing relative to an exact
-ideal array-factor model. Low-S/N or edge-peaking channels do not get a timing
-measurement. Rank-1 and peak/off-RMS are not absolute sensitivity measurements.
+The sky check uses five-hour stationary-beam visibilities with common
+antenna/channel masks. From October 5 its default **Weighted mean** divides each
+channel's signed cross sum by `2 sum(i<j) |w_i||w_j|`; **Raw sum** is selectable.
+This cancels arbitrary weight scale but retains unequal receiver gains and
+relative weighting. Both remove the selected background's time mean. The lower
+comparison is `(power - background mean) / std(background, ddof=1)`, including
+sky and interference. Neither curve height nor this ratio proves sensitivity.
+
+Non-solar backgrounds require Sun below 0° at each integration timestamp,
+beyond ±90 min by default, with at least two samples on each side. Missing
+coverage blocks the derived comparison. Actual intervals, altitude range and
+excluded Sun-up samples appear beside a local/UTC toggle. Solar self-checks
+use the outer windows with a warning. This is separate from the solve's night
+template and does not certify absence of other sources or RFI.
+
+White waterfalls use symmetric 99th-percentile absolute-power colour limits;
+colorbar extensions mark saturated extremes, retained in curves/statistics.
+Amplitude schemes have selectable individual waterfall/curve views. Optional
+**Peak time vs frequency** replaces the chromaticity pair: the strongest
+three-integration-smoothed feature per channel and the exact ideal array
+prediction. Weak or edge-peaking channels are omitted. Peak time does not
+identify the source or measure an instrumental clock delay.
+Existing NPZs are redrawn through read-only, fingerprint-cached routes; original
+files stay unchanged. The normalizer is embedded in new products and recovered
+from recorded calibration/profile evidence for older ones. Missing normalization
+allows only Raw sum. Every metric is recalculated with the displayed background.
+No new solve, raw-data read, upload or observing-pipeline change is required.
+Transit-review revisions: `casm_monitor` `c6bd89b`, `casm_vis_analysis` `042a8f9`.
+Acceptance used the saved September 25 Cyg A transit, all available amplitude
+schemes, local/UTC switching, both power scales, zoom/download and mobile views.
+It made no non-GET API requests and verified original-file hashes were unchanged.
 
 Grid generation separately reuses the saved calibration for exactly 512 exact
 pointings and a matching IB product. Custom/factorial cells are not preserved.
