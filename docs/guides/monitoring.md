@@ -229,7 +229,10 @@ zoom/download are included. The player reads numeric cache chunks, with no
 per-frame plot-image request or hardware operation. Click a panel to pause and
 enlarge it, then Play inside the zoom viewer to watch only that baseline.
 Closing returns to the array at the same time, paused; Download pauses before
-saving the current frame. API, budgets and estimator
+saving the current frame. Enlarged visibility playback preserves its 16:9
+dynamic-spectrum frame; enlarged SNAP playback preserves the autos' 324:192
+spectrum frame. Display zoom scales both dimensions, and short windows scroll
+instead of flattening the plots. The array grids are unchanged. API, budgets and estimator
 details: `casm_monitor/docs/visibility-playback.md`.
 Compact visibility movies now use at most four panels per row, with taller
 figures and scrolling when needed. Small screens use fewer columns. The live
