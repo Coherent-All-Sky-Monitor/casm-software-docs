@@ -106,6 +106,38 @@ Exact counters, capture timestamps/hashes and limits are recorded in
 `casm_monitor/docs/resources-and-storage.md`. Regenerate the evidence with
 `casm_monitor/scripts/capture_monitor_docs.py`, not with mocked browser results.
 
+## Classify candidates
+
+**Candidates → Browse** keeps the recent plot grid and right-hand selector.
+Enter your name once, then use **Classify** for a large plot and a fixed review
+queue. Labels are FRB, Pulsar, Solar, RFI, Noise and Unsure; Cannot assess records
+missing/bad data separately. Optional RFI descriptors and notes stay under
+Details. Class buttons save immediately; automatic advance is optional. Undo
+retains revision history. Each reviewer gets their own class-coloured badge;
+different labels remain visible instead of replacing one another.
+
+Names are self-declared, not authenticated accounts. Classify can hide others'
+votes until your first assessment. Browse still displays them, so this workflow
+does not establish a blinded review. Human FRB labels are assessments and do not
+promote candidates into the production FRB catalog or affect T2/T3.
+
+The separate durable database defaults to
+`/mnt/nvme3/casm_candidate_annotations/annotations.sqlite3`. Reviewed PNGs,
+metadata and available detection-beam filterbanks are copied into its artifact
+directory; missing/oversize filterbanks are explicit. Local SQLite backups
+supplement the WAL database, but off-host backups of the complete directory are
+still required for disk-loss protection. No annotation retention TTL is applied.
+**Export labels** provides JSONL revisions and evidence manifests for later ML
+dataset construction. Queue filters cover the loaded list; exports include all
+saved reviews. The owning API, byte limits and backup procedure are in
+`casm_monitor/docs/candidate-annotations.md`.
+
+The October 6 classification change (`casm_monitor` commit `9d6ca2f`) was checked with temporary-database API
+tests and a two-reviewer browser workflow, including failed saves, undo, stale
+tabs and responsive layouts. No test labels were entered in the live store.
+The source snapshot preflight still finds the previously recorded missing
+calibrator modules and revision drift; that historical API snapshot is unchanged.
+
 ## Start with recovery and search pressure
 
 Overview retains injection outcomes, trial details, product freshness and array
