@@ -111,8 +111,13 @@ Exact counters, capture timestamps/hashes and limits are recorded in
 **Candidates → Browse** keeps the recent plot grid and right-hand selector.
 Enter your name once, then use **Classify** for a large plot and a fixed review
 queue. Labels are FRB, Pulsar, Solar, RFI, Noise and Unsure; Cannot assess records
-missing/bad data separately. Optional RFI descriptors and notes stay under
-Details. Class buttons save immediately; automatic advance is optional. Undo
+missing/bad data separately. Optional RFI descriptors are Narrowband, Broadband,
+Bursty, Frequency comb, Swept/drifting and Repeating in time. Multiple selections
+describe bandwidth and time behaviour separately. Class buttons save immediately;
+automatic advance defaults on. RFI pauses for details, then **Save RFI & next**
+continues. The visible candidate list and badges refresh every five seconds, with
+the next two plots and metadata prefetched. Incoming events leave the queue fixed
+until **Refresh queue**. Undo
 retains revision history. Each reviewer gets their own class-coloured badge;
 different labels remain visible instead of replacing one another.
 
@@ -131,10 +136,14 @@ still required for disk-loss protection. No annotation retention TTL is applied.
 dataset construction. Queue filters cover the loaded list; exports include all
 saved reviews. The owning API, byte limits and backup procedure are in
 `casm_monitor/docs/candidate-annotations.md`.
+New reviews use taxonomy version 2; prior version-1 annotations are unchanged.
 
-The October 6 classification change (`casm_monitor` commit `9d6ca2f`) was checked with temporary-database API
-tests and a two-reviewer browser workflow, including failed saves, undo, stale
-tabs and responsive layouts. No test labels were entered in the live store.
+The October 6 classification update (`casm_monitor` commit `82152c7`) was checked
+with temporary-database API tests and a multi-reviewer browser workflow, including
+default advance, RFI details, failed saves, undo, stale tabs and responsive layouts.
+The browser check adds 150 ms to metadata/image requests and verifies that advancing
+to a prefetched plot issues no extra metadata read. No test labels were entered in
+the live store.
 The source snapshot preflight still finds the previously recorded missing
 calibrator modules and revision drift; that historical API snapshot is unchanged.
 
