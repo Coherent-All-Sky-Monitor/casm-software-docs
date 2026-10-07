@@ -120,6 +120,8 @@ the next two plots and metadata prefetched. Incoming events leave the queue fixe
 until **Refresh queue**. Undo
 retains revision history. Each reviewer gets their own class-coloured badge;
 different labels remain visible instead of replacing one another.
+Classifier figures fill their panel width at the original aspect ratio, with
+page scrolling for taller images. Click a figure for zoom and download.
 
 Names are self-declared, not authenticated accounts. Classify can hide others'
 votes until your first assessment. Browse still displays them, so this workflow
@@ -144,6 +146,8 @@ default advance, RFI details, failed saves, undo, stale tabs and responsive layo
 The browser check adds 150 ms to metadata/image requests and verifies that advancing
 to a prefetched plot issues no extra metadata read. No test labels were entered in
 the live store.
+The full-width sizing follow-up (`4fcb27e`) verifies image proportions and panel
+fit across desktop and mobile sizes without changing saved plots or annotations.
 The source snapshot preflight still finds the previously recorded missing
 calibrator modules and revision drift; that historical API snapshot is unchanged.
 
