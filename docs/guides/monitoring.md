@@ -701,9 +701,11 @@ calibration's bound canonical report through the deployment ledger. New
 calibration restores those values, not the newest generated candidate. A
 different selected date gets computed windows. Missing or unbound uploaded
 metadata is a labelled fallback, never inferred from a filename or report mtime.
-Prepare also displays large current-calibration cards: calibrator, observation
-date, solve window and last upload date/time. OVRO local is the default with a
-UTC toggle. The recorded product stays fixed when the new trial's date changes.
+Prepare displays three current-calibration cards matching Overview's dark clock
+panels: Calibrator, Solve window and Last uploaded. Large values have separate
+date/time captions; equal-height cards stack on narrow screens. OVRO local is
+the default with a UTC toggle. The recorded product stays fixed when the new
+trial's date changes, keeping observation and upload dates distinct.
 The night-template guide plots Sun, Cyg A, Cas A and Tau A for the selected
 local date only, 00:00–23:59 PT (23/25 elapsed hours on DST transition days).
 The altitude axis is 0–90° with a line at 20° and gray shading below it;
