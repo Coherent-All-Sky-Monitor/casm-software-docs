@@ -75,11 +75,22 @@ and APIs do not inherit the static-asset cache policy. Timings and reproduction 
 
 The subsequent October 6 SSH-focused update restores recent Overview, Search,
 Visibilities and SNAPs plots and controls when returning to a tab. A bounded
-browser memory cache is cleared on full reload. Live status expires on its
-normal cadence; failed refreshes remain visible and cannot keep a cached green
-verdict. Plot timestamps and displayed intervals stay attached to their data.
+browser memory cache is cleared on full reload. The October 8 follow-up separates
+the 30-second status polling cadence from a 120-second maximum response age.
+Routine revalidation retains the last response; failed checks immediately remove
+green verdicts, and a hanging request expires locally. Measurement-age limits
+still apply. Plot timestamps and displayed intervals stay attached to their data.
 Search's stream boxes load independently of its larger figure. Inactive pages
 stop polling; hidden tabs pause periodic reads, and playback stays user-driven.
+
+Background refresh leaves the completed view bright and interactive. A small
+Updating label appears only after 500 ms. Replacement PNGs/rasters decode before
+plots, labels and times change together, including reference/quantity changes.
+The upper triangle keeps its completed matrix until all selected replacements
+are ready. Failed image reads retain the old labelled plot with a warning.
+Hourly SNAP acquisition revisions preserve the preceding labelled spectra during
+loading. Zoom and selected inputs survive normal refresh. Plot estimators,
+acquisition cadences, weights and operational-write gates are unchanged.
 
 Visibility spectra request no dynamic images until that view is selected;
 each quantity and auto-power scale loads on demand with the same scientific
