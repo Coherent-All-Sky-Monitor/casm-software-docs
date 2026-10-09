@@ -600,16 +600,15 @@ September 25 07:14:51 UTC, retaining all four accepted offsets.
 Strict exact-match PPS results remain unchanged in the API. Displayed **PPS
 timing** compares with explicitly accepted offsets: September 25's accepted
 SNAP 0/1/2/3 reference is 0/−1/0/−1 ticks versus SNAP 0. The October 8 PDT
-operator-approved display policy accepts both readings in {−2, −1} as green
-**Within tolerance** on SNAPs 1/3. A 0 in either reading, with both in
-{−2, −1, 0}, is yellow **Review offset**, pending a visibility phase check.
-SNAP 2 retains its exact zero-offset requirement. The relay tolerance applies
-only to the audited board-IP/SNAP-ID mappings and their saved −1 baseline.
-Other offsets, a changed reference, bad periods or stopped PPS are red
+operator clarification accepts both readings from **−2 through +2 ticks**
+relative to SNAP 0 as green **Within tolerance**, including zero, on all four
+current antenna boards. This absolute range is not ±2 around the old −1 offset.
+It applies only to the audited board-IP/SNAP-ID mappings and their saved baseline.
+Larger offsets, a changed reference, bad periods or stopped PPS are red
 **Needs attention**. Both frames remain visible, including green transitions.
-SNAPs and Overview share these colours; yellow boards do not count as green.
-Missing/failed/stale/incomplete checks remain Unknown, even when another board
-is yellow. A known red fault has highest aggregate priority. The monitoring
+SNAPs and Overview share these colours. The provisional yellow-at-zero policy
+has been removed. Missing/failed/stale/incomplete checks remain Unknown.
+A known red fault has highest aggregate priority. The monitoring
 database baseline never updates automatically; `--accept-saved-baseline`
 requires fresh complete saved evidence and explicit operator approval.
 Source-check records no longer gate this status, and no source re-check runs
