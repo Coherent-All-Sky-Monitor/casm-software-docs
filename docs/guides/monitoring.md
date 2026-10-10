@@ -8,7 +8,25 @@ scratchpad on 8501 and Medusa remain unchanged. Forward port
 8061 to use the preview remotely. The page background is black and no Plotly
 code is loaded. Imaging is removed from this preview's navigation and frontend
 routes because the operator rejected its current plots. Other viewers and
-the existing scientific/backend imaging implementation remain unchanged.
+the existing scientific imaging implementation remain available. On October 10,
+2026, monitor imaging was also removed from scheduling and job dispatch. Saved
+images remain on disk; even old queued imaging requests are skipped.
+
+SNAP spectra and PPS diagnostics now use their own `casm-monitor-snap-read`
+worker. The existing hourly schedule and **Read now** queue feed this worker,
+independently of the render-only `casm-monitor-jobs` service. The read lease,
+manual cooldown and board sequence remain in place. Calibration uses its
+separate store and worker. Collector and worker units load the main checkout
+explicitly; background figures use a two-thread pool and a lower resource
+budget. This follows an imaging workload that stalled visibility requests and
+coincided with T2 falling behind. Worker limits and verification procedures are
+in `casm_monitor/docs/resources-and-storage.md`.
+The worker separation is `casm_monitor` commit `8315552`, checked with 387
+targeted regression tests and a live, protected manual acquisition. All four
+antenna boards returned spectra and PPS evidence. The existing relay `.69`
+management-read failure remains; no recovery was attempted. The unrelated
+three-package scientific source snapshot still reports pre-existing drift and
+was preserved; the monitoring guide, HTML/link and Markdown-export checks pass.
 
 Navigation labels are larger and semibold, with pale text on dark-blue tab
 surfaces. The selected tab uses a brighter fill, border and underline; keyboard
