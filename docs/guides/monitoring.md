@@ -28,6 +28,25 @@ management-read failure remains; no recovery was attempted. The unrelated
 three-package scientific source snapshot still reports pre-existing drift and
 was preserved; the monitoring guide, HTML/link and Markdown-export checks pass.
 
+Restart-safe plots (October 12 local): missing measurements remain blank and
+new measurements resume at their actual timestamps. A new visibility
+observation need not share the old run's cadence origin. Live/all-pairs tiles
+and source-history waterfalls now accept that change, with integration-cell
+edges used for the time axis. Calibration previews use their saved timestamps
+and retain the original time averaging; historical exports are not rewritten.
+The visibility collector publishes short averaged-channel batches each pass
+instead of waiting for eight integrations. Raw-data safety guards remain.
+SNAP history already leaves missing boards blank, labels gaps between saved
+reads and breaks trends across missing hours. Search uses the gulp ledger to
+distinguish quiet intervals from unavailable evidence. Latest-value displays
+keep their actual measurement timestamps and freshness checks during outages.
+These are monitor changes only; observing, weights, T2/T3 and SNAP hardware
+settings are unchanged. The local contracts and check script are in
+`casm_monitor/docs/api-science.md` and `scripts/check_restart_gaps_browser.py`.
+Source commit: `9bf6367`; verification: 234 targeted Python tests, all 12 frontend
+test files, frontend build and the read-only live browser check. The unrelated
+three-package source-snapshot drift remains and was not folded into this change.
+
 Navigation labels are larger and semibold, with pale text on dark-blue tab
 surfaces. The selected tab uses a brighter fill, border and underline; keyboard
 focus has its own outline. Tabs wrap on narrow screens without hiding names.
