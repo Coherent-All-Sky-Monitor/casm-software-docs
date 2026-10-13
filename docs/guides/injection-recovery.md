@@ -104,6 +104,11 @@ The ledger's `inject_utc`, 22:27:24.976 UTC, records when the injection was
 sent. The event time in the plot describes the searched samples, which were
 already buffered. Do not equate the two timestamps.
 
+This replay is a single figure, drawn from the dump as recorded. The raw and masked
+pair described under [Replay with hella's flags applied](#replay-with-hellas-flags-applied)
+is not deployed, so no replay archived by the running system, this one included, has a
+raw twin or a mask file.
+
 ## Read a miss before diagnosing it
 
 Shot `inj_20260913_0021` was recorded as `missed_t1`. Its ledger reason says
@@ -185,6 +190,52 @@ run-hella --input_dir /mnt/nvme3/vishnu/inj_test --gpus 0
 `run-hella` reads `injections_manifest.csv` from `--input_dir` and matches
 candidates against the injected ground truth.
 
+## Replay with hella's flags applied
+
+Status: built on branch `hella-mask` (casm_t3 `240422f`, casm_t2 `c9d1d86`). Not
+deployed; the deploy waits for operator approval. On the running system a replay is
+one figure, drawn as recorded or, with `clean: hella`, through the offline replica of
+hella's flagging stage.
+
+With the branch, `t3-replay-injection` draws a pair when hella's flag records cover the
+replay window for the injected global beam (illustrative command; the records exist only
+after the deploy):
+
+```bash
+t3-replay-injection --inject-id 675 \
+  --dump /mnt/nvme4/data/casm/cand_beam_dumps/stream_0 \
+  --mask-records /mnt/nvme4/data/casm/hella_masks \
+  --out /tmp/inj_replay.png --raw-out /tmp/inj_replay_raw.png
+```
+
+- `--out` is drawn with hella's recorded flags applied, titled `synthetic replay; hella
+  RFI flags applied`. The flags replace `--clean hella` for that figure.
+- `--raw-out` is the same beam before flagging, titled `synthetic replay; before hella
+  RFI flagging`.
+- Both titles say "synthetic replay": the pulse is added by the tool to a recorded dump,
+  and the records describe the live stream that carried the real injection. The flags
+  were computed on that stream, without the replay's synthetic pulse.
+- Without coverage, `--clean hella` keeps the offline replica (title `synthetic replay;
+  offline replica of hella flagging`). With records requested and no `--clean`, the dump
+  as recorded is labelled `hella RFI flags unavailable (<reason>)`. `--raw-out` without
+  records writes only the raw figure.
+- Both flags default to off. The card JSON written by `--card-json` gains `kind:
+  "synthetic_replay"`, `hella_mask` and `replay.raw_plot`, and the mask is stored beside
+  `--fil` as `<name>.mask.npz`.
+
+In the injection daemon, casm_t2's `injection.replay.mask_records` (default `''`, off)
+passes `--mask-records` to the replay command, and every replay command gets
+`--raw-out <name>_raw.png`. Once the shot's own Slack message is up, the raw figure is
+posted as a reply in its thread after the main figure. A failure to find or post it is
+logged and changes nothing else; the ledger's `replay_posted` covers the main figure
+only. The shot's archive directory gains `<name>_raw.png`, and `<name>.mask.npz` when
+records covered the replay. Deploy `t3-replay-injection` before the scheduler restarts
+on this casm_t2, because an older tool rejects `--raw-out`.
+
+The masked figure is a diagnostic of the replay. The ledger's matched search cluster
+still establishes recovery. The pair, the schema-2 event folder and the deploy order are
+in [T2/T3 and event storage](../packages/t2-t3.md#hella-rfi-flags-and-the-schema-2-event-folder).
+
 Continue to [T2/T3 and event storage](../packages/t2-t3.md).
 
 ## Provenance
@@ -195,4 +246,6 @@ unmodified into `docs/_static/tutorials/injections/`). Ledger: `t2.sqlite`,
 Selected fields for both shots are frozen in
 `docs/_static/tutorials/injections/frozen-records.json`; the live ledger can
 change or reconcile after this page was written. Source revisions:
-`source-snapshot.json` in the repository.
+`source-snapshot.json` in the repository. The replay-pair section follows the
+branch documentation of casm_t3 `240422f` and casm_t2 `c9d1d86`; it has not been run
+against live hella records.
