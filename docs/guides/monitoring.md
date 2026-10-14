@@ -211,6 +211,16 @@ interpreting a saved replay as live search evidence.
 Open **Search (T1)** to see the past 24 hours immediately, then change the interval
 if needed. Inspect emitted candidates per stream, beam/time, DM/time and width
 distributions. The stream title includes the approximate 8.59-second gulp.
+The **Search configuration** card shows current HELLA DM/S/N, boxcar trial
+widths, gulp size, **SumThreshold RFI** ON/OFF and the static mask in
+channels and MHz. A striped frequency strip marks masked channels. Select a
+stream to inspect differences; the disclosure contains the other configured
+flag parameters. Settings are read every minute from running processes' config
+paths on both correlators, including wrapper overrides. The browser reads
+saved results every 30 seconds; it performs no SSH or pipeline writes.
+Missing, stale or edited-since-launch settings remain Unknown. This card is
+current even when the plot shows a historical interval. It reports configured
+flagging, not how many samples SumThreshold removed from a particular gulp.
 Stream and DM heatmaps show counts per time bin (3 minutes in the default
 24-hour view), with logarithmic pale-lavender-to-deep-purple colour scales:
 higher counts are darker.
