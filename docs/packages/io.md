@@ -31,6 +31,8 @@ of validation on telescope data.
 | DADA voltage dumps already on disk | `casm_io.VoltageReader` | `FullBandResult` or `SubbandResult` |
 | SIGPROC filterbank | `casm_io.FilterbankFile` | Header first; data loaded on demand |
 | Hella T1 candidate list | `casm_io.CandidateReader` | Renamed columns in `.df` |
+| Hella RFI flag records and per-event masks (branch `hella-mask`, not deployed) | `casm_io.candidates.hella_mask` | `MaskWindow`; `<event>.mask.npz` |
+| T3 event folder, schema 1 or 2 (branch `hella-mask`, not deployed) | `casm_io.candidates.load_event` | `T3Event` |
 | Physical antenna to hardware mapping | `casm_io.correlator.AntennaMapping` | CSV-backed input indices and ENU positions |
 
 Voltage dumps and filterbanks are existing package capabilities. Their inclusion
@@ -145,6 +147,110 @@ or recovery fractions.
 stream subbands may be zero-filled and are listed in `filled_subbands`.
 Inspect those flags before interpreting a spectrum. The package also provides
 writers and conversion CLIs; those are outside this read-only walkthrough.
+
+## Hella RFI flags and T3 event folders
+
+Status: `casm_io` branch `hella-mask`, revision `357d3af`. Not deployed; the deploy
+needs operator approval. The running pipeline still writes schema-1 event folders
+and its hella build writes no flag records, so on the running system `load_event`
+reads schema-1 folders only and `hella_mask` has no records to read. Both modules
+are documented by hand here and are not in the generated [API reference](io-api.md).
+Byte-level specs: casm_io `docs/hella_masks.md` and `docs/t3_events.md` on that
+branch. The pipeline side is in [T2, T3 and saved events](t2-t3.md#hella-rfi-flags-and-the-schema-2-event-folder).
+
+### `casm_io.candidates.hella_mask`
+
+hella (the `casm_hella_vishnu` fork) can record, for every beam and every gulp, the
+flag decisions its flagging stage made. The module reads those record files (`.hmr`,
+and the open `.hmr.part`) and assembles a mask over any sample window at full time
+resolution. A record holds hella's flag decisions, not the data hella searched: the
+final baseline pass standardises and subtracts a baseline after blanking, and
+clipping and uint8 quantisation can create further zeros. Figures built from the
+records show "hella RFI flags applied".
+
+| Component | Granularity | Decision in hella |
+|---|---|---|
+| `static` | channels `[flag1, flag2)` | `FLAG1` / `FLAG2` cfg keys |
+| `channel_flags` | channels, with reason bits | blanked by a standardisation pass, or replaced by the `SPEC_MIN`/`SPEC_MAX` rule |
+| `sumthreshold` | channel x `mmin`-sample bin | SumThreshold mask after growing |
+| `whole_channel` | channels | SumThreshold rows with more than `blank_cnt` flagged bins |
+
+```python
+from casm_io.candidates import hella_mask
+
+# Illustrative paths and sample numbers; needs hella records, which exist only
+# after the deploy.
+win = hella_mask.window_mask(root, utc_start="2026-10-13-18:22:38", beam=285,
+                             sample0=4199616, nsamp=9728)
+win.combined.shape      # (3072, 9728) bool, True = flagged
+win.coverage.mean()     # fraction of samples with a usable record
+hella_mask.save_event_mask("261013nnuclj.mask.npz", win)
+win2 = hella_mask.load_event_mask("261013nnuclj.mask.npz")
+```
+
+| Function | Returns |
+|---|---|
+| `read_file(path, *, beams=None, sample_range=None)` | `HmrFile` for one `.hmr` or `.hmr.part`; `HmrFormatError` on a bad file header |
+| `read_records(root, utc_start, beam, sample_range=None)` | `list[GulpRecord]` for one global beam, ascending `first_sample` |
+| `window_mask(root, utc_start, beam, sample0, nsamp, *, fch1=484.375, foff=-125/4096)` | `MaskWindow` over `[sample0, sample0 + nsamp)` |
+| `summarize(win)` | dict for the event summary: `coverage`, `searched`, `flagged_fraction`, `channels_fully_flagged`, `static_channels`, `gulps` |
+| `save_event_mask(path, win)`, `load_event_mask(path)` | write (through a temporary name, then rename) and read the `mask.npz` |
+
+The spec also lists the file-header parser, `scrunch_could_fire` and a reference
+encoder (`write_record_file`) that tests use to build record files.
+
+Reading rules that change how a mask is interpreted:
+
+- Align by sample index, never by time. `tstart` in the event's `.fil` derives from
+  corr1's system clock (about 15 s fast on 2026-10-13, casm-wiki `incidents.md`).
+- Where `coverage` is False every component is False and the flags are unknown, not
+  "unflagged". A window no record covers returns all-False arrays and no gulps.
+- A record with a bad CRC, no end magic, a payload that does not parse, or
+  `alignment_ok` other than 1 is skipped and counted in `HmrFile.skipped`.
+- SCRUNCH stages are not recorded. hella refuses to record when a configured SCRUNCH
+  stage could fire (threshold below 1e5 sigma; the deployed stage is 1e6 and never
+  fires), and the reader warns when a header's cfg shows one.
+- `searched` says whether the search step that ran right after flagging a gulp reached
+  the beam. It is not per-sample search coverage: an event hella reported can sit in a
+  gulp with `searched` 0.
+
+`<event>.mask.npz` sits next to `<event>.fil` and covers exactly the fil: channel 0 is
+484.375 MHz (descending) and the first sample is the same. It holds the packed boolean
+arrays `combined` (union of the components), `static`, `channel_flags`, `sumthreshold`,
+`whole_channel` (True = flagged), `channel_reasons` (uint8, reason bits per channel per
+gulp), `coverage`, `searched`, and a JSON `meta` string with the shape, `sample0`,
+`tsamp`, the gulps, the record headers used and the cfg sha256.
+
+### `casm_io.candidates.load_event`
+
+Every candidate T3 dumps gets a folder `/mnt/nvme3/T3/EVENTS/<candname>/`. `load_event`
+reads schema 1 (one monolithic card JSON, the layout the running system writes) and
+schema 2 (summary JSON, CSV tables, `mask.npz` and a manifest, the layout the branch
+writes) into one `T3Event`.
+
+```python
+from casm_io.candidates import load_event
+
+ev = load_event("/mnt/nvme3/T3/EVENTS/261013nnuclj")   # illustrative folder name
+ev.schema            # 1 or 2
+ev.summary           # dict; for schema 1, built from the card
+ev.trials            # DataFrame: the deduplicated T1 table
+ev.clusters, ev.beams
+ev.mask              # hella_mask.MaskWindow or None
+ev.slack             # list of dicts parsed from .slack
+ev.fil, ev.png, ev.raw_png   # paths or None
+ev.complete          # manifest present and every file in it checks out
+ev.problems          # why not, one string per finding
+```
+
+`load_event(event_dir, *, verify=False, load_mask=True)` raises `FileNotFoundError` when
+`<candname>.json` is absent and `ValueError` for a `schema` above 2. A missing CSV reads
+as an empty table with the right columns and a line in `problems`. `complete` means the
+manifest exists and the files it lists are intact, not that every optional product
+exists: an event whose `.fil` failed to write is complete with `ev.fil` None.
+`verify=True` also re-hashes every listed file. A schema-1 folder has no manifest, so
+`complete` is True when its PNG exists, and `ev.mask` is None. The folder layout,
+summary keys, CSV columns and `.slack` marker format are in casm_io `docs/t3_events.md`.
 
 ## Known discrepancies in upstream documentation
 
