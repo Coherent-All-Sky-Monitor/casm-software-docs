@@ -215,10 +215,11 @@ The **Search configuration** card uses one row per setting for current HELLA
 DM/S/N, boxcar trial widths and gulp size. A second compact table holds
 **SumThreshold RFI**, **Channel mask**, **Masked frequencies** and **Masked
 channels**. Channel ranges are inclusive; channel 0 is the high-frequency end.
-There is no bar graphic or stream selector;
-unexpected differences and the other configured flag parameters are in the
-disclosure. The tables use warm off-white/taupe rows, dark text and muted green
-status badges, stacking on narrow screens.
+There are no redundant column headings, bar graphic or stream selector.
+**Details** shows sampling, boxcar trials and last-check times. A per-stream
+comparison only appears when settings differ or are unavailable. Raw config
+parameters remain in the API. The tables use white backgrounds, black text
+and green status badges, stacking on narrow screens.
 Settings are read every minute from running processes' config
 paths on both correlators, including wrapper overrides. The browser reads
 saved results every 30 seconds; it performs no SSH or pipeline writes.
