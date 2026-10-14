@@ -211,11 +211,15 @@ interpreting a saved replay as live search evidence.
 Open **Search (T1)** to see the past 24 hours immediately, then change the interval
 if needed. Inspect emitted candidates per stream, beam/time, DM/time and width
 distributions. The stream title includes the approximate 8.59-second gulp.
-The **Search configuration** card shows current HELLA DM/S/N, boxcar trial
-widths, gulp size, **SumThreshold RFI** ON/OFF and the static mask in
-channels and MHz. A striped frequency strip marks masked channels. Select a
-stream to inspect differences; the disclosure contains the other configured
-flag parameters. Settings are read every minute from running processes' config
+The **Search configuration** card uses one row per setting for current HELLA
+DM/S/N, boxcar trial widths, gulp size, **SumThreshold RFI** ON/OFF and static
+mask channel count. Beside the table, a frequency bar labels **Kept / Masked**
+regions, with their MHz and inclusive channel ranges below. Frequency increases
+left to right; channel 0 is the high-frequency end. Kept regions can still be
+flagged dynamically. There is one shared display without a stream selector;
+unexpected differences and the other configured flag parameters are in the
+disclosure. The white/charcoal/grey table reserves green for status.
+Settings are read every minute from running processes' config
 paths on both correlators, including wrapper overrides. The browser reads
 saved results every 30 seconds; it performs no SSH or pipeline writes.
 Missing, stale or edited-since-launch settings remain Unknown. This card is
